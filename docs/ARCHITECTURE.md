@@ -99,9 +99,9 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 ```
 /
 ├── CLAUDE.md                      Operating manual; read first
-├── .mcp.json                      Project MCP servers (figma, playwright, firecrawl)
+│                                  (MCP servers configured globally, not via a shipped .mcp.json — see DECISIONS D-012)
 ├── .claude/                       The agent + design harness
-│   ├── settings.json              Permission allowlist + enabled MCP servers
+│   ├── settings.json              Permission allowlist + enabledMcpjsonServers whitelist
 │   ├── skills/                    data-author, scene-motion
 │   ├── agents/                    verifier, design-reviewer
 │   └── commands/                  phase-check, design-review, compound, capture-figma, pull-figma

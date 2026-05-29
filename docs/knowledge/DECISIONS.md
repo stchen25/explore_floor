@@ -8,6 +8,12 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 ## 2026-05-29
 
+### D-012 — Don't ship a project `.mcp.json`; configure MCP servers globally (supersedes D-009)
+- **Decision:** Remove the committed `.mcp.json`. MCP servers (`figma` / `playwright` / `firecrawl`) are expected to be configured globally (`claude mcp add` or an existing global setup). `.claude/settings.json` keeps `enabledMcpjsonServers` as a name-whitelist so a teammate with no global config can drop in their own local `.mcp.json` and have it auto-enable.
+- **Why:** A project `.mcp.json` whose server names collide with the owner's global config caused duplicate-server issues in Claude Code. The app never depends on the file (it's dev-time tooling, not runtime), so removing it is the clean fix; the whitelist preserves the per-clone fallback.
+- **Alternatives:** Keep `.mcp.json` and rename project servers to avoid collisions (rejected — churns the docs + still double-registers tools); `git update-index --skip-worktree` to keep it tracked but locally deleted (rejected — fragile, hides the file's absence from teammates).
+- **Affected:** `.mcp.json` (deleted), `README.md`, `docs/ARCHITECTURE.md`, `docs/knowledge/HARNESS.md`. Historical refs in `STATUS.md` + the 2026-05-29 session note are left as-dated.
+
 ### D-011 — Defer the live RC.org capture until aesthetic-rubric authoring
 - **Decision:** Don't scrape/screenshot RoboticsCareer.org yet. Capture it (Firecrawl + Playwright) when we author the aesthetic/design-system rubrics, ~Phase 1.
 - **Why:** RC.org's brand tokens are already in `DESIGN_SYSTEM.md` verbatim; a live capture mainly grounds the *aesthetic* rubric and the before/after narrative, which we don't need until visual work starts.
@@ -21,7 +27,7 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 - **Note:** It references legacy `framer-motion` imports; we use `motion/react`. Identical API; our `scene-motion` skill is authoritative for conventions.
 - **Affected:** `README.md`, `.claude/skills/scene-motion`, toolchain setup.
 
-### D-009 — Declare project MCP servers in `.mcp.json` for onboarding
+### D-009 — Declare project MCP servers in `.mcp.json` for onboarding — *superseded by D-012*
 - **Decision:** Add `figma` (remote HTTP), `playwright`, `firecrawl` to `.mcp.json`.
 - **Why:** A teammate cloning the repo has none of the owner's global plugins; project-scoped servers get them productive immediately.
 - **Alternatives:** Rely on each person installing plugins (rejected — slow onboarding, undocumented).

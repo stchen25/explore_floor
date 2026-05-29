@@ -34,7 +34,12 @@ pnpm typecheck    # tsc --noEmit
 
 ## Tooling / MCP setup
 
-Project MCP servers are declared in [`.mcp.json`](./.mcp.json) so a fresh clone is prompted to connect them. After cloning:
+The harness uses three MCP servers — **figma** (design↔code round-trip), **playwright** (review/E2E), **firecrawl** (scrape). Configure them once, either way:
+
+- **Globally (recommended)** — `claude mcp add` for each (or your existing global setup). This repo deliberately ships **no** project `.mcp.json`, to avoid duplicate-server collisions when you already have these configured globally (see `DECISIONS.md` D-012).
+- **Per-clone** — if you have no global config, drop your own `.mcp.json` at the repo root declaring `figma` / `playwright` / `firecrawl`; `.claude/settings.json` already whitelists those names via `enabledMcpjsonServers`.
+
+Then:
 
 - **Figma** — run `/mcp` in Claude Code and authenticate the `figma` server (OAuth, one-time).
 - **Firecrawl** — set `FIRECRAWL_API_KEY` in `.env` ([get a key](https://www.firecrawl.dev/app/api-keys)).
@@ -68,7 +73,7 @@ This project is built with Claude Code using a small, owned **harness** — the 
 | **Slash commands** | `.claude/commands/` | Things you kick off (see below) | Type `/name` in the prompt |
 | **Subagents** | `.claude/agents/` | `verifier` (gates) + `design-reviewer` (UI critique) in isolated contexts | Dispatched by the commands |
 | **Rubrics** | `docs/rubrics/` | Checkable design-quality bars | Graded by `design-reviewer` |
-| **MCP servers** | `.mcp.json` | figma (round-trip), playwright (review/E2E), firecrawl (scrape) | `/mcp` to connect/authenticate |
+| **MCP servers** | global (`claude mcp add`) or your own `.mcp.json` | figma (round-trip), playwright (review/E2E), firecrawl (scrape) | `/mcp` to connect/authenticate |
 | **Knowledge** | `docs/knowledge/` | Status, decisions, lessons, case study, session handoffs | `/compound`; read `STATUS.md` first |
 
 Commands: `/phase-check` (verify the phase's criteria + tick STATUS), `/design-review` (screenshot the UI and grade it vs rubrics), `/compound` (capture a decision/lesson/session note), `/capture-figma` & `/pull-figma` (the Figma round-trip).

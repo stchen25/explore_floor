@@ -16,7 +16,7 @@ If you're new to Claude Code, the building blocks differ in **who triggers them*
 | **Skill** | The model, when your task matches the skill's description | main context | `.claude/skills/<name>/SKILL.md` |
 | **Slash command** | **You**, by typing `/name` | main context | `.claude/commands/<name>.md` |
 | **Subagent** | The model (or a slash command), via the Agent tool | its **own** fresh context window | `.claude/agents/<name>.md` |
-| **MCP server** | Exposes tools the model can call | external process/service | declared in `.mcp.json` |
+| **MCP server** | Exposes tools the model can call | external process/service | global config or an `.mcp.json` (see §6) |
 | **Hook** | The harness, on an event (deterministic) | shell | `settings.json` |
 
 Rule of thumb: **skills** teach the model *how* to do a recurring job (it pulls them in on its own); **slash commands** are things *you* kick off; **subagents** are for work you want done in a clean, isolated context (so it doesn't clog the main thread) or by an independent "second pair of eyes."
@@ -79,9 +79,9 @@ Quality bars made checkable. The `design-reviewer` grades against them. Each is 
 
 Severity: **p1** blocks, **p2** should-fix, **p3** polish. To add one, copy the frontmatter shape, tune the criteria, and cite a source.
 
-## 6. MCP servers — external tools (`.mcp.json`)
+## 6. MCP servers — external tools
 
-Declared project-wide so a fresh clone is prompted to connect them. Run `/mcp` to see status/authenticate.
+Configured **globally** (`claude mcp add`), not via a shipped project `.mcp.json` — that file was removed to avoid duplicate-server collisions with the owner's global config (`DECISIONS.md` D-012). `.claude/settings.json` still whitelists the three names via `enabledMcpjsonServers`, so a teammate without a global setup can drop in their own `.mcp.json` and have it auto-enable. Run `/mcp` to see status/authenticate.
 
 - **`figma`** (remote, OAuth) — the design↔code round-trip. Used by `/capture-figma` and `/pull-figma`; also reads variables/frames. One-time auth via `/mcp`. See `ARCHITECTURE.md` §7 for the read-leaning workflow and what does/doesn't round-trip.
 - **`playwright`** — drives a real browser. Used by the `design-reviewer` (screenshots, interaction) and by the E2E test loop.
@@ -101,7 +101,7 @@ In-repo, version-controlled, doubles as ARM handoff + portfolio material. See `d
 ## 8. Settings (`.claude/settings.json`)
 
 - `permissions.allow` — a permission allowlist for safe, frequent commands (`pnpm …`, read-only git, `npx playwright`, `npx skills add`) so you aren't prompted constantly; `deny` blocks `git push` and `rm -rf`.
-- `enabledMcpjsonServers` — auto-enables the three project MCP servers.
+- `enabledMcpjsonServers` — whitelists the three MCP server names (`figma`/`playwright`/`firecrawl`); a forward-compat no-op unless a project `.mcp.json` exists (see §6 + `DECISIONS.md` D-012).
 - `enabledPlugins` — project-enabled plugins (e.g. commit-commands).
 
 ---
