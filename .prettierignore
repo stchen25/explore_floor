@@ -1,0 +1,10 @@
+dist
+node_modules
+pnpm-lock.yaml
+playwright-report
+test-results
+coverage
+
+# Prose docs and the hand-authored harness — don't let Prettier reformat them.
+*.md
+.claude/

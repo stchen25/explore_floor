@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens — the single source of truth for color, type, spacing, radius,
+ * shadow, and easing. Mirrors DESIGN_SYSTEM.md §2–§8 and the Figma RC-CC file
+ * (variable names match the Figma path mapping in §2 so the code↔canvas round-trip
+ * stays legible). Under Tailwind v4 the token home is this @theme block, not
+ * tailwind.config.ts. Motion DURATIONS and the spring live in /src/lib/motion.ts
+ * (Figma can't model them); easing curves are mirrored here as utilities.
+ */
+@theme {
+  /* ---- Brand (locked, exact — DESIGN_SYSTEM §3.1) ---- */
+  --color-arm-yellow: #ffb81c;
+  --color-arm-yellow-soft: #fdc547;
+  --color-arm-orange: #f56a00; /* Builder archetype */
+  --color-arm-blue: #38a5ee; /* Innovator archetype */
+  --color-arm-teal: #117289; /* Architect archetype */
+
+  /* ---- Semantic (light-mode foundation — §3.2) ---- */
+  --color-page-bg: #f4f4f4;
+  --color-bg: #ffffff;
+  --color-bg-soft: #fafafa;
+  --color-bg-section: #f5f5f5;
+  --color-text-default: #2d3a4a;
+  --color-text-strong: #000000de; /* 87% black */
+  --color-text-muted: #00000099; /* 60% black */
+  --color-text-subtle: #595959;
+  --color-text-faint: #757575;
+  --color-border-default: #0000001f; /* 12% black */
+  --color-overlay: #262626f2;
+  --color-near-black: #262626;
+  --color-black: #000000; /* overrides Tailwind default; verify vs Figma color/neutral/black */
+  --color-white: #ffffff;
+
+  /* ---- Playful scene layer (§3.4 — starter values, refine in Phase 2) ---- */
+  --color-scene-paper: #f5efe3;
+  --color-scene-paper-warm: #efe4ce;
+  --color-scene-line: #2d3a4a;
+  --color-scene-line-soft: #5c6975;
+  --color-scene-shadow: #2d3a4a1a; /* 10% slate */
+
+  /* ---- Spacing (0-indexed; space-0 = 4px deliberate — §5) ---- */
+  --spacing-space-0: 4px;
+  --spacing-space-1: 8px;
+  --spacing-space-2: 12px;
+  --spacing-space-3: 16px;
+  --spacing-space-4: 24px;
+  --spacing-space-5: 32px;
+  --spacing-space-6: 48px;
+  --spacing-space-7: 64px;
+  --spacing-container-px: 16px; /* horizontal page padding */
+  --spacing-section-py: 48px; /* vertical section padding */
+
+  /* ---- Container widths (§5). Override v4's sm/md/lg/xl scale with RC-CC values;
+     usage: max-w-lg = 1248 (typical), max-w-xl = 1500 (sort/scene). ---- */
+  --container-sm: 564px;
+  --container-md: 912px;
+  --container-lg: 1248px;
+  --container-xl: 1500px;
+
+  /* ---- Radius (§6 — overrides defaults) ---- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-full: 9999px;
+
+  /* ---- Shadow / elevation (§7 — Material triple-shadow stacks) ---- */
+  --shadow-card:
+    0 2px 1px -1px rgb(0 0 0 / 0.2), 0 1px 1px 0 rgb(0 0 0 / 0.14), 0 1px 3px 0 rgb(0 0 0 / 0.12);
+  --shadow-elev-2:
+    0 3px 1px -2px rgb(0 0 0 / 0.2), 0 2px 2px 0 rgb(0 0 0 / 0.14), 0 1px 5px 0 rgb(0 0 0 / 0.12);
+
+  /* ---- Typography (§4 — locked pairing + scale) ---- */
+  --font-heading: 'Montserrat', system-ui, sans-serif;
+  --font-body: 'Roboto', system-ui, sans-serif;
+
+  --text-h1: 56px;
+  --text-h1--line-height: 64px;
+  --text-h1--font-weight: 700;
+  --text-h2: 40px;
+  --text-h2--line-height: 48px;
+  --text-h2--font-weight: 700;
+  --text-h3: 32px;
+  --text-h3--line-height: 38px;
+  --text-h3--font-weight: 700;
+  --text-h4: 24px;
+  --text-h4--line-height: 32px;
+  --text-h4--font-weight: 700;
+  --text-h5: 20px;
+  --text-h5--line-height: 28px;
+  --text-h5--font-weight: 700;
+  --text-body: 16px;
+  --text-body--line-height: 22px;
+  --text-small: 14px;
+  --text-small--line-height: 22px;
+  --text-overline: 14px;
+  --text-overline--line-height: 22px;
+  --text-overline--font-weight: 500;
+  --text-overline--letter-spacing: 1px;
+
+  /* ---- Easing (§8 — durations + spring stay in /src/lib/motion.ts) ---- */
+  --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-snap: cubic-bezier(0.5, 0, 0.1, 1.5);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-page-bg);
+    color: var(--color-text-default);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+}

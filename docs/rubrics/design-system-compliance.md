@@ -1,7 +1,7 @@
 ---
 rubric: design-system-compliance
 name: Design System Compliance
-applies_to: [tsx, css, tailwind-config]
+applies_to: [tsx, css]
 version: 1
 severity_defaults:
   default: p2
@@ -104,7 +104,7 @@ Checks whether UI honors the RC.org-derived design system: brand-exact color, th
 - A "cool" frosted-glass card appears on Results.
 
 ## 1. Tokens, not literals
-Every reused or semantically named value lives in `tailwind.config.ts` (color/type/space/radius) or `/src/lib/motion.ts` (durations/easings). Inline hex and magic pixels are the single most common drift and break the Figma↔code token alignment. **Pass:** `className="text-arm-orange p-space-4 rounded-md"`. **Fail:** `style={{ color: '#F56A00', padding: '23px' }}`.
+Every reused or semantically named value lives in the `@theme` block in `src/styles/globals.css` (color/type/space/radius) or `/src/lib/motion.ts` (durations/easings). Inline hex and magic pixels are the single most common drift and break the Figma↔code token alignment. **Pass:** `className="text-arm-orange p-space-4 rounded-md"`. **Fail:** `style={{ color: '#F56A00', padding: '23px' }}`.
 
 ## 2. Color usage
 The four ARM brand colors are exact and non-negotiable. Archetypes are color-coded **Builder→`arm-orange`, Innovator→`arm-blue`, Architect→`arm-teal`**; `arm-yellow` is the global brand signature and never an archetype. The Make.md neons are dead. Product is light-mode only. **Fail:** inventing a fourth accent, or tinting a Technician (Builder) card blue.

@@ -34,7 +34,7 @@ Work proceeds phase by phase, not on a fixed schedule — each phase ships when 
 
 #### 1.2 Tailwind tokens
 
-- Author `tailwind.config.ts` mirroring `DESIGN_SYSTEM.md` section 2 exactly.
+- Author the `@theme` token block in `src/styles/globals.css` mirroring `DESIGN_SYSTEM.md` section 2 exactly (Tailwind v4 is CSS-first — no `tailwind.config.ts`).
 - All brand colors verbatim from the Figma file: `arm-yellow`, `arm-yellow-soft`, `arm-orange`, `arm-blue`, `arm-teal`.
 - All semantic colors, type scale, spacing scale, container widths, radii, shadows.
 - New motion tokens from `DESIGN_SYSTEM.md` section 8 (`duration-instant` through `duration-reveal`, plus easing curves).

@@ -14,7 +14,7 @@ This is the "how the code is organized" doc. It explains stack choices, how data
 
 ### Styling
 
-- **Tailwind CSS** with `tailwind.config.ts` as the **single source of design tokens.** Colors, typography, spacing, radii, motion durations. Never inline hex. Never magic pixel values. If a value is reused or semantically named, it lives in the config.
+- **Tailwind CSS (v4, CSS-first)** with the `@theme` block in `src/styles/globals.css` as the **single source of design tokens** (loaded via the `@tailwindcss/vite` plugin; there is no `tailwind.config.ts`). Colors, typography, spacing, radii. Never inline hex. Never magic pixel values. If a value is reused or semantically named, it lives in `@theme`. (Motion durations/easings live in `/src/lib/motion.ts`; easings are mirrored into `@theme`.)
 - This matters more than usual because the design tokens are also the **shared vocabulary with Figma** (section 7).
 
 ### Animation & motion (two layers)
@@ -24,7 +24,7 @@ The build is a design showcase, so motion gets two complementary engines with a 
 - **Motion (the library formerly named Framer Motion)** owns everything driven by React state or component lifecycle: screen and route transitions (`AnimatePresence`), card enter/exit, the drag-to-bin gesture (`drag` + `dragConstraints`), hover/tap micro-interactions, results layout reflow (`layout` prop), the compare interaction (active card lights up, content swaps), and the central `prefers-reduced-motion` gate. Standard pattern: declarative `motion.div` / `motion.svg` with variants.
 - **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly: the conveyor item travel + arm reach + part-to-robot + snap as one timeline, the cinematic build beat, `DrawSVG` for the Goose-game linework drawing itself in, `MorphSVG` for shape morphs, `MotionPath` for parts arcing into their robot slots. GSAP is fully free as of 2025, including these formerly-paid plugins.
 - **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Register plugins once at app start: `gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`.
-- **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (mirrored into `tailwind.config.ts` where useful). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
+- **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (easings mirrored into the `@theme` block in `src/styles/globals.css`; durations stay in code). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
 - **Ownership per screen:** Landing — Motion for the CTA card; optional GSAP `DrawSVG` reveal of the scene hint. Sort — Motion owns the drag gesture and card UI; GSAP owns the belt and (Phase 2) the item-to-robot choreography. Build beat — pure GSAP timeline; this is the showcase moment. Results — Motion owns card layout and compare; GSAP (`Flip` or `MotionPath`) slides the robot between pedestals so it reads as continuous.
 - **Use the official GSAP AI skills.** GreenSock ships `greensock/gsap-skills` (Agent Skills format: core, timeline, plugins, react, performance). Install it into the repo's Claude Code skills in Phase 0 so the agent authors GSAP with GreenSock's canonical patterns rather than guessing. See `ROADMAP.md` Phase 0.
 - **Not used:** anime.js (overlaps GSAP, adds a third paradigm) and Lottie (passive playback, can't drive the interactive robot). Rive is a documented future exploration for the robot only; see section 9.
@@ -203,7 +203,7 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   └── index.ts
 │   │
 │   └── styles/
-│       └── globals.css            Tailwind directives, base layer overrides
+│       └── globals.css            Tailwind v4 entry (@import) + @theme design tokens (canonical source)
 │
 ├── tests/
 │   ├── e2e/
@@ -213,7 +213,6 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   ├── visual/                    Visual regression specs (Phase 2+)
 │   └── fixtures/
 │
-├── tailwind.config.ts             Design tokens (the canonical source)
 ├── tsconfig.json
 ├── vite.config.ts
 ├── playwright.config.ts
@@ -225,7 +224,7 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 ### Sizing rules
 
 - **Screens orchestrate.** A `Sort.tsx` is layout, state reads, and event handlers. The actual sort card and bin UI live in sibling files.
-- **Split by responsibility, not by line count.** A file does one job. A screen holds layout, state reads, and event handlers only; the moment it contains a reusable sub-element's JSX, inline business logic, or a second distinct UI concern, that part gets extracted to its named sibling (e.g. `SortCard.tsx`, `SortBins.tsx`). Crossing ~250 lines is a prompt to re-check against this rule, not an automatic split, and never a reason to fragment a single coherent concern. `tailwind.config.ts` is exempt; it's just a map.
+- **Split by responsibility, not by line count.** A file does one job. A screen holds layout, state reads, and event handlers only; the moment it contains a reusable sub-element's JSX, inline business logic, or a second distinct UI concern, that part gets extracted to its named sibling (e.g. `SortCard.tsx`, `SortBins.tsx`). Crossing ~250 lines is a prompt to re-check against this rule, not an automatic split, and never a reason to fragment a single coherent concern. The `@theme` token block in `src/styles/globals.css` is exempt; it's just a map.
 - **`index.ts` per folder** as the barrel export. Other files in the folder are not imported directly from outside the folder.
 
 ## 4. State patterns
@@ -318,7 +317,7 @@ The capture works on *rendered* UI, so the value is uneven by surface, and that'
 
 ### Variable sync (the part Figma can actually hold)
 
-Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between the Figma file and `tailwind.config.ts`. Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
+Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between the Figma file and the `@theme` block in `src/styles/globals.css`. Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
 
 - Figma `color/brand/arm-yellow` ↔ Tailwind `arm-yellow`
 - Figma `color/archetype/builder` ↔ Tailwind `archetype-builder`

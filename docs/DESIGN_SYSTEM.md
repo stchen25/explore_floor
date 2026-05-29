@@ -16,7 +16,7 @@ Three principles:
 
 ## 2. Token alignment with Figma
 
-The Figma file (RC-CC) is the source for tokens. `tailwind.config.ts` mirrors those tokens 1:1. The mapping is mechanical:
+The Figma file (RC-CC) is the source for tokens. The `@theme` block in `src/styles/globals.css` mirrors those tokens 1:1 (Tailwind v4 is CSS-first — tokens live in `@theme`, not a `tailwind.config.ts`). The token names below are unchanged; the mapping is mechanical:
 
 | Figma path | Tailwind name | Notes |
 |---|---|---|
@@ -228,7 +228,7 @@ Use sparingly. The playful layer should rely more on warm fills, soft outlines, 
 
 ## 8. Motion
 
-Motion tokens live in code, not in Figma. Figma Variables can't model easing curves or springs, so these are defined once in `/src/lib/motion.ts` and mirrored into `tailwind.config.ts` where a duration is useful as a utility. Both animation engines (Motion and GSAP) read these same values so the feel is consistent across the two. See `ARCHITECTURE.md` section 1.
+Motion tokens live in code, not in Figma. Figma Variables can't model easing curves or springs, so these are defined once in `/src/lib/motion.ts`. The easing curves are mirrored into the `@theme` block in `src/styles/globals.css` as `ease-soft` / `ease-snap` utilities; durations stay in code only (Tailwind v4 has no first-class duration token namespace). Both animation engines (Motion and GSAP) read these same values so the feel is consistent across the two. See `ARCHITECTURE.md` section 1.
 
 | Token | Value | Use |
 |---|---|---|

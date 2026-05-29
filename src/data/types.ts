@@ -1,0 +1,150 @@
+// All shared data types for the experience. Schema spec: docs/DATA_MODEL.md §2.
+// Data is data, not code — content lives in the sibling files, never in components.
+
+// ---------- Archetypes & Roles ----------
+
+export type ArchetypeId = 'builder' | 'innovator' | 'architect';
+
+export type RoleId = 'technician' | 'specialist' | 'integrator';
+
+/** Each archetype maps to exactly one role. */
+export const ARCHETYPE_TO_ROLE: Record<ArchetypeId, RoleId> = {
+  builder: 'technician',
+  innovator: 'specialist',
+  architect: 'integrator',
+};
+
+export interface Job {
+  title: string;
+  description: string; // one-liner, plain language
+}
+
+export interface Role {
+  id: RoleId;
+  archetypeId: ArchetypeId;
+  name: string; // "Robotics Technician"
+  archetypeName: string; // "Builder"
+  shortDescription: string; // teen-friendly plain language
+  pathFraming: string; // typical educational pathway, plain language
+  competencyIds: string[];
+  jobs: Job[];
+}
+
+// ---------- Competencies & Skills ----------
+
+export interface Competency {
+  id: string;
+  roleId: RoleId;
+  name: string; // "PLC (Programmable Logic Controller)"
+  plainName: string; // teen-friendly translation; see DATA_MODEL §5
+}
+
+export interface EssentialSkill {
+  id: string;
+  name: string; // "Critical Thinking"
+}
+
+// ---------- Interest items ----------
+
+/** Weights are integers 0-3. 0 = no signal, 1 = light lean, 2 = clear lean,
+ *  3 = defining. An item can contribute to multiple archetypes. */
+export interface ArchetypeWeights {
+  builder: number;
+  innovator: number;
+  architect: number;
+}
+
+export type RoundId = 1 | 2 | 3 | 4;
+
+export interface InterestItem {
+  id: string; // stable identifier, e.g. 'building-or-fixing'
+  round: RoundId;
+  label: string; // what the user reads on the card
+  weights: ArchetypeWeights;
+  robotContribution: RobotContribution;
+}
+
+// ---------- Robot ----------
+
+/** A robot has a fixed set of slots. Each kept interest contributes to one
+ *  or more of them. The build logic resolves conflicts (last-wins by default;
+ *  see DATA_MODEL §10). */
+export type RobotSlot =
+  | 'base'
+  | 'body'
+  | 'leftArm'
+  | 'rightArm'
+  | 'head'
+  | 'accessory' // up to N accessories can stack
+  | 'decal' // up to N decals can stack
+  | 'colorScheme';
+
+export interface RobotContribution {
+  /** Description for designers/authors. Not shown to user. */
+  intent: string;
+  /** One or more part contributions applied if this interest is kept. */
+  parts: RobotPartRef[];
+}
+
+export interface RobotPartRef {
+  slot: RobotSlot;
+  partId: string; // refs an entry in /src/data/robotParts.ts
+}
+
+export interface RobotPart {
+  id: string;
+  slot: RobotSlot;
+  name: string; // designer-facing label
+  svgComponent: string; // name of the React/SVG component to render (Phase 2)
+}
+
+// ---------- Color schemes ----------
+
+/** Archetype-derived color scheme for the robot + role accents (DESIGN_SYSTEM §3.3).
+ *  Picked from the dominant archetype after scoring. */
+export interface ColorScheme {
+  id: ArchetypeId | 'default';
+  accentToken: string; // Tailwind/Figma token name, e.g. 'arm-orange'
+  accentHex: string; // raw hex for SVG fills / non-class usage
+  name: string; // designer-facing label
+}
+
+// ---------- Programs ----------
+
+export interface TrainingProgram {
+  id: string;
+  name: string;
+  type: 'apprenticeship' | 'certificate' | 'degree' | 'bootcamp' | 'workshop';
+  duration: string; // "12 weeks", "2 years", etc.
+  rolesServed: RoleId[];
+  competencyIds: string[]; // which competencies this program builds
+  blurb: string; // 1-2 sentence description
+  url?: string; // optional, mocked
+}
+
+// ---------- Runtime ----------
+
+export type Decision = 'keep' | 'pass';
+
+export interface SessionState {
+  currentScreen: 'landing' | 'sort' | 'build' | 'results';
+  currentRound: 0 | 1 | 2 | 3 | 4; // 0 = not started, 4 = sorting done
+  decisions: Record<string, Decision>; // keyed by InterestItem.id
+  scoreResult: ScoreResult | null;
+  robot: RobotState | null;
+  currentlyTryingOn: RoleId | null; // results screen state
+  soundEnabled: boolean;
+}
+
+export interface RobotState {
+  slots: Partial<Record<RobotSlot, string | string[]>>; // partId or array for stacking slots
+  isFinalized: boolean; // true only after completion
+}
+
+export interface ScoreResult {
+  raw: ArchetypeWeights; // sum of weights for kept items, per archetype
+  matchPercentages: ArchetypeWeights; // 0-100 per archetype, see scoring formula
+  primaryArchetype: ArchetypeId;
+  primaryRole: RoleId;
+  ranking: ArchetypeId[]; // ordered, primary first
+}

@@ -1,0 +1,27 @@
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+type Variant = 'primary' | 'neutral' | 'ghost';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: Variant;
+  children: ReactNode;
+}
+
+// Tokens only — no literals. Phase 0 styling is intentionally plain; the real button
+// variants come from the Figma foundation set in Phase 1+.
+const VARIANTS: Record<Variant, string> = {
+  primary: 'bg-arm-yellow text-near-black hover:bg-arm-yellow-soft',
+  neutral: 'border border-border-default bg-bg text-text-default hover:bg-bg-section',
+  ghost: 'bg-transparent text-text-muted hover:text-text-default',
+};
+
+export function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps) {
+  return (
+    <button
+      className={`rounded-md px-space-4 py-space-2 font-body text-body transition-colors ${VARIANTS[variant]} ${className}`}
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}

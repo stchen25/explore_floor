@@ -40,7 +40,7 @@ Research found the barrier to robotics manufacturing careers is not lack of inte
 | Build | Vite | Fast dev loop. |
 | Language | TypeScript | Strict mode on. |
 | UI | React 18 | Function components and hooks only. |
-| Styling | Tailwind CSS | All design tokens live in `tailwind.config.ts`. No magic hex values in components. |
+| Styling | Tailwind CSS (v4, CSS-first) | All design tokens live in the `@theme` block in `src/styles/globals.css` (loaded via `@tailwindcss/vite`). No magic hex values in components. |
 | Animation (UI) | Motion (ex-Framer Motion) | React-state-driven motion: screen transitions, gestures, drag-to-bin, the results compare interaction, `prefers-reduced-motion`. |
 | Animation (scene) | GSAP + plugins | Scene choreography and the cinematic build beat. MorphSVG, DrawSVG, MotionPath, plus `@gsap/react`. Fully free since 2025. The two libraries share a motion-token file and never animate the same property on the same node. |
 | Scene rendering | SVG (React components) | The assembly line is composed SVG, not canvas, not WebGL. Inspectable and diffable. |
@@ -65,9 +65,9 @@ If you want to add a dependency, check `ARCHITECTURE.md` first. Prefer the stack
   /state              Zustand stores
   /data               Mock data: roles, competencies, interest items, archetype mappings, scoring
   /lib                Pure helpers (scoring engine, mappers, formatters)
-  /styles             Tailwind entry, global CSS, design-token references
+  /styles             Tailwind v4 entry + the @theme design-token block (globals.css)
 /tests                Playwright specs and fixtures
-tailwind.config.ts    Design tokens. Single source of truth for color/type/spacing/motion.
+src/styles/globals.css  Design tokens via Tailwind v4 @theme. Single source of truth for color/type/spacing (motion tokens live in src/lib/motion.ts).
 ```
 
 ## Core conventions
@@ -115,7 +115,7 @@ Phase 1 ships a working flow. Phase 2 gives it soul. Protect that order so users
 
 - Never invent the ARM role taxonomy. There are exactly three role families: **Robotics Integrator, Robotics Specialist, Robotics Technician.** Their competencies are fixed mock data in `/src/data`. Do not add or rename roles.
 - Never make the result a single prescriptive role. Always a weighted match across all three. See `PRD.md` scoring section.
-- Never use the neon palette from early brainstorm docs. Palette is defined in `DESIGN_SYSTEM.md` and `tailwind.config.ts`.
+- Never use the neon palette from early brainstorm docs. Palette is defined in `DESIGN_SYSTEM.md` and the `@theme` block in `src/styles/globals.css`.
 - Never add a screen, step, or feature not described in `PRD.md` without flagging it first.
 - When in doubt about scope, content, or direction, stop and ask. The user is driving and prefers to be consulted before you expand scope.
 

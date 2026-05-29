@@ -8,6 +8,12 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 ## 2026-05-29
 
+### D-013 — Tailwind v4 (CSS-first): design tokens live in `@theme`, not `tailwind.config.ts`
+- **Decision:** Phase 0 scaffolds on **Tailwind v4** via the `@tailwindcss/vite` plugin. The design-token source of truth is the `@theme` block in `src/styles/globals.css`; there is no `tailwind.config.ts` and no `postcss.config.js`/`autoprefixer`. Token **names are unchanged** (`arm-yellow`, `space-4`, `text-h1`, …) so the Figma-variable mirror and the tokens-not-literals rule are unaffected. Easing curves are mirrored into `@theme` (`ease-soft`/`ease-snap`); motion **durations** + the spring stay in `/src/lib/motion.ts` (v4 has no duration token namespace).
+- **Why:** The user chose v4 explicitly during Phase 0 planning. v4 is the current major and a fresh scaffold pulls it by default; it moves tokens into CSS-first `@theme`, which is the idiomatic v4 model. Keeping token names identical preserves every downstream convention.
+- **Alternatives:** Tailwind v3 with `tailwind.config.ts` (the original doc assumption; rejected per the user's call — would pin to the prior major); v4 in legacy `@config` compat mode loading a `tailwind.config.ts` (rejected — fights the v4 grain for no benefit once names are preserved).
+- **Affected:** `src/styles/globals.css` (the `@theme` block), `package.json` (`tailwindcss@4` + `@tailwindcss/vite`, no postcss/autoprefixer), `vite.config.ts`. Docs reconciled to point at `@theme`: `CLAUDE.md`, `docs/ARCHITECTURE.md` §1/§3/§7, `docs/DESIGN_SYSTEM.md` §2/§8, `docs/ROADMAP.md` §1.2, `docs/rubrics/design-system-compliance.md`.
+
 ### D-012 — Don't ship a project `.mcp.json`; configure MCP servers globally (supersedes D-009)
 - **Decision:** Remove the committed `.mcp.json`. MCP servers (`figma` / `playwright` / `firecrawl`) are expected to be configured globally (`claude mcp add` or an existing global setup). `.claude/settings.json` keeps `enabledMcpjsonServers` as a name-whitelist so a teammate with no global config can drop in their own local `.mcp.json` and have it auto-enable.
 - **Why:** A project `.mcp.json` whose server names collide with the owner's global config caused duplicate-server issues in Claude Code. The app never depends on the file (it's dev-time tooling, not runtime), so removing it is the clean fix; the whitelist preserves the per-clone fallback.
