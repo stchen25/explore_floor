@@ -38,7 +38,7 @@ The compressed version (full version in `CONTEXT_BRIEF.md`):
 - Produce a recommendation across all three role families, not a single prescriptive verdict.
 - Make the experience genuinely fun and worth completing, so the robot payoff and results feel earned.
 - Make every piece of content (interests, role copy, scoring weights, results text) trivially editable by the team without touching logic.
-- Ship a flow testable with users within roughly two weeks (Phase 1).
+- Ship a flow testable with users as the Phase 1 milestone.
 
 ### Non-goals (for this build)
 
@@ -241,3 +241,5 @@ What remains, none of which blocks Phase 0 or 1:
 ## 14. Explicitly out of scope
 
 Auth, accounts, persistence, backend, real ARM data, the professional track, 3D/WebGL, analytics instrumentation, production accessibility, and any screen or step not described above. Flag before building any of these.
+
+**Note on demo affordances.** Two non-core conveniences are intentionally allowed even though they are not part of the user-facing flow in section 5: a `?demo=true` mode that pre-fills a representative result and jumps straight to Results, and a hidden skip-to-results link for demo and user-test setup. Both are Phase 3 tooling (see `ROADMAP.md` 4.5 and 4.7), exist only to make demos and testing faster, and are the documented exception to "no step not described above."

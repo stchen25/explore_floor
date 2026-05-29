@@ -167,7 +167,7 @@ export interface ScoreResult {
 
 ## 3. The 24 interest items
 
-Seeded weights below are **designer defaults** (per PRD section 7). They produce a believable spread and total to roughly balanced maxes per archetype (Builder 22, Innovator 24, Architect 25), so no archetype is structurally favored. ARM's dev team owns tuning for production.
+Seeded weights below are **designer defaults** (per PRD section 7). They produce a believable spread. Their per-archetype maxes are Builder 22, Innovator 27, Architect 25. These maxes do not need to match: the scoring engine normalizes each archetype against its own maximum (`raw[A] / max[A] * 100`), so no archetype is structurally favored regardless of its raw ceiling. ARM's dev team owns tuning for production.
 
 | # | Round | Label | B | I | A | Robot intent |
 |---|-------|-------|---|---|---|--------------|
@@ -202,7 +202,7 @@ Notes for the author of `/src/data/items.ts`:
 - The "Robot intent" column is a starter description; the actual `parts` array per item refers to `partId`s from the part library (section 7). Pencil in placeholder IDs that match these intents; the SVG components themselves get authored alongside Phase 2 of the build.
 - Many cells are zero. The schema requires all three weight fields. Do not omit them.
 
-**Sanity totals (max possible if user keeps every item):** Builder 22, Innovator 24, Architect 25.
+**Sanity totals (max possible if user keeps every item):** Builder 22, Innovator 27, Architect 25.
 
 ## 4. Roles
 
@@ -568,7 +568,7 @@ If a content change feels like it needs a code edit, stop and ask. It probably d
 When `/src/data` is scaffolded from this doc, verify:
 
 - All 24 items exist with all three weights set (no missing zeros).
-- Sum-per-archetype across all items matches: Builder 22, Innovator 24, Architect 25.
+- Sum-per-archetype across all items matches: Builder 22, Innovator 27, Architect 25.
 - Every role's `competencyIds` array is non-empty and references real entries in `competencies.ts`.
 - Every program references real role IDs and real competency IDs.
 - Every item's `robotContribution.parts` references real entries in `robotParts.ts` (placeholders fine; the references must resolve).

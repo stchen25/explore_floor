@@ -1,0 +1,36 @@
+---
+name: data-author
+description: Use when creating or editing anything in /src/data — interest items, archetype weights, roles, competencies, essential skills, training programs, robot-part mappings, or color schemes. Encodes the "data is data, not code" discipline and the DATA_MODEL invariants so content stays tunable without touching component logic. Trigger on tasks like "add/edit an interest item", "tune the weights", "update results copy", "add a mock program", or "map a robot part".
+---
+
+# Authoring `/src/data`
+
+`DATA_MODEL.md` is the schema spec — **read it, don't restate it.** This skill is the working discipline for editing data safely. The single rule everything serves: **content lives in typed data, never in components.** The team tunes content constantly; a content change must never require editing logic.
+
+## Where things live
+`/src/data/`: `types.ts`, `items.ts` (24 interests), `roles.ts` (3), `competencies.ts`, `skills.ts` (14), `programs.ts` (~6-10), `robotParts.ts`, `colorSchemes.ts`, `index.ts` (barrel). See `DATA_MODEL.md` §13.
+
+## Invariants — must hold after every edit (`DATA_MODEL.md` §15)
+- **24 interest items**, built in round order, each with **all three** weights present (`builder`, `innovator`, `architect`) — never omit a zero.
+- **Per-archetype weight sums: Builder 22 · Innovator 27 · Architect 25.** (These maxes need not be equal — scoring normalizes per archetype against its own max. If you change a weight, update this expectation *and* the scoring unit test, and log it in `docs/knowledge/DECISIONS.md`.)
+- Weights are integers **0-3** (0 none, 1 light, 2 clear, 3 defining). Passing an item contributes 0 by default; negative weights are schema-allowed but off in v1.
+- Every `Role.competencyIds` is non-empty and resolves to a real `competencies.ts` entry.
+- Every `TrainingProgram` references real role IDs and real competency IDs.
+- Every item's `robotContribution.parts` resolves to a real `robotParts.ts` entry (placeholder components are fine in Phase 0/1; the *reference* must resolve).
+- Exactly three roles/archetypes — **never add, rename, or remove one.** Builder→Technician, Innovator→Specialist, Architect→Integrator.
+
+## Tunable without code vs needs-code (`DATA_MODEL.md` §14)
+- **Tunable (just edit data):** any text (labels, role descriptions, plain-name competency translations, job/program blurbs), all archetype weights, per-item robot-part assignments, the mock program set.
+- **Needs code / stop and ask:** adding a fourth archetype/role, changing the scoring algorithm shape, adding robot slots, changing session-state shape. If a content change *feels* like it needs a code edit, it probably doesn't — re-check the schema first.
+
+## Workflow
+1. Confirm the change is data, not logic. If logic, stop and flag.
+2. Edit the relevant `/src/data` file, matching existing types exactly (no `any`).
+3. Re-run the affected invariants above (recompute weight sums by hand if you touched weights).
+4. If `/src/lib` tests exist, run them (`pnpm test:unit`) — especially `scoring.test.ts`.
+5. If you changed a weight max, copy/code-edit the expectation, and record the decision in `DECISIONS.md`.
+
+## Anti-patterns (refuse)
+- Putting copy, weights, or role text inside a component.
+- Omitting a zero weight "for brevity."
+- A config-driven generalization the spec didn't ask for (the sort is a fixed 4 rounds of 6 — build that).

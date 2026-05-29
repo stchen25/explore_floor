@@ -98,14 +98,22 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 
 ```
 /
+├── CLAUDE.md                      Operating manual; read first
+├── .mcp.json                      Project MCP servers (figma, playwright, firecrawl)
+├── .claude/                       The agent + design harness
+│   ├── settings.json              Permission allowlist + enabled MCP servers
+│   ├── skills/                    data-author, scene-motion
+│   ├── agents/                    verifier, design-reviewer
+│   └── commands/                  phase-check, design-review, compound, capture-figma, pull-figma
 ├── docs/                          All planning docs
-│   ├── CLAUDE.md
 │   ├── PRD.md
 │   ├── CONTEXT_BRIEF.md
 │   ├── DESIGN_SYSTEM.md
 │   ├── ARCHITECTURE.md            (this file)
 │   ├── DATA_MODEL.md
-│   └── ROADMAP.md
+│   ├── ROADMAP.md
+│   ├── knowledge/                 Living memory: STATUS, DECISIONS, LESSONS, CASESTUDY, sessions/
+│   └── rubrics/                   Design-quality rubrics (design-reviewer grades against these)
 │
 ├── public/
 │   ├── audio/                     SFX files
@@ -211,7 +219,7 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 ├── playwright.config.ts
 ├── package.json
 ├── pnpm-lock.yaml
-└── README.md                      Quick orientation; defers to docs/
+└── README.md                      Teammate onboarding + MCP/toolchain setup; defers to docs/
 ```
 
 ### Sizing rules

@@ -279,7 +279,7 @@ Untitled Goose Game. Specifically:
 
 ### 10.3 Specific applications
 
-- **Landing scene**: a partial view of the assembly-line scene visible behind the CTA card. Stylized, soft, no animation yet. Hints at what's coming.
+- **Landing scene**: a partial view of the assembly-line scene visible behind the CTA card. Stylized and soft, with a gentle entrance reveal (GSAP `DrawSVG` linework drawing itself in) introduced in Phase 1 as an early, low-risk test of the scene-animation approach. Hints at what's coming.
 - **Conveyor scene**: the central artifact. Goose-style line + fill, slight motion as ambient state (small ambient idle on the arm, the conveyor surface texture not moving fast enough to be distracting).
 - **Robot**: stylized, friendly without being twee. Limbs and parts have visible "joints" (small circles), pieces look attached rather than seamlessly merged. The robot reads as built, not 3D-rendered.
 - **Results pedestal**: a soft circular plinth, slight shadow, the robot standing on it. The role cards behind it have the same warm fill quality.

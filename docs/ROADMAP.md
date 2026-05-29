@@ -8,14 +8,14 @@ This doc is the operational counterpart to `PRD.md` (what we're building), `DATA
 
 ## 0. Overall timeline
 
-| Phase | Goal | Duration | Output |
-|---|---|---|---|
-| Phase 0 | Scaffold and foundation | 3–5 days | Working skeleton, every screen clickable, scoring engine tested |
-| Phase 1 | Testable flow | ~1 week | Full flow end to end with simple sort interaction — **first user test** |
-| Phase 2 | Feel pass | ~2 weeks | Conveyor scene, robot building live, the experience has its character |
-| Phase 3 | Polish | ~1–2 weeks | Copy, sound, motion polish, mobile, light a11y, Figma sync — **demoable to ARM** |
+| Phase | Goal | Output |
+|---|---|---|
+| Phase 0 | Scaffold and foundation | Working skeleton, every screen clickable, scoring engine tested |
+| Phase 1 | Testable flow | Full flow end to end with simple sort interaction — **first user test** |
+| Phase 2 | Feel pass | Conveyor scene, robot building live, the experience has its character |
+| Phase 3 | Polish | Copy, sound, motion polish, mobile, light a11y, Figma sync — **demoable to ARM** |
 
-Roughly six weeks of focused build inside the summer's 12-week arc. Remaining time absorbs iteration after each user test plus final ARM delivery prep.
+Work proceeds phase by phase, not on a fixed schedule — each phase ships when its acceptance criteria are met. Time between and after phases absorbs iteration from each user test plus final ARM delivery prep.
 
 ## 1. Phase 0 — Scaffold and foundation
 
@@ -154,7 +154,7 @@ Phase is complete when ALL of these are true:
 
 - Final-ish copy (the landing one-liner is an open question per `PRD.md` section 13; use the best draft we have and iterate).
 - Primary CTA styled per `DESIGN_SYSTEM.md`.
-- A static, soft hint of the assembly-line scene behind the CTA (placeholder illustration is fine; the real scene comes in Phase 2).
+- A soft hint of the assembly-line scene behind the CTA (placeholder illustration is fine; the full scene comes in Phase 2). Add a gentle entrance reveal (GSAP `DrawSVG`) as an early, low-risk test of the scene-animation approach.
 
 #### 2.2 Sort screen — real interaction
 
