@@ -1,0 +1,482 @@
+# Architecture
+
+This is the "how the code is organized" doc. It explains stack choices, how data flows through the app, where things live, how the Figma and Playwright integrations work, and the documented future 3D path. For *what* we're building, see `PRD.md`. For *what data shapes exist*, see `DATA_MODEL.md`.
+
+---
+
+## 1. Stack choices and why
+
+### Build & language
+
+- **Vite** for dev server and build. Sub-second hot reload, near-zero config, Claude Code is fluent in it.
+- **TypeScript, strict mode.** Catches the failure mode of "Claude Code shipped a thing that runs but is subtly wrong." Strict mode makes the data model in `DATA_MODEL.md` enforceable at compile time.
+- **React 18.** Function components and hooks only. No class components. No legacy patterns.
+
+### Styling
+
+- **Tailwind CSS** with `tailwind.config.ts` as the **single source of design tokens.** Colors, typography, spacing, radii, motion durations. Never inline hex. Never magic pixel values. If a value is reused or semantically named, it lives in the config.
+- This matters more than usual because the design tokens are also the **shared vocabulary with Figma** (section 7).
+
+### Animation & motion (two layers)
+
+The build is a design showcase, so motion gets two complementary engines with a hard ownership boundary between them. They do not conflict because **a given element and property is owned by exactly one library at a time.** Motion runs through React's render cycle and the Web Animations API. GSAP writes straight to the DOM and SVG and bypasses React's reconciler, which is why it stays at 60fps on large choreographed sequences. The only failure mode is two libraries grabbing the same transform on the same node at once, and the ownership rule below prevents that.
+
+- **Motion (the library formerly named Framer Motion)** owns everything driven by React state or component lifecycle: screen and route transitions (`AnimatePresence`), card enter/exit, the drag-to-bin gesture (`drag` + `dragConstraints`), hover/tap micro-interactions, results layout reflow (`layout` prop), the compare interaction (active card lights up, content swaps), and the central `prefers-reduced-motion` gate. Standard pattern: declarative `motion.div` / `motion.svg` with variants.
+- **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly: the conveyor item travel + arm reach + part-to-robot + snap as one timeline, the cinematic build beat, `DrawSVG` for the Goose-game linework drawing itself in, `MorphSVG` for shape morphs, `MotionPath` for parts arcing into their robot slots. GSAP is fully free as of 2025, including these formerly-paid plugins.
+- **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Register plugins once at app start: `gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`.
+- **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (mirrored into `tailwind.config.ts` where useful). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
+- **Ownership per screen:** Landing — Motion for the CTA card; optional GSAP `DrawSVG` reveal of the scene hint. Sort — Motion owns the drag gesture and card UI; GSAP owns the belt and (Phase 2) the item-to-robot choreography. Build beat — pure GSAP timeline; this is the showcase moment. Results — Motion owns card layout and compare; GSAP (`Flip` or `MotionPath`) slides the robot between pedestals so it reads as continuous.
+- **Use the official GSAP AI skills.** GreenSock ships `greensock/gsap-skills` (Agent Skills format: core, timeline, plugins, react, performance). Install it into the repo's Claude Code skills in Phase 0 so the agent authors GSAP with GreenSock's canonical patterns rather than guessing. See `ROADMAP.md` Phase 0.
+- **Not used:** anime.js (overlaps GSAP, adds a third paradigm) and Lottie (passive playback, can't drive the interactive robot). Rive is a documented future exploration for the robot only; see section 9.
+
+### Scene rendering
+
+- **Plain SVG as React components.** The assembly-line scene, the conveyor, the robotic arms, the bins, and the robot itself are all composed SVG. Each part is its own component in `/src/scene/`.
+- No canvas. No WebGL in v1. No Pixi.js. This is a deliberate choice for Claude Code's success rate (debuggable, inspectable, no shader-level issues) and for the Goose-game aesthetic (vector linework + soft fills works perfectly here).
+- The 3D migration path is real and documented in section 9. SVG today does not preclude 3D later.
+
+### State
+
+- **Zustand**, one store per domain. The primary store is `sessionStore.ts` (defined in `DATA_MODEL.md` section 12). If we add more stores (e.g. a settings store), each lives in its own file in `/src/state/`.
+- No Redux, no Context for global state, no prop-drilling.
+
+### Audio
+
+- **Howler.js** for SFX. Small, easy, handles all the things native HTMLAudio doesn't.
+- Sounds are **off by default** with a visible toggle in the UI (top-right corner). All sound calls go through a single `audio.ts` helper so the toggle works as a kill switch.
+
+### Testing
+
+- **Playwright** for end-to-end and visual regression. Set up in Phase 0 with one happy-path test. Expanded each phase.
+- **Vitest** for unit tests of pure functions (`scoring.ts`, `robotAssembly.ts`, `programSelection.ts`). The scoring engine in particular is exhaustively tested because it's the brain.
+
+### Tooling
+
+- **pnpm** as the package manager. Faster, deterministic, doesn't blow up `node_modules`.
+- **ESLint + Prettier** with a sensible default config. Run automatically before any commit.
+- **Husky + lint-staged** for pre-commit hooks (optional; add if friction becomes a thing).
+
+### What we explicitly do *not* use
+
+- No SSR framework (no Next.js, Remix, etc.). This is a SPA prototype.
+- No backend or BFF layer. No `/api` routes. Mocked data only.
+- No state management library other than Zustand.
+- No styled-components, Emotion, or CSS-in-JS. Tailwind handles everything.
+- No UI component library (no MUI, Chakra, shadcn). We're building bespoke components; the design is the point.
+- No routing library bigger than what we need. Use **React Router** for the few routes we have (landing, sort, build, results) and don't reach further.
+
+## 2. Data flow at a glance
+
+```
+                  ┌──────────────────────┐
+                  │  /src/data           │
+                  │  (typed constants)   │
+                  └──────────┬───────────┘
+                             │ imports
+                             ▼
+   ┌──────────────────────────────────────────────────┐
+   │  /src/state/sessionStore.ts (Zustand)            │
+   │                                                  │
+   │  state: SessionState                             │
+   │  actions:                                        │
+   │    - recordDecision  ────► /src/lib/scoring      │
+   │    - completeSorting    └► /src/lib/robotAssembly│
+   │    - tryOnRole          └► /src/lib/programSelect│
+   └──────────────────────┬───────────────────────────┘
+                          │ useStore() / selectors
+                          ▼
+   ┌──────────────────────────────────────────────────┐
+   │  /src/screens/* and /src/scene/*                 │
+   │  React components — read state, dispatch actions │
+   │  No business logic.                              │
+   └──────────────────────────────────────────────────┘
+```
+
+The principle: **data flows down, actions flow up, logic lives in pure functions in `/src/lib`.** Components are dumb consumers. The store is the only thing that knows about both the data and the logic; everything else either provides one or consumes the other.
+
+## 3. File structure (canonical)
+
+```
+/
+├── docs/                          All planning docs
+│   ├── CLAUDE.md
+│   ├── PRD.md
+│   ├── CONTEXT_BRIEF.md
+│   ├── DESIGN_SYSTEM.md
+│   ├── ARCHITECTURE.md            (this file)
+│   ├── DATA_MODEL.md
+│   └── ROADMAP.md
+│
+├── public/
+│   ├── audio/                     SFX files
+│   ├── fonts/                     Self-hosted webfonts (if any)
+│   └── favicon.svg
+│
+├── src/
+│   ├── app/
+│   │   ├── App.tsx                Top-level component
+│   │   ├── router.tsx             React Router config
+│   │   ├── providers.tsx          Any global providers (rarely needed)
+│   │   └── main.tsx               Vite entry point
+│   │
+│   ├── screens/
+│   │   ├── Landing/
+│   │   │   ├── Landing.tsx
+│   │   │   ├── LandingScene.tsx
+│   │   │   └── index.ts
+│   │   ├── Sort/
+│   │   │   ├── Sort.tsx
+│   │   │   ├── SortCard.tsx
+│   │   │   ├── SortBins.tsx
+│   │   │   ├── RoundIndicator.tsx
+│   │   │   └── index.ts
+│   │   ├── Build/
+│   │   │   ├── Build.tsx
+│   │   │   └── index.ts
+│   │   └── Results/
+│   │       ├── Results.tsx
+│   │       ├── RoleCard.tsx
+│   │       ├── Pedestal.tsx
+│   │       ├── ProgramList.tsx
+│   │       └── index.ts
+│   │
+│   ├── scene/
+│   │   ├── ConveyorBelt.tsx
+│   │   ├── ConveyorItem.tsx
+│   │   ├── RoboticArm.tsx
+│   │   ├── Bin.tsx
+│   │   ├── Factory.tsx            Background factory scene
+│   │   └── robot/
+│   │       ├── Robot.tsx          Composes all the parts
+│   │       ├── parts/
+│   │       │   ├── WrenchArm.tsx
+│   │       │   ├── BinaryDecal.tsx
+│   │       │   ├── ChipPin.tsx
+│   │       │   ├── Clipboard.tsx
+│   │       │   ├── MiniRobotArm.tsx
+│   │       │   ├── HardHat.tsx
+│   │       │   ├── MagnifierHead.tsx
+│   │       │   ├── ...
+│   │       │   └── DefaultBase.tsx
+│   │       └── index.ts
+│   │
+│   ├── components/
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── ProgressBar.tsx
+│   │   ├── SoundToggle.tsx
+│   │   └── motion/                Reusable motion primitives
+│   │       ├── FadeIn.tsx
+│   │       └── SnapInto.tsx
+│   │
+│   ├── state/
+│   │   └── sessionStore.ts
+│   │
+│   ├── data/                      See DATA_MODEL.md for full contents
+│   │   ├── types.ts
+│   │   ├── items.ts
+│   │   ├── roles.ts
+│   │   ├── competencies.ts
+│   │   ├── skills.ts
+│   │   ├── programs.ts
+│   │   ├── robotParts.ts
+│   │   ├── colorSchemes.ts
+│   │   └── index.ts
+│   │
+│   ├── lib/
+│   │   ├── scoring.ts
+│   │   ├── robotAssembly.ts
+│   │   ├── programSelection.ts
+│   │   ├── audio.ts               Howler wrapper, respects sound toggle
+│   │   ├── __tests__/
+│   │   │   ├── scoring.test.ts
+│   │   │   ├── robotAssembly.test.ts
+│   │   │   └── programSelection.test.ts
+│   │   └── index.ts
+│   │
+│   └── styles/
+│       └── globals.css            Tailwind directives, base layer overrides
+│
+├── tests/
+│   ├── e2e/
+│   │   ├── happy-path.spec.ts
+│   │   ├── results-compare.spec.ts
+│   │   └── ...
+│   ├── visual/                    Visual regression specs (Phase 2+)
+│   └── fixtures/
+│
+├── tailwind.config.ts             Design tokens (the canonical source)
+├── tsconfig.json
+├── vite.config.ts
+├── playwright.config.ts
+├── package.json
+├── pnpm-lock.yaml
+└── README.md                      Quick orientation; defers to docs/
+```
+
+### Sizing rules
+
+- **Screens orchestrate.** A `Sort.tsx` is layout, state reads, and event handlers. The actual sort card and bin UI live in sibling files.
+- **Split by responsibility, not by line count.** A file does one job. A screen holds layout, state reads, and event handlers only; the moment it contains a reusable sub-element's JSX, inline business logic, or a second distinct UI concern, that part gets extracted to its named sibling (e.g. `SortCard.tsx`, `SortBins.tsx`). Crossing ~250 lines is a prompt to re-check against this rule, not an automatic split, and never a reason to fragment a single coherent concern. `tailwind.config.ts` is exempt; it's just a map.
+- **`index.ts` per folder** as the barrel export. Other files in the folder are not imported directly from outside the folder.
+
+## 4. State patterns
+
+### Reading state
+
+```ts
+import { useSessionStore } from '@/state/sessionStore';
+
+// Subscribe to specific slices, never the whole store
+const currentRound = useSessionStore((s) => s.state.currentRound);
+const recordDecision = useSessionStore((s) => s.recordDecision);
+```
+
+This avoids unnecessary re-renders. **Do not** subscribe to the entire store from a component.
+
+### Dispatching actions
+
+All mutations go through store actions. Components never mutate state directly. The store actions are the only place that touches `/src/lib` business logic.
+
+### Computed/derived state
+
+Either compute inside a store action (and store the result), or use a selector pattern with `useMemo`. Don't recompute the same thing in five components.
+
+### Persistence
+
+None in v1. State lives in memory and resets on refresh. This is intentional for the prototype.
+
+## 5. Scene composition
+
+The assembly-line scene is built as a hierarchy of SVG React components. The scene choreography (belt, item travel, arm, part-to-robot) is driven by GSAP timelines; the drag-to-bin gesture and any React-state-driven transitions are Motion. See the ownership rule in section 1.
+
+### Composition principle
+
+The `<Factory>` is the static background. The `<ConveyorBelt>` is a long horizontal rectangle with motion. `<ConveyorItem>` instances are positioned along it, animated in from the right, paused at the sort point (under the user-controlled arm), animated out to whichever bin the user chose. The `<RoboticArm>` is the cursor's stand-in. The robot under construction (`<Robot>`) sits to the side, accreting parts.
+
+### Motion variants
+
+Each meaningful motion (arm-to-bin, item-to-bin, robot-part-snap-in) is a named variant. Variants live alongside the component that uses them. Standard set:
+
+```ts
+const ITEM_VARIANTS = {
+  onBelt: { x: 0, opacity: 1 },
+  toKeepBin: { x: 200, y: 80, opacity: 0, scale: 0.6, transition: { duration: 0.4 } },
+  toPassBin: { x: -200, y: 80, opacity: 0, scale: 0.6, transition: { duration: 0.4 } },
+};
+```
+
+This way the visual language is reusable and tunable from one place per concept.
+
+### Performance notes
+
+SVG performs fine at our scale. Cap the number of animated nodes to a few dozen at once (we'll have far fewer). Use `will-change: transform` sparingly. Profile if anything feels janky on a mid-range laptop; profile *before* optimizing.
+
+## 6. Routing
+
+Four routes:
+
+- `/` — Landing
+- `/sort` — the conveyor-belt experience
+- `/build` — the Build beat (often a transient pass-through)
+- `/results` — Results
+
+The router lives in `/src/app/router.tsx`. Navigation between screens happens via store actions that update `state.currentScreen` *and* call `navigate()`. Keep the URL in sync so refresh-on-results lands sanely (or, in v1, just redirects to landing — acceptable for a prototype).
+
+Phase 0 stubs all four screens; Phase 1 fills them with real content.
+
+## 7. Figma integration via MCP
+
+The Figma MCP server is the seam between design and code, and it runs in a **read-leaning round-trip**, not a constant bidirectional sync. Code is the source of truth for behavior; Figma is where static UI gets reviewed and refined visually. The loop has a name and a tool now (see below), and Claude Code is a supported client for it.
+
+### The round-trip: code to canvas and back
+
+Figma's **code-to-canvas** tool (`generate_figma_design`, on the remote MCP server) captures live UI rendered from the running app into **editable Figma frames**. The flow is:
+
+1. **Code to canvas.** Claude Code starts the local dev server, the tool captures the rendered screen (or a selected element) into Figma as standard, editable design layers. A whole multi-step flow can be captured screen by screen in one session.
+2. **Refine on the canvas.** The captured frames are real Figma layers. A UI designer makes pixel-perfect edits to static elements: nudge spacing, retype copy, adjust a color, move a button, fix alignment.
+3. **Canvas back to code.** You point Claude Code at the edited frame URL. It reads the frame through the MCP and implements the diff in React, against our conventions (Tailwind tokens, component composition), not as a blind regeneration.
+
+### Why this earns its place
+
+This is not "designs and code should match" for its own sake. It's a workflow lever for the team. It lets the UI-designer instinct make precise static edits on the canvas where that's faster and more natural than editing JSX, and it gives teammates who are less comfortable with agentic code authoring a real way to contribute changes that land in the build, without touching a terminal. That accessibility is the point.
+
+### The honest boundary
+
+The capture works on *rendered* UI, so the value is uneven by surface, and that's fine:
+
+- **Static UI round-trips well:** cards, buttons, forms, the results layout, landing chrome, role cards. Edit these freely on the canvas and pull them back.
+- **The animated scene and the robot do not round-trip.** They capture at best as a frozen snapshot of one DOM state, and their motion cannot be edited in Figma and brought back. Treat those regions of a captured frame as reference stills or leave them effectively blank. The conveyor, the arm, the build beat, and the GSAP/Motion choreography are code-authored, full stop. Nobody should expect to tune the scene in Figma.
+
+### Variable sync (the part Figma can actually hold)
+
+Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between the Figma file and `tailwind.config.ts`. Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
+
+- Figma `color/brand/arm-yellow` ↔ Tailwind `arm-yellow`
+- Figma `color/archetype/builder` ↔ Tailwind `archetype-builder`
+- Figma `space/4` ↔ Tailwind `space-4`
+
+Sync a related set as one operation (all colors at once, the full type scale at once) so there's no half-synced in-between state. Naming alignment is a soft convention that makes the round-trip cleaner; it is not enforced by tooling.
+
+### No Code Connect
+
+Earlier drafts leaned on Code Connect (`.figma.tsx` mapping files, `figma connect publish`) as the enforceable contract between Figma components and React. We are **not using it.** Its Dev Mode payoff is gated behind Figma Organization/Enterprise plans the team doesn't have, and the code-to-canvas round-trip above doesn't need it. Naming-convention discipline plus the capture loop covers what we need.
+
+### Selective, not constant
+
+Capture and sync at meaningful checkpoints: when a design iteration is settled, before a user test, before showing ARM, after a focused code-side refactor. Drift between Figma and code is fine when it's intentional and short-lived. Continuous background sync is noise.
+
+### What we don't auto-generate
+
+We don't auto-generate React components from Figma layouts from scratch. Layout-to-code generation fights our conventions (inline styles, deep wrapper nesting, no Tailwind tokens, no real composition). The MCP is for capturing rendered UI to the canvas, reading frames as reference, and applying surgical updates back to code, not for building components from nothing.
+
+### Phase 0 setup (see ROADMAP)
+
+Connect the remote Figma MCP server for Claude Code, authenticate, confirm a read works (pull a variable or a frame), and confirm one code-to-canvas capture succeeds. That's the whole gate. There is no write-round-trip smoke test to block on and no Code Connect publish step.
+
+
+## 8. Playwright integration
+
+Playwright is set up in Phase 0 and runs as part of `pnpm test`. It serves two purposes: regression prevention and self-verification during development.
+
+### Test types
+
+- **Happy-path E2E.** One test that walks the user from landing through sorting (with a known set of decisions) to results, asserting that the results screen shows the expected primary role.
+- **Interaction tests.** Drag-and-drop, the compare-by-moving-robot interaction on results, the sound toggle.
+- **Visual regression.** Snapshot key screens (landing, mid-sort, build moment, results). Phase 2+.
+
+### Self-verification by Claude Code
+
+After making a change, Claude Code should run the Playwright suite and inspect failures rather than asking the user to manually check the browser. For visual changes, take a screenshot and view it. This dramatically reduces the "is it actually working?" loop.
+
+### Test data
+
+Tests use fixed seed data, not the live mock data. Tests live in `/tests/`, fixtures in `/tests/fixtures/`. A test that needs a specific scoring outcome constructs its own decisions object rather than relying on the live data, so tests don't break when content gets tuned.
+
+### Configuration
+
+`playwright.config.ts` runs against the dev server. Browsers: Chromium for fast iteration, with Firefox/WebKit as an optional matrix in CI. Headless by default.
+
+## 9. The future 3D path (documented, not built)
+
+The PRD scopes the prototype to 2D. This section exists so the team has a credible path to 3D later without redoing the foundation.
+
+### What changes
+
+Only `/src/scene/` and its dependencies. Everything else (the data model, the scoring engine, the state store, the screens, the components, the design tokens) stays.
+
+### What gets added
+
+- **`@react-three/fiber`** for declarative 3D in React.
+- **`@react-three/drei`** for OrbitControls, common helpers, useful primitives.
+- Optionally **`leva`** for live-tuning 3D parameters during development.
+- A `<Canvas>` boundary at the top of the scene tree. Inside the Canvas: 3D scene. Outside: regular DOM/SVG/HTML.
+
+### What gets rebuilt
+
+- `<ConveyorBelt>`, `<ConveyorItem>`, `<RoboticArm>`, `<Bin>`, `<Factory>` — all migrated from SVG to 3D meshes.
+- The robot — modeled as a parameterized 3D mesh with attachment points instead of layered SVG parts. The data-driven part contributions still resolve to attachable 3D meshes, the same way SVG components do today. The `RobotState` schema is unchanged.
+- Scene animation moves from GSAP timelines to a mix of Motion/GSAP (for UI overlays) and three.js animation primitives (for the 3D scene itself). Lerping camera, animating bones on the arm, etc.
+
+### What stays the same
+
+- The data model.
+- The scoring engine.
+- The robot assembly logic. The output is the same; only the rendering of the resulting parts changes.
+- The state store.
+- The non-scene UI: cards, buttons, navigation, results layout.
+- The Figma design system (with 3D-specific concerns added: lighting, materials, camera framing).
+
+### Cost estimate (rough)
+
+A focused engineer could migrate the scene to 3D in 2–4 weeks, most of it spent on asset modeling and lighting rather than code. Doing it now would consume a disproportionate share of the prototype timeline and add risk; doing it later is straightforward because the seam is clean.
+
+### Trigger for actually doing it
+
+When ARM commits to building this for production and wants the "cinematic" treatment ARM expressed interest in, the 2D prototype is the proof-of-concept and the 3D version is the production build. The team isn't there yet.
+
+### Sidebar: Rive for the robot (worth exploring, out of scope now)
+
+Rive deserves a flag because it maps onto the robot better than anything else. It's purpose-built for interactive, state-machine-driven characters that respond to app state at runtime (the canonical example is Duolingo's mascot), the React runtime would bind cleanly to our Zustand state via data binding, and the runtime file is tiny. A Rive robot would be the single most impressive element in the build and a strong portfolio artifact.
+
+It's out of scope for this timeframe for one concrete reason: the robot rig, mesh, and state machine have to be hand-authored by a person in the Rive editor, a separate tool with a real learning curve. Claude Code can wire the runtime and feed it inputs but cannot author the `.riv`. The team's animation-authoring bandwidth is thin (Caelan has some rigging/3D background, no one else does), so betting the centerpiece on a new tool inside this summer is the wrong risk. Documented here so the option is on the table if a future phase has the bandwidth; the default robot stays SVG composed from parts, animated by GSAP.
+
+## 10. Build, lint, test
+
+Standard scripts in `package.json`:
+
+```
+pnpm dev          # Vite dev server
+pnpm build        # Production build (for demos)
+pnpm preview      # Preview the production build locally
+pnpm lint         # ESLint
+pnpm format       # Prettier
+pnpm typecheck    # tsc --noEmit
+pnpm test         # Vitest unit tests + Playwright E2E
+pnpm test:unit    # Vitest only
+pnpm test:e2e     # Playwright only
+pnpm test:visual  # Playwright visual regression only
+```
+
+A task is not done until `pnpm lint && pnpm typecheck && pnpm test` all pass.
+
+## 11. Conventions and antipatterns
+
+### Conventions
+
+- **One concept per file.** A component, a hook, a helper. Not a grab bag.
+- **Named exports.** `export const Foo = ...`. Default exports only where a framework requires (e.g. Vite entry, lazy-loaded routes).
+- **Imports sorted** by the import-sorter convention (external first, then internal). Run on save.
+- **Path alias** `@/` for `src/`. Configured in `tsconfig.json` and `vite.config.ts`. Use it; don't write `../../../`.
+- **Props typed inline or via named interfaces** above the component. Pick one per component and stick with it.
+
+### Antipatterns to flag (and refuse to do)
+
+- Adding content (copy, weights, role descriptions) directly into a component. It belongs in `/src/data`.
+- Reaching for `useEffect` to derive state. Compute it.
+- Using `any`. If you genuinely need a punt, use `unknown` and narrow.
+- Inline hex colors or pixel values. Use tokens.
+- Adding a new top-level dependency without checking this doc or `CLAUDE.md`.
+- Building a feature not described in `PRD.md`. Flag, don't build.
+- "Helpful" generalizations (a config-driven sort engine when the spec is hardcoded 4 rounds of 6). Build the thing in the spec.
+
+## 12. Dependency boundaries
+
+Imports flow downward only:
+
+```
+screens / scene → components → state → lib → data
+                                        ↑
+                       (lib reads data, never the other way)
+```
+
+- `screens` and `scene` may import from `components`, `state`, `lib`, `data`.
+- `components` may import from `lib` and `data` (rarely from `state`; prefer props).
+- `state` may import from `lib` and `data`.
+- `lib` may import from `data`.
+- `data` imports nothing from `src/`.
+
+If a circular dependency appears, that's a code smell pointing at a layering mistake. Fix it by moving code, not by adding `eslint-disable`.
+
+## 13. Performance posture
+
+This is a prototype, not a production product. The performance posture is:
+
+- It should feel instant on a mid-range laptop in Chrome.
+- No animation should drop below 60fps at normal viewport size.
+- Bundle size doesn't matter for the prototype.
+- We don't lazy-load anything.
+- We don't do code splitting beyond what Vite does by default.
+
+If something feels janky during development, profile and fix it. Don't optimize speculatively.
+
+## 14. Accessibility posture
+
+Light touch, per the PRD:
+
+- Semantic HTML where it costs nothing.
+- Keyboard navigation works for the sort interaction (drag-and-drop has a keyboard fallback: arrow keys + Enter to choose a bin).
+- `prefers-reduced-motion` respected. Sound is off by default.
+- Color contrast meets WCAG AA for text.
+
+Anything more (screen reader narration of the scene, full keyboard nav of the results compare interaction) is deferred to a future build.
