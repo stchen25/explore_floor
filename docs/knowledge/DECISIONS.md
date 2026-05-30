@@ -6,6 +6,20 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 ---
 
+## 2026-05-30
+
+### D-015 — Phase 1 sort interaction is drag + tap only (no arrow-key/Enter mechanic)
+- **Decision:** The Phase 1 Sort screen is sorted by **dragging the card into a bin or tapping a bin**. The bespoke "arrow keys to focus a bin, Enter to choose" mechanic (built then removed) is dropped. The two bins remain native `<button>`s, so basic keyboard operability (Tab to a bin, Enter/Space to activate) still exists for free — what's gone is the custom arrow-navigation layer.
+- **Why:** User call during the Slice 1 checkpoint — the arrow/Enter layer added UI state and a focus model that didn't fit the intended drag-first interaction, and it foreshadows the Phase 2 conveyor where sorting is purely drag-off-the-belt. Native button semantics keep the experience keyboard-reachable without the bespoke layer.
+- **Alternatives:** Keep the arrow/Enter mechanic (rejected per user); remove keyboard entirely incl. button activation (rejected — needlessly drops the free native a11y).
+- **Affected:** `src/screens/Sort/Sort.tsx`, `src/screens/Sort/SortBin.tsx`; `ROADMAP.md` §2.2 (keyboard bullet) + the round-beat copy example. Full keyboard-nav polish remains a Phase 3 a11y item.
+
+### D-014 — Phase 2 sort model: user drags parts off the belt; the arm assembles from the keep bin
+- **Decision:** Refine the Phase 2 conveyor interaction. **The user drags interest parts directly off the moving belt into one of two bins set in front of the line (downscreen in 2D): "That's me" / "Not my thing." A robot arm then lifts each kept part from the "That's me" bin and assembles it onto the robot standing behind/above the belt.** A second arm — or a trash chute — clears the "Not my thing" bin (exact treatment is a Phase 2 authoring choice, TBD). This supersedes the earlier "user controls the arm to push items to bins" framing.
+- **Why:** User's articulated vision at the Slice 1 checkpoint. Dragging parts directly is more legible and direct than puppeteering an arm; reserving the arm for *assembly* gives the robot-build payoff a clear, visible cause (kept part → arm → robot). Engine ownership stays clean: Motion owns the user's drag-off-belt gesture; GSAP owns the belt, the assembling arm(s), and the part-to-robot snap.
+- **Alternatives:** User-controlled sorting arm (the prior doc model; rejected — indirect, more interaction-design risk); auto-sorting with the user only watching (rejected — removes agency, the core "half-real decision" the PRD is built on).
+- **Affected:** `ROADMAP.md` §3.2/§3.3, `PRD.md` §5.2/§5.3, `DESIGN_SYSTEM.md` §10.3, `ARCHITECTURE.md` §5. Phase 2 builds to this model; Phase 1 stays the plain card-sort.
+
 ## 2026-05-29
 
 ### D-013 — Tailwind v4 (CSS-first): design tokens live in `@theme`, not `tailwind.config.ts`

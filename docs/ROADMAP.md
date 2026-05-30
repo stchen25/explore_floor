@@ -158,13 +158,13 @@ Phase is complete when ALL of these are true:
 
 #### 2.2 Sort screen — real interaction
 
-- Replace the Phase 0 button-grid with a clean drag-to-bin (or click-to-bin) interaction.
+- Replace the Phase 0 button-grid with a clean drag-to-bin / tap-a-bin interaction.
 - One item displayed at a time, advancing as the user sorts.
 - Two visible bins: "That's me" and "Not my thing." Distinct visual treatment, archetype-neutral.
-- Round transitions (between rounds, a brief beat: "Nice. Next: how you solve problems" or similar).
+- Round transitions (between rounds, a brief beat — encouraging and theme-free, e.g. "Nice work — that's round one done." Round themes stay internal per `PRD.md` §5.2; copy lives in `src/data/rounds.ts`).
 - Round indicator using `Label/Overline` style: "ROUND 2 OF 4".
 - A progress bar or counter so the user can see how far in they are.
-- Keyboard fallback: arrow keys to focus a bin, Enter to choose.
+- Input: drag the card into a bin, or tap a bin. The bespoke arrow-key/Enter mechanic was dropped (`DECISIONS.md` D-015); bins are native buttons, so basic Tab/Enter operability remains. Full keyboard-nav polish is a Phase 3 a11y item.
 
 #### 2.3 Build screen — transition beat
 
@@ -245,17 +245,20 @@ The output of this test is a list of changes that feed Phase 2's work as content
 
 #### 3.2 The sort interaction, animated
 
-- Items arrive on the conveyor from the right, advance to the arm's position.
-- User controls the arm (via mouse, drag, or keyboard) to push items to one of the two bins.
-- GSAP timelines for the scene choreography: item entry, item travel, arm motion, the part flying into the robot, the snap. Motion handles the drag-to-bin gesture itself. Per the ownership rule in `ARCHITECTURE.md` section 1.
+The interaction model (refined per `docs/knowledge/DECISIONS.md` D-014):
+
+- The conveyor belt turns; interest items ride it as labeled parts, arriving from one side.
+- The **user drags a part off the belt** into one of **two bins set in front of the line** (downscreen, in 2D): "That's me" (keep) / "Not my thing" (pass). The user sorts directly — they do **not** puppeteer the arm.
+- A **robot arm lifts each kept part from the "That's me" bin and assembles it onto the robot** standing behind/above the belt (see 3.3). The "Not my thing" bin is cleared by a second arm or a trash chute — exact treatment is a Phase 2 authoring choice (TBD).
+- Engine ownership (`ARCHITECTURE.md` §1): **Motion** owns the user's drag-off-belt gesture; **GSAP** owns the belt motion, the assembling arm(s), the part-to-robot arc + snap, and ambient idle.
 - Round transitions feel like the line "resets" between rounds (subtle visual cue).
-- Subtle ambient idle motion (arm hovering, conveyor texture).
+- Subtle ambient idle motion (arm hovering, conveyor texture) — gentle, never distracting.
 
 #### 3.3 The robot, live-building
 
 - Author the SVG robot parts library. Many parts can be shared across items per `DATA_MODEL.md` section 7.
-- The robot sits visibly on-screen during sorting (a corner or side area).
-- Each "That's me" decision triggers the matching `robotContribution.parts` to attach with a satisfying snap.
+- The robot stands visibly **behind/above the conveyor** (in 2D) during sorting.
+- Each "That's me" decision sends its part to the keep bin; the **robot arm lifts it from that bin and snaps it onto the robot** — the kept part's journey (belt → bin → arm → robot) is the visible cause of the build.
 - The robot is partially built throughout sorting and becomes finalized at the Build beat.
 
 #### 3.4 The Build beat

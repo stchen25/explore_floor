@@ -81,7 +81,7 @@ Details:
 - **Fixed, deterministic item set** for the prototype. Every user sees the same 24 items in the same order. No adaptive funneling in v1 (documented as a future enhancement in `ARCHITECTURE.md`).
 - Each sort decision contributes to the scoring engine (section 7) and visibly adds a part to the robot being assembled (section 6).
 - A subtle progress indicator (e.g. "Round 2 of 4" or a filling bar) keeps the 2-4 minute promise honest.
-- Phase 1 implements this as simple drag-and-drop or tap-to-sort into two bins, no conveyor animation. Phase 2 layers in the conveyor, the controllable robotic arm doing the sorting, and the build animation.
+- Phase 1 implements this as a simple drag-the-card / tap-a-bin sort into two bins, no conveyor animation. Phase 2 layers in the turning conveyor with interest-labeled parts: the user drags parts off the belt into the two bins, and a robot arm assembles the kept parts onto the robot standing behind the line (see section 6 and `ROADMAP.md` §3.2, refined per `DECISIONS.md` D-014).
 
 ### 5.3 Build (the payoff moment)
 

@@ -1,23 +1,52 @@
-import { useEffect, useRef } from 'react';
+import { AnimatePresence, useReducedMotion } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/components';
-import { items } from '@/data';
+import { ProgressBar, RoundIndicator } from '@/components';
+import { items, rounds } from '@/data';
+import type { Decision } from '@/data/types';
+import { durationsMs } from '@/lib';
 import { useSessionStore } from '@/state';
 
-// Phase 0 stub: a plain grid of all 24 items with Keep/Pass buttons — no conveyor, no drag,
-// no rounds (those are Phase 1/2). Once every item is decided, finalize and advance.
+import { RoundBeat } from './RoundBeat';
+import { SortBin } from './SortBin';
+import { SortCard } from './SortCard';
+
+// Phase 1 sort: one item at a time into two neutral bins, via swipe-drag or tapping a bin. The
+// conveyor + arm come in Phase 2. The store + scoring already exist — this screen only
+// orchestrates: derive the current item, dispatch decisions, mark round transitions, and hand
+// off to the build beat when every item is sorted.
+
+const SWIPE_HINT = 40; // px of drag before the nearer bin lights up
+const SWIPE_COMMIT = 120; // px of drag that counts as a choice
 
 export function Sort() {
   const navigate = useNavigate();
+  const reduce = !!useReducedMotion();
+
   const decisions = useSessionStore((s) => s.state.decisions);
   const recordDecision = useSessionStore((s) => s.recordDecision);
+  const advanceRound = useSessionStore((s) => s.advanceRound);
   const completeSorting = useSessionStore((s) => s.completeSorting);
 
-  const decidedCount = items.filter((item) => decisions[item.id]).length;
-  const allDecided = decidedCount === items.length;
+  const currentItem = items.find((item) => !decisions[item.id]);
+  const decidedCount = items.length - items.filter((item) => !decisions[item.id]).length;
+  const currentRound = currentItem?.round ?? 4;
+  const allDecided = !currentItem;
+
+  const [activeBin, setActiveBin] = useState<Decision | null>(null);
+  const [beatCopy, setBeatCopy] = useState<string | null>(null);
+
   const advanced = useRef(false);
 
+  // The round beat is non-blocking and auto-dismisses.
+  useEffect(() => {
+    if (!beatCopy) return;
+    const timer = setTimeout(() => setBeatCopy(null), durationsMs.reveal);
+    return () => clearTimeout(timer);
+  }, [beatCopy]);
+
+  // Once everything is sorted, finalize scoring + robot and hand off to the build beat.
   useEffect(() => {
     if (allDecided && !advanced.current) {
       advanced.current = true;
@@ -26,46 +55,76 @@ export function Sort() {
     }
   }, [allDecided, completeSorting, navigate]);
 
+  function choose(decision: Decision) {
+    if (!currentItem) return;
+    const fromRound = currentItem.round;
+    setActiveBin(null);
+    recordDecision(currentItem.id, decision);
+
+    // Detect a round boundary using the next still-undecided item (decisions is pre-update,
+    // so exclude the item we just decided).
+    const next = items.find((item) => item.id !== currentItem.id && !decisions[item.id]);
+    if (next && next.round > fromRound) {
+      advanceRound();
+      const enterCopy = rounds.find((r) => r.round === next.round)?.enterCopy;
+      if (enterCopy) setBeatCopy(enterCopy);
+    }
+  }
+
+  function handleDragMove(offsetX: number) {
+    setActiveBin(offsetX > SWIPE_HINT ? 'keep' : offsetX < -SWIPE_HINT ? 'pass' : null);
+  }
+
+  function handleDragRelease(offsetX: number) {
+    if (offsetX > SWIPE_COMMIT) choose('keep');
+    else if (offsetX < -SWIPE_COMMIT) choose('pass');
+    else setActiveBin(null);
+  }
+
   return (
-    <main className="mx-auto flex min-h-full max-w-lg flex-col gap-space-4 p-space-5">
-      <header className="flex items-baseline justify-between">
-        <h2 className="font-heading text-h2 text-text-strong">Sort what you&apos;re into</h2>
-        <p className="text-small text-text-muted" data-testid="sort-progress">
-          {decidedCount} / {items.length} sorted
-        </p>
+    <main className="mx-auto flex min-h-full max-w-md flex-col gap-space-5 p-space-5">
+      <header className="flex flex-col gap-space-3">
+        <RoundIndicator round={currentRound} total={4} />
+        <ProgressBar value={decidedCount} total={items.length} />
       </header>
 
-      <ul className="grid grid-cols-1 gap-space-3 sm:grid-cols-2">
-        {items.map((item) => {
-          const decision = decisions[item.id];
-          return (
-            <li
-              key={item.id}
-              className="flex flex-col gap-space-2 rounded-md border border-border-default bg-bg p-space-3 shadow-card"
-            >
-              <span className="text-body text-text-default">{item.label}</span>
-              <div className="flex gap-space-2">
-                <Button
-                  variant={decision === 'keep' ? 'primary' : 'neutral'}
-                  onClick={() => recordDecision(item.id, 'keep')}
-                  aria-pressed={decision === 'keep'}
-                  data-testid={`keep-${item.id}`}
-                >
-                  That&apos;s me
-                </Button>
-                <Button
-                  variant={decision === 'pass' ? 'primary' : 'neutral'}
-                  onClick={() => recordDecision(item.id, 'pass')}
-                  aria-pressed={decision === 'pass'}
-                  data-testid={`pass-${item.id}`}
-                >
-                  Not my thing
-                </Button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="relative flex flex-1 flex-col items-center justify-center gap-space-5">
+        <div className="flex items-center justify-center gap-space-5">
+          <SortBin
+            decision="pass"
+            label="Not my thing"
+            active={activeBin === 'pass'}
+            onChoose={choose}
+          />
+
+          <div className="relative flex h-52 w-80 shrink-0 items-center justify-center">
+            <AnimatePresence mode="popLayout">
+              {currentItem && (
+                <SortCard
+                  key={currentItem.id}
+                  item={currentItem}
+                  reduce={reduce}
+                  onDragMove={handleDragMove}
+                  onDragRelease={handleDragRelease}
+                />
+              )}
+            </AnimatePresence>
+          </div>
+
+          <SortBin
+            decision="keep"
+            label="That's me"
+            active={activeBin === 'keep'}
+            onChoose={choose}
+          />
+        </div>
+
+        <p className="text-small text-text-faint">Drag the card into a bin — or tap a bin.</p>
+
+        <AnimatePresence>
+          {beatCopy && <RoundBeat copy={beatCopy} reduce={reduce} />}
+        </AnimatePresence>
+      </div>
     </main>
   );
 }

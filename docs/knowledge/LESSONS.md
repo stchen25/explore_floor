@@ -8,6 +8,20 @@ Format per entry: **L-### — one-line takeaway** · context · what to do.
 
 ---
 
+## 2026-05-30
+
+### L-006 — GSAP DrawSVG: ellipses not circles; register once; scope + matchMedia
+- **Context:** First GSAP use in the build (Phase 1 landing reveal). DrawSVG animates `stroke-dasharray/offset`, so targets need a visible stroke — and it supports `rect/line/polyline/polygon/ellipse` but **not `<circle>`**, which silently won't draw.
+- **Do:** Use `<ellipse>` for rollers/joints. Register plugins once at app start (`src/lib/gsap.ts`, side-effect imported in `main.tsx`), never in a component. Run every tween inside `useGSAP(..., { scope })` (auto-revert on unmount), and gate the draw with `gsap.matchMedia('(prefers-reduced-motion: no-preference)')` so reduced-motion users see the lines already drawn. Keep GSAP (scene strokes) and Motion (content opacity/transform) on disjoint nodes — verified no crossed engines.
+
+### L-005 — Dynamic Tailwind class names aren't generated; use a static literal map
+- **Context:** Archetype accents (`arm-orange`/`arm-blue`/`arm-teal`) needed to vary per role. `` `text-${token}` `` produces a class string Tailwind v4's scanner never sees, so the utility doesn't exist at runtime.
+- **Do:** Author a static literal class map keyed by the variant (`src/components/accent.ts`: `ACCENT_CLASSES[archetype].text/border/bg/soft`). Every class appears verbatim in source, so it's generated. For SVG tinting, set the accent as the element's text color and draw with `currentColor` + `fill-bg`.
+
+### L-004 — AnimatePresence `mode="wait"` + a draggable child stalls the swap
+- **Context:** The Sort card used `mode="wait"` with a `drag` + `dragSnapToOrigin` card whose exit animated `x`. On a drag-commit the exit `x` fought the snap-back, exit never completed, and `mode="wait"` never mounted the next card — the user saw "no more cards." Reproduced it live before fixing (state was advancing; only the render stalled).
+- **Do:** For a draggable item under AnimatePresence, use `mode="popLayout"` (the next item mounts immediately — can't stall), `forwardRef` the child (popLayout measures it via a ref), and keep `x`/drag-owned properties **out** of the exit variant (exit on opacity/scale only). Reproduce render-stall bugs before claiming a fix.
+
 ## 2026-05-29
 
 ### L-003 — The agent can't self-install external skills; hand the command to the user

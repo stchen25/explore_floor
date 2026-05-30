@@ -27,6 +27,7 @@ export interface Role {
   shortDescription: string; // teen-friendly plain language
   pathFraming: string; // typical educational pathway, plain language
   competencyIds: string[];
+  skillIds: string[]; // essential (soft) skills this role leans on; resolves to skills.ts
   jobs: Job[];
 }
 
@@ -62,6 +63,15 @@ export interface InterestItem {
   label: string; // what the user reads on the card
   weights: ArchetypeWeights;
   robotContribution: RobotContribution;
+}
+
+/** Per-round authoring + copy. The sort is a fixed 4 rounds of 6 (PRD §5.2). */
+export interface RoundMeta {
+  round: RoundId;
+  /** Internal theme — authoring context only. NEVER rendered (PRD §5.2: no category labels). */
+  theme: string;
+  /** Encouraging beat shown when this round begins. Round 1 is null (it's the start). */
+  enterCopy: string | null;
 }
 
 // ---------- Robot ----------
@@ -148,3 +158,6 @@ export interface ScoreResult {
   primaryRole: RoleId;
   ranking: ArchetypeId[]; // ordered, primary first
 }
+
+/** Plain-language band for a match percentage, used in the results "how you match" read. */
+export type FitBand = 'strong' | 'solid' | 'light';

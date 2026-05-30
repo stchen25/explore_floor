@@ -2,9 +2,9 @@
 
 **Read this first.** Live snapshot of where the build is. Updated as acceptance criteria clear (by `/phase-check` or by hand).
 
-- **Last updated:** 2026-05-29
-- **Current focus:** Phase 0 — scaffold & foundation — **complete (10/10)**. All gates green; tokens verified against the Design System source values.
-- **Next up:** Phase 1 — testable flow (real one-at-a-time drag-to-bin sort with rounds, the Results compare interaction, top-3 programs per role, Phase 1 Playwright tests). Criteria in `ROADMAP.md` §2. _Optional:_ a byte-level live Figma-variable diff (needs the Foundations frame selected in the Figma desktop app — the MCP's variable/context tools are selection-based).
+- **Last updated:** 2026-05-30
+- **Current focus:** Phase 1 — testable flow — **complete**. All gates green (lint, typecheck, 33 unit, 4 E2E, 11 data invariants); design-review passed all four screens with no p1/p2 findings. Built in 3 slices: Sort, Results (the conversion screen), Landing reveal + Build beat.
+- **Next up:** Phase 2 — feel pass (the conveyor scene, the robotic arm, the robot building live, the Goose-game landing). Criteria in `ROADMAP.md` §3. Build to the **refined sort model** logged in `DECISIONS.md` D-014: the user drags parts off the belt into two bins; the arm assembles the kept parts onto the robot behind the line.
 
 ---
 
@@ -41,11 +41,23 @@ Acceptance criteria (from `ROADMAP.md` §1):
 - [x] GSAP AI skills installed and discoverable (`gsap-*` packs in `.claude/skills/`, pinned in `skills-lock.json`).
 - [x] Every data sanity check from `DATA_MODEL.md` §15 passes (per-archetype sums **B 22 / I 27 / A 25**).
 
-## Phase 1 — Testable flow (not started)
-Tracked when Phase 0 closes. Criteria in `ROADMAP.md` §2.
+## Phase 1 — Testable flow (complete)
+
+_Last `/phase-check`: 2026-05-30 — `verifier` PASS on all gates (lint, typecheck, 33 unit across scoring/assembly/program/fit/data-integrity, 4 E2E) and all `DATA_MODEL.md` §15 invariants (sums recomputed Builder 22 / Innovator 27 / Architect 25, plus the new role.skillIds-resolves check). `design-reviewer` PASS on all four screens — no p1/p2 findings. Built in 3 reviewed slices on branch `phase-1-flow`._
+
+Acceptance criteria (from `ROADMAP.md` §2):
+
+- [x] A user can complete the full flow (land → sort 24 → build → results). _(Flow completes end to end; the 3-4 min pacing is a human-test observation.)_
+- [x] The Sort screen works via mouse, touch, and keyboard. _(Drag + tap; bins are native buttons so Tab/Enter operability remains. The bespoke arrow-key/Enter mechanic was intentionally removed — `DECISIONS.md` D-015. Full keyboard-nav polish is a Phase 3 a11y item.)_
+- [x] Results shows believable weighted match scores across all three archetypes. _(E2E asserts displayed % == engine for a 30/24/23 spread.)_
+- [x] The compare interaction works (moving the robot / tapping a card swaps the active read). _(E2E `compare.spec.ts`.)_
+- [x] Each role card surfaces programs from the mock data. _(top-3 via `selectProgramsForRole`.)_
+- [x] All Playwright tests pass, including the compare interaction. _(4/4.)_
+- [x] No console errors on any screen. _(happy-path + reduced-motion specs assert zero console errors across the flow.)_
+- [ ] **Demoable to the MHCI cohort; survives 5 unmoderated sessions.** _(Human user-test item — for the team to confirm in testing. Build is technically demoable: flow completes, no crashes in automated runs.)_
 
 ## Phase 2 — Feel pass (not started)
-Criteria in `ROADMAP.md` §3.
+Criteria in `ROADMAP.md` §3. Sort interaction model refined — see `DECISIONS.md` D-014.
 
 ## Phase 3 — Polish (not started)
 Criteria in `ROADMAP.md` §4.

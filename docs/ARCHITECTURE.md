@@ -259,7 +259,7 @@ The assembly-line scene is built as a hierarchy of SVG React components. The sce
 
 ### Composition principle
 
-The `<Factory>` is the static background. The `<ConveyorBelt>` is a long horizontal rectangle with motion. `<ConveyorItem>` instances are positioned along it, animated in from the right, paused at the sort point (under the user-controlled arm), animated out to whichever bin the user chose. The `<RoboticArm>` is the cursor's stand-in. The robot under construction (`<Robot>`) sits to the side, accreting parts.
+The `<Factory>` is the static background. The `<ConveyorBelt>` is a long horizontal rectangle with motion. `<ConveyorItem>` instances ride it as labeled parts; the **user drags a part off the belt** into one of two `<Bin>`s set in front of the line (downscreen, in 2D) — "That's me" / "Not my thing." The `<RoboticArm>` then lifts each kept part from the keep bin and assembles it onto the `<Robot>`, which stands **behind/above the belt**; a second arm or a trash chute clears the pass bin. (Interaction model per `docs/knowledge/DECISIONS.md` D-014: the user sorts directly; the arm's job is assembly, not user-puppeteered sorting.) Engine split: Motion owns the drag-off-belt gesture; GSAP owns the belt, the assembling arm(s), and the part-to-robot snap.
 
 ### Motion variants
 

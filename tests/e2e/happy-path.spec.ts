@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-// The Phase 0 happy path: land → sort all 24 → auto-advance through build → results with
-// three role cards, and no console errors anywhere along the way.
-test('landing → sort all 24 → build → results shows three role cards', async ({ page }) => {
+// The Phase 1 happy path: land → sort all 24 one at a time → build beat → results with three
+// role cards and the robot, and no console errors anywhere along the way.
+test('landing → sort all 24 one at a time → build → results shows three role cards', async ({
+  page,
+}) => {
   const consoleErrors: string[] = [];
   page.on('console', (msg) => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
@@ -15,19 +17,22 @@ test('landing → sort all 24 → build → results shows three role cards', asy
   await page.getByTestId('start-cta').click();
   await expect(page).toHaveURL(/\/sort$/);
 
-  // Sort every item by clicking its "That's me" (keep) button.
-  const keepButtons = page.locator('[data-testid^="keep-"]');
-  await expect(keepButtons).toHaveCount(24);
-  const count = await keepButtons.count();
-  for (let i = 0; i < count; i++) {
-    await keepButtons.nth(i).click();
+  // One card at a time: click "That's me" (keep) for each item, confirming the progress
+  // counter advances before sorting the next one.
+  const keepBin = page.getByTestId('sort-keep');
+  const progress = page.getByTestId('sort-progress');
+  await expect(page.getByTestId('sort-card')).toBeVisible();
+
+  for (let i = 1; i <= 23; i++) {
+    await keepBin.click();
+    await expect(progress).toHaveText(`${i} of 24 sorted`);
   }
+  // The 24th decision finalizes scoring and auto-advances through /build to /results.
+  await keepBin.click();
+  await expect(page).toHaveURL(/\/results$/, { timeout: 7000 });
 
-  // Completing the sort auto-advances to /build (1s pass-through) then /results.
-  await expect(page).toHaveURL(/\/results$/, { timeout: 5000 });
-
-  await expect(page.getByTestId('role-card')).toHaveCount(3);
-  await expect(page.getByTestId('robot-placeholder')).toBeVisible();
+  await expect(page.locator('[data-testid^="role-card-"]')).toHaveCount(3);
+  await expect(page.getByTestId('robot')).toBeVisible();
 
   expect(consoleErrors, `console errors:\n${consoleErrors.join('\n')}`).toEqual([]);
 });

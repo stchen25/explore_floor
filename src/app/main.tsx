@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import '@/lib/gsap'; // registers GSAP plugins (useGSAP, DrawSVG) once at app start
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

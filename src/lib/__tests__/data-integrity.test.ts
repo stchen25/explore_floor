@@ -4,6 +4,7 @@ import { items } from '@/data/items';
 import { programs } from '@/data/programs';
 import { robotParts } from '@/data/robotParts';
 import { roles } from '@/data/roles';
+import { essentialSkills } from '@/data/skills';
 import type { ArchetypeId, RoleId } from '@/data/types';
 import { ARCHETYPE_TO_ROLE } from '@/data/types';
 
@@ -51,6 +52,16 @@ describe('§15 data invariants', () => {
       expect(role.competencyIds.length, role.id).toBeGreaterThan(0);
       for (const id of role.competencyIds) {
         expect(competencyIds.has(id), `${role.id} → ${id}`).toBe(true);
+      }
+    }
+  });
+
+  it('gives every role a non-empty skillIds that resolves to real essential skills', () => {
+    const skillIds = new Set(essentialSkills.map((s) => s.id));
+    for (const role of roles) {
+      expect(role.skillIds.length, role.id).toBeGreaterThan(0);
+      for (const id of role.skillIds) {
+        expect(skillIds.has(id), `${role.id} → ${id}`).toBe(true);
       }
     }
   });

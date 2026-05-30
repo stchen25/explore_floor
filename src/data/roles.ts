@@ -23,6 +23,7 @@ export const roles: Role[] = [
       'tech-robot-programming',
       'tech-system-controls',
     ],
+    skillIds: ['attention-to-detail', 'problem-solving', 'technical-learning-ability', 'work-ethic'],
     jobs: [
       {
         title: 'Robotics Technician',
@@ -66,6 +67,7 @@ export const roles: Role[] = [
       'spec-sensors',
       'spec-vision',
     ],
+    skillIds: ['critical-thinking', 'problem-solving', 'technology-aptitude', 'adaptability'],
     jobs: [
       {
         title: 'Robotics Specialist',
@@ -109,6 +111,7 @@ export const roles: Role[] = [
       'int-modeling',
       'int-visualization',
     ],
+    skillIds: ['communication', 'leadership', 'teaming', 'time-management'],
     jobs: [
       {
         title: 'Robotics Integrator',
