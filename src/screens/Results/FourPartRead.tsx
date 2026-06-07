@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 
-import { competencies, essentialSkills, resultsCopy } from '@/data';
+import { competencies, essentialSkills } from '@/data';
 import type { Role } from '@/data/types';
 import { getFitBand } from '@/lib';
+import { useQuestionSet } from '@/state';
 
 import { ProgramList } from './ProgramList';
 
@@ -15,6 +16,8 @@ interface FourPartReadProps {
 // programs that get you there. All copy is data (resultsCopy / role / competency / skill / program
 // content), so the team tunes wording without touching this component.
 export function FourPartRead({ role, pct }: FourPartReadProps) {
+  // The fit/section copy comes from the active question set; role/skill/competency data is shared.
+  const { resultsCopy } = useQuestionSet();
   const fitLine = resultsCopy.fit[getFitBand(pct)];
 
   const skills = role.skillIds

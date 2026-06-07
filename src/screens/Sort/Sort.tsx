@@ -3,10 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ProgressBar, RoundIndicator } from '@/components';
-import { items, rounds } from '@/data';
 import type { Decision } from '@/data/types';
 import { durationsMs } from '@/lib';
-import { useSessionStore } from '@/state';
+import { useQuestionSet, useSessionStore } from '@/state';
 
 import { RoundBeat } from './RoundBeat';
 import { SortBin } from './SortBin';
@@ -21,6 +20,8 @@ export function Sort() {
   const navigate = useNavigate();
   const reduce = !!useReducedMotion();
 
+  // Items, rounds, and sort copy all come from the active question set (A/B test condition).
+  const { items, rounds, sortCopy } = useQuestionSet();
   const decisions = useSessionStore((s) => s.state.decisions);
   const recordDecision = useSessionStore((s) => s.recordDecision);
   const advanceRound = useSessionStore((s) => s.advanceRound);
@@ -102,7 +103,7 @@ export function Sort() {
           <SortBin
             ref={binRefs.pass}
             decision="pass"
-            label="Not my thing"
+            label={sortCopy.passLabel}
             active={activeBin === 'pass'}
             onChoose={choose}
           />
@@ -125,13 +126,13 @@ export function Sort() {
           <SortBin
             ref={binRefs.keep}
             decision="keep"
-            label="That's me"
+            label={sortCopy.keepLabel}
             active={activeBin === 'keep'}
             onChoose={choose}
           />
         </div>
 
-        <p className="text-small text-text-faint">Drag the card onto a bin — or tap one.</p>
+        <p className="text-small text-text-faint">{sortCopy.dragHint}</p>
 
         <AnimatePresence>
           {beatCopy && <RoundBeat copy={beatCopy} reduce={reduce} />}

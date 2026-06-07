@@ -529,6 +529,10 @@ Conventions:
   programs.ts           Mock TrainingProgram objects (~6-10)
   robotParts.ts         The RobotPart library
   colorSchemes.ts       Archetype -> color scheme mapping
+  questionSets/         A/B language-test variants (see section 16)
+    setA.ts             Set A — re-exports items/rounds/resultsCopy + owns its landing/sort copy
+    setB.ts             Set B — placeholder clone until the compiled content lands
+    index.ts            Registry: questionSets map, defaultSetId, questionSetList
   index.ts              Barrel export
 
 /src/lib
@@ -551,6 +555,7 @@ What's expected to change without code edits:
 
 - **Any text:** item labels, role descriptions, plain-name competency translations, job descriptions, program blurbs.
 - **All archetype weights** in `items.ts`. This is the primary scoring tuning surface.
+- **A whole question set** (section 16): set B's items, weights, robot mappings, and owned copy are authored in `questionSets/setB.ts` via the data-author skill — no component edits.
 - **Robot part assignments** per item (which partId each item references).
 - **Mock training programs** added, removed, or edited freely.
 
@@ -567,11 +572,52 @@ If a content change feels like it needs a code edit, stop and ask. It probably d
 
 When `/src/data` is scaffolded from this doc, verify:
 
-- All 24 items exist with all three weights set (no missing zeros).
-- Sum-per-archetype across all items matches: Builder 22, Innovator 27, Architect 25.
+- All 24 items exist with all three weights set (no missing zeros). _(Per question set — see section 16.)_
+- Sum-per-archetype across all items matches the set's **declared `expectedSums`** (Set A: Builder 22, Innovator 27, Architect 25). Sums are recomputed from live items and compared against the declaration, per set.
 - Every role's `competencyIds` array is non-empty and references real entries in `competencies.ts`.
 - Every program references real role IDs and real competency IDs.
 - Every item's `robotContribution.parts` references real entries in `robotParts.ts` (placeholders fine; the references must resolve).
 - A unit test confirms `calculateScores` on an all-keep input returns 100/100/100.
 - A unit test confirms `calculateScores` on an all-pass input returns 0/0/0.
 - A unit test confirms `calculateScores` returns the expected primary archetype for a representative builder-heavy input.
+
+## 16. Question sets (A/B language test)
+
+Added 2026-06-04 for the first user test (see `DECISIONS.md` D-016; flagged in `PRD.md` §8/§14). The test compares two language treatments — formal/exam-like vs playful/narrativized — so the content the user reads ships as two swappable **question sets**.
+
+### The QuestionSet shape
+
+```ts
+interface QuestionSet {
+  id: QuestionSetId;            // 'a' | 'b'
+  name: string;                 // researcher-facing label on the landing switcher
+  items: InterestItem[];        // its own 24 — own ids, labels, weights, robot mappings
+  rounds: RoundMeta[];          // its own round-transition copy
+  sortCopy: SortCopy;           // bin labels + drag hint
+  landingCopy: LandingCopy;     // overline, heading, description, CTA
+  resultsCopy: ResultsCopy;     // heading, compare hint, retake, low-signal, sections, fit bands
+  expectedSums: ArchetypeWeights; // declared per-archetype sums; tests assert declared == computed
+}
+```
+
+### What a set owns vs what stays shared
+
+- **Set-owned:** the 24 interest items (ids, labels, weights, robot-part mappings), round copy, sort-screen copy, landing copy, results copy. The whole experience reads in one voice per set.
+- **Shared (never per-set):** roles, competencies, essential skills, training programs, the robot-part catalog, color schemes, and the scoring algorithm. The three-role taxonomy is a hard rule.
+
+### Invariants (enforced per set by `data-integrity.test.ts`)
+
+- 24 items, 6 per round, all three weights present (0–3), every robot-part reference resolves.
+- Recomputed per-archetype sums equal the set's **declared** `expectedSums`. Sets need not match each other — scoring normalizes each archetype against its own max, per set.
+- Item ids unique within a set **and across sets** (decisions are keyed by item id; set B uses a `b-` prefix).
+- All owned copy non-empty; 4 round entries covering rounds 1–4.
+
+### Runtime model
+
+- The registry lives in `questionSets/index.ts`; `defaultSetId` is `'a'`.
+- The session store holds `questionSetId` **next to** session state, not inside it — `reset()` ("Start over") replaces only the session, so the researcher's chosen condition survives between participants. The landing switcher calls `selectQuestionSet`.
+- Store actions resolve the active set's items at action time; screens read copy via the `useQuestionSet()` hook. Only one set is ever active in a session.
+
+### Authoring set B
+
+Set B currently ships as a `[B]`-marked placeholder clone of set A. The real content is compiled in `docs/knowledge/QUESTION_SET_WORKSHEET.md` and then authored into `questionSets/setB.ts` via the data-author skill: literal items (own weights — update `expectedSums`), own robot mappings, own copy blocks.

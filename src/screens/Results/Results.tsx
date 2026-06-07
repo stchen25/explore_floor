@@ -2,11 +2,11 @@ import { motion, useReducedMotion } from 'motion/react';
 import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { resultsCopy, roles } from '@/data';
+import { roles } from '@/data';
 import type { ArchetypeId, RoleId } from '@/data/types';
 import { durations, easings, isLowSignal } from '@/lib';
 import { RobotPlaceholder } from '@/scene/RobotPlaceholder';
-import { useSessionStore } from '@/state';
+import { useQuestionSet, useSessionStore } from '@/state';
 
 import { Pedestal } from './Pedestal';
 import { RoleCard } from './RoleCard';
@@ -20,6 +20,8 @@ export function Results() {
   const navigate = useNavigate();
   const reduce = !!useReducedMotion();
 
+  // Results copy is owned by the active question set; roles/scores are shared data.
+  const { resultsCopy } = useQuestionSet();
   const scoreResult = useSessionStore((s) => s.state.scoreResult);
   const currentlyTryingOn = useSessionStore((s) => s.state.currentlyTryingOn);
   const tryOnRole = useSessionStore((s) => s.tryOnRole);

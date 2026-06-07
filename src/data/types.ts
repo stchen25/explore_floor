@@ -74,6 +74,59 @@ export interface RoundMeta {
   enterCopy: string | null;
 }
 
+// ---------- Question sets (A/B language test) ----------
+
+/** Sort-screen copy a question set owns: the two bin labels + the drag hint. */
+export interface SortCopy {
+  keepLabel: string;
+  passLabel: string;
+  dragHint: string;
+}
+
+/** Landing-screen copy a question set owns. */
+export interface LandingCopy {
+  overline: string;
+  heading: string;
+  description: string;
+  cta: string;
+}
+
+/** Results-screen copy a question set owns (the shape of `resultsCopy`). */
+export interface ResultsCopy {
+  heading: string;
+  compareHint: string;
+  retake: string;
+  lowSignal: string;
+  sections: {
+    match: string;
+    skills: string;
+    competencies: string;
+    programs: string;
+  };
+  fit: Record<FitBand, string>;
+}
+
+export type QuestionSetId = 'a' | 'b';
+
+/** A complete, standalone content variant for the A/B language user test (DATA_MODEL §16).
+ *  A set owns its 24 interest items (own ids, labels, weights, robot mappings) and the copy
+ *  around them; roles, competencies, skills, programs, and the robot-part catalog stay
+ *  SHARED — the three-role taxonomy is fixed. */
+export interface QuestionSet {
+  id: QuestionSetId;
+  /** Researcher-facing label on the landing switcher, e.g. 'Set A'. */
+  name: string;
+  items: InterestItem[];
+  rounds: RoundMeta[];
+  sortCopy: SortCopy;
+  landingCopy: LandingCopy;
+  resultsCopy: ResultsCopy;
+  /** Declared per-archetype weight sums. The data-integrity test asserts declared ==
+   *  computed, so each set carries its own maxima — they need not match across sets
+   *  (scoring normalizes per archetype against its own max). */
+  expectedSums: ArchetypeWeights;
+}
+
 // ---------- Robot ----------
 
 /** A robot has a fixed set of slots. Each kept interest contributes to one

@@ -6,6 +6,14 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 ---
 
+## 2026-06-04
+
+### D-016 — A/B question-set instrument inserted between Phase 1 and Phase 2
+- **Decision:** The first user test compares two language treatments (formal/exam-like vs playful/narrativized), so content ships as two swappable **question sets** (`DATA_MODEL.md` §16): each set owns its 24 items (own ids/labels/weights/robot mappings) plus the landing, sort, round, and results copy; roles/competencies/skills/programs/parts stay shared. A researcher-facing segmented control on Landing switches sets; `questionSetId` lives **next to** session state in the store (not inside it) so `reset()`'s shallow merge preserves the condition between participants. Per-set **declared `expectedSums`** replace the global 22/27/25 sums invariant (recomputed-vs-declared, per set). Set B ships as a loud `[B]`-marked placeholder clone until the compiled content lands via the worksheet (`docs/knowledge/QUESTION_SET_WORKSHEET.md`) + data-author skill.
+- **Why:** Research need — the test isolates language treatment, so both treatments must run on the same build with a switch the researcher can flip between sessions without re-setup. Building the registry to hold *fully independent* sets (not label overlays) covers both rewordings and structurally different question sets, which the team hasn't finished compiling. User chose full-experience scope (cards + flow + results copy), independent structure, and a visible landing toggle.
+- **Alternatives:** Label-overlay map per set (rejected — locks out different items/weights); env/build-time switch or URL param (rejected — researcher needs an in-app flip); two deployed builds (rejected — heavier setup, drifts).
+- **Affected:** `src/data/types.ts` (QuestionSet/SortCopy/LandingCopy/ResultsCopy), `src/data/questionSets/`, `src/state/sessionStore.ts` + `useQuestionSet`, `src/components/SegmentedControl.tsx`, Landing/Sort/Results/FourPartRead, `data-integrity.test.ts` (per-set `describe.each`), new `tests/e2e/question-set-b.spec.ts`, `DATA_MODEL.md` §13–§16, `PRD.md` §8/§14, data-author skill invariants. **Known boundary:** `Build.tsx` copy, the Results empty state, and chrome strings are intentionally NOT set-owned in this pass. Also fixed: `playwright.config.ts` now follows vite's port move to 5174.
+
 ## 2026-05-30
 
 ### D-015 — Phase 1 sort interaction is drag + tap only (no arrow-key/Enter mechanic)

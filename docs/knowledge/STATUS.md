@@ -2,9 +2,10 @@
 
 **Read this first.** Live snapshot of where the build is. Updated as acceptance criteria clear (by `/phase-check` or by hand).
 
-- **Last updated:** 2026-05-30
-- **Current focus:** Phase 1 — testable flow — **complete**. All gates green (lint, typecheck, 33 unit, 4 E2E, 11 data invariants); design-review passed all four screens with no p1/p2 findings. Built in 3 slices: Sort, Results (the conversion screen), Landing reveal + Build beat.
-- **Next up:** Phase 2 — feel pass (the conveyor scene, the robotic arm, the robot building live, the Goose-game landing). Criteria in `ROADMAP.md` §3. Build to the **refined sort model** logged in `DECISIONS.md` D-014: the user drags parts off the belt into two bins; the arm assembles the kept parts onto the robot behind the line.
+- **Last updated:** 2026-06-04
+- **Current focus:** **A/B question-set instrument** for the first user test (inserted between Phase 1 and Phase 2 — `DECISIONS.md` D-016, `DATA_MODEL.md` §16). Two swappable content variants (formal vs playful language), researcher switcher on Landing, per-set declared-sums invariants. Infra is live with Set B as a `[B]`-marked placeholder clone; gates green (lint, typecheck, 45 unit, 5 E2E). **Waiting on:** the team's compiled question sets (`docs/knowledge/QUESTION_SET_WORKSHEET.md`), then author real Set A/B content via data-author.
+- **Phase 1 status:** complete — all gates green; design-review passed all four screens with no p1/p2 findings. Built in 3 slices: Sort, Results (the conversion screen), Landing reveal + Build beat.
+- **Next up:** run the A/B user test on this build, then Phase 2 — feel pass (the conveyor scene, the robotic arm, the robot building live, the Goose-game landing). Criteria in `ROADMAP.md` §3. Build to the **refined sort model** logged in `DECISIONS.md` D-014: the user drags parts off the belt into two bins; the arm assembles the kept parts onto the robot behind the line.
 
 ---
 

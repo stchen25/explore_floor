@@ -14,7 +14,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    port: 5174,
   },
   // Vitest config lives here (the `test` key). The include/exclude split keeps Vitest
   // scoped to /src unit specs and out of the Playwright e2e specs under /tests.
