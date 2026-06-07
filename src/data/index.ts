@@ -1,10 +1,12 @@
 export { colorSchemes, defaultColorScheme } from './colorSchemes';
 export { competencies } from './competencies';
+export { defaultFlowId, flowList, flows } from './flows';
 export { items } from './items';
 export { programs } from './programs';
 export { defaultSetId, questionSetList, questionSets } from './questionSets';
 export { resultsCopy } from './resultsCopy';
 export { robotParts } from './robotParts';
+export { roleDetails } from './roleDetails';
 export { roles } from './roles';
 export { rounds } from './rounds';
 export { essentialSkills } from './skills';
