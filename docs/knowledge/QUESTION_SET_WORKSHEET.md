@@ -1,8 +1,10 @@
 # Question-set authoring worksheet
 
+> **SUPERSEDED (2026-06-07).** The A/B *language* test this worksheet served was replaced by the question-*structure* study (`DATA_MODEL.md` §17, `DECISIONS.md` D-017) before set B was authored. Set B and the formal/playful plan are retired. The live study's content lives in `src/data/flows/` and the verified transcription in `docs/reference/Narrative Quiz Structure Content Spec.md`. Kept below as a historical artifact + a still-valid template should a single-flow language A/B ever be revived (it would slot into the **classic** flow's QuestionSet).
+
 The compilation template for the A/B language test (`DATA_MODEL.md` §16, `DECISIONS.md` D-016). Fill one copy of the **Set template** below per treatment — e.g. Set A formal/exam-like (CollegeBoard-ish), Set B playful/narrativized (Futurescape-ish). When a set is complete, hand it to Claude with "author this into `questionSets/` via data-author" and the tests will verify everything.
 
-**The current build:** Set A is the original Phase 1 content; Set B is a `[B]`-marked placeholder clone. Both get replaced/retuned from this worksheet.
+**The current build:** Set A is the original Phase 1 content (now wrapped by the classic flow). Set B was never authored — retired with the language test.
 
 ---
 

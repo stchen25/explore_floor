@@ -287,5 +287,7 @@ A sheet opens over the map explaining the category that the title belongs to. Co
 
 - The wireframe sketch shows three job-title nodes per category; the actual title lists above run three to five. The board doesn't say whether to cap at three.
 - Two choices carry question marks on the board, meaning the team wasn't settled on them: "IT club" (Version 1, Scene 4) and "Writing code" (Version 1, Scene 6).
-- Page 1 of the board has two unattached format labels, "Multiple choice" and "Drag and drop." They aren't assigned to anything; treat all Version 1 questions as standard single-select unless told otherwise.
+- _(Corrected 2026-06-07, verified against the live board.)_ Page 1's two format labels, "Multiple choice" (pink) and "Drag and drop" (blue), are a **color legend**, not unattached: the intro questions are pink (multiple choice, tap-to-select) and all seven story scenes are blue (drag and drop). As built (D-017): intro questions are single-select MC; scenes are drag-your-pick-into-a-zone (with a tap fallback).
+- _(Corrected 2026-06-07.)_ The statement sort uses **three** buckets — "That's me" / "Maybe" / "Not me" — not two. A prior user study asked for a maybe option; it currently scores as a no (`MAYBE_WEIGHT = 0`, tunable). See D-017.
 - Page 2 of the board also holds an earlier rough results sketch (robot character, four-category percentage breakdown, "Breakdowns" and "Your roles" panels). The node-map flow described above is the intended results experience.
+- _As built:_ the on-canvas job-title scatter from results wireframe 1 was simplified to a tray of title pills below the map — the scatter collided with 3-5 wide titles per category. All titles are shown (no cap at three). Flagged for a polish pass with the team.

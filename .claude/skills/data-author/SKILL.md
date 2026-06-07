@@ -8,10 +8,11 @@ description: Use when creating or editing anything in /src/data — interest ite
 `DATA_MODEL.md` is the schema spec — **read it, don't restate it.** This skill is the working discipline for editing data safely. The single rule everything serves: **content lives in typed data, never in components.** The team tunes content constantly; a content change must never require editing logic.
 
 ## Where things live
-`/src/data/`: `types.ts`, `items.ts` (24 interests), `roles.ts` (3), `competencies.ts`, `skills.ts` (14), `programs.ts` (~6-10), `robotParts.ts`, `colorSchemes.ts`, `questionSets/` (A/B language-test variants — `DATA_MODEL.md` §16), `index.ts` (barrel). See `DATA_MODEL.md` §13.
+`/src/data/`: `types.ts`, `items.ts` (24 interests), `roles.ts` (3), `competencies.ts`, `skills.ts` (14), `programs.ts` (~6-10), `robotParts.ts`, `colorSchemes.ts`, `questionSets/` (set A only — the classic flow; the A/B language test is retired, `DATA_MODEL.md` §16), `flows/` (the question-structure study: narrative/exam/classic + `roleDetails.ts` — `DATA_MODEL.md` §17), `index.ts` (barrel). See `DATA_MODEL.md` §13.
 
-## Invariants — must hold after every edit (`DATA_MODEL.md` §15 + §16)
-- **24 interest items per question set**, built in round order, each with **all three** weights present (`builder`, `innovator`, `architect`) — never omit a zero. Item ids are unique within a set **and across sets** (set B uses a `b-` prefix).
+## Invariants — must hold after every edit (`DATA_MODEL.md` §15–§17)
+- **24 interest items per question set** (set A / the classic flow), built in round order, each with **all three** weights present (`builder`, `innovator`, `architect`) — never omit a zero. Item ids are unique within a set.
+- **Study flows (`flows/`, §17):** narrative = 7 scenes × 4 choices (one per category), branch targets resolve forward; exam = 30 statements counted 8/7/7/8, interleaved, 3 buckets; each `CategoryFlow.expectedCategoryMax` must equal the computed full-path max (`data-integrity` enforces). Four categories operate/repair/program/plan — parallel to the three archetypes, never mixed. Background-question choices may map to **zero** categories (intentional, D-017). `data-integrity.test.ts` covers all of this per flow.
 - **Per-archetype weight sums equal the set's declared `expectedSums`** (Set A: Builder 22 · Innovator 27 · Architect 25; other sets declare their own). Maxes need not be equal across archetypes or sets — scoring normalizes per archetype against its own max. If you change a weight, update that set's `expectedSums` and log it in `docs/knowledge/DECISIONS.md`.
 - A question set owns its items + landing/sort/round/results copy; **roles, competencies, skills, programs, and robot parts stay shared** — never fork those per set.
 - Weights are integers **0-3** (0 none, 1 light, 2 clear, 3 defining). Passing an item contributes 0 by default; negative weights are schema-allowed but off in v1.

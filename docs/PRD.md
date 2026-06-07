@@ -133,7 +133,7 @@ This supersedes the single-winner logic in the Make.md brainstorm.
 
 The locked 24-item set, per team decision. Drawn from the Make.md brainstorm. Final wording is good enough to build against; weights and any small wording polish will iterate inside `/src/data` without touching code.
 
-> **A/B language test (2026-06-04, flagged addition):** for the first user test this set lives as **question set A** inside the question-set registry (`DATA_MODEL.md` §16). A second set — different language treatment, its own weights — is being compiled and will run alongside it as **set B**. The registry and the landing switcher are a research instrument, not product scope; see §14 and `DECISIONS.md` D-016.
+> **Question-structure study (2026-06-07, supersedes the A/B language test):** for the first user test this 24-item set lives as the **Classic** flow inside the flow registry (`DATA_MODEL.md` §17). It runs alongside two structurally different conditions — **Narrative** (branching intro questions + day-in-the-life scenes) and **Exam** (background questions + a 30-statement sort) — that score four RC.org categories and share a node-map results screen. A three-way landing switcher picks the condition. The earlier formal/playful language A/B (§16, set B) was retired before its content was authored. The registry and switcher are a research instrument, not product scope; see §14 and `DECISIONS.md` D-017.
 
 **Round 1 — things you like doing**
 1. Building or fixing things
@@ -246,4 +246,4 @@ Auth, accounts, persistence, backend, real ARM data, the professional track, 3D/
 
 **Note on demo affordances.** Two non-core conveniences are intentionally allowed even though they are not part of the user-facing flow in section 5: a `?demo=true` mode that pre-fills a representative result and jumps straight to Results, and a hidden skip-to-results link for demo and user-test setup. Both are Phase 3 tooling (see `ROADMAP.md` 4.5 and 4.7), exist only to make demos and testing faster, and are the documented exception to "no step not described above."
 
-**Note on the question-set switcher (2026-06-04).** The Landing screen carries a small researcher-facing segmented control that switches the active question set (A/B language treatments for the first user test — `DATA_MODEL.md` §16, `DECISIONS.md` D-016). Like the demo affordances above, it is a documented research instrument, not user-facing product scope; ARM's production build would drop it along with the registry's second set.
+**Note on the flow switcher (2026-06-07).** The Landing screen carries a small researcher-facing segmented control that switches the active flow — Narrative / Exam / Classic — for the question-structure study (`DATA_MODEL.md` §17, `DECISIONS.md` D-017). Like the demo affordances above, it is a documented research instrument, not user-facing product scope; ARM's production build would drop it and ship a single chosen flow. (This supersedes the 2026-06-04 A/B language switcher.)

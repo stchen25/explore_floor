@@ -113,8 +113,8 @@ Phase 1 ships a working flow. Phase 2 gives it soul. Protect that order so users
 
 ## Hard rules
 
-- Never invent the ARM role taxonomy. There are exactly three role families: **Robotics Integrator, Robotics Specialist, Robotics Technician.** Their competencies are fixed mock data in `/src/data`. Do not add or rename roles.
-- Never make the result a single prescriptive role. Always a weighted match across all three. See `PRD.md` scoring section.
+- Never invent the ARM role taxonomy. The **classic** experience has exactly three role families: **Robotics Integrator, Robotics Specialist, Robotics Technician.** Their competencies are fixed mock data in `/src/data`. Do not add or rename roles. _Carve-out (D-017):_ the question-structure **study flows** score RC.org's four published career categories — Operate/Repair/Program/**Plan** → Operator/Technician/Specialist/Integrator. "Operator" is a real RC.org entry-level role; it lives only in the category world (`roleDetails.ts`, `CategoryId`), never touches the three-archetype taxonomy or `roles.ts`. Don't invent beyond these four either.
+- Never make the result a single prescriptive role. Always a weighted match across all three (classic) or all four (study flows). See `PRD.md` scoring section + `DATA_MODEL.md` §17.
 - Never use the neon palette from early brainstorm docs. Palette is defined in `DESIGN_SYSTEM.md` and the `@theme` block in `src/styles/globals.css`.
 - Never add a screen, step, or feature not described in `PRD.md` without flagging it first.
 - When in doubt about scope, content, or direction, stop and ask. The user is driving and prefers to be consulted before you expand scope.

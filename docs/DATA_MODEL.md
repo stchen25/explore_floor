@@ -618,6 +618,71 @@ interface QuestionSet {
 - The session store holds `questionSetId` **next to** session state, not inside it — `reset()` ("Start over") replaces only the session, so the researcher's chosen condition survives between participants. The landing switcher calls `selectQuestionSet`.
 - Store actions resolve the active set's items at action time; screens read copy via the `useQuestionSet()` hook. Only one set is ever active in a session.
 
-### Authoring set B
+### Status (superseded for the live study)
 
-Set B currently ships as a `[B]`-marked placeholder clone of set A. The real content is compiled in `docs/knowledge/QUESTION_SET_WORKSHEET.md` and then authored into `questionSets/setB.ts` via the data-author skill: literal items (own weights — update `expectedSums`), own robot mappings, own copy blocks.
+The formal-vs-playful A/B was **superseded by the question-structure study** (§17, `DECISIONS.md` D-017) before set B's content was authored. Set B and the `b-` cross-set machinery are removed; `QuestionSetId` is now just `'a'` and `questionSetList` holds only set A. The QuestionSet shape itself survives intact: the **classic** flow wraps set A by reference (§17), so the Phase 1 interest-sort pipeline is unchanged. `QUESTION_SET_WORKSHEET.md` is retained as a historical artifact but is no longer the live authoring path.
+
+## 17. Flows (question-structure study)
+
+Added 2026-06-07 for the first user test (see `DECISIONS.md` D-017; flagged in `PRD.md`). The test compares which **question structure** is most engaging and produces the most trusted results. Three selectable flows ship on one build; a researcher-facing segmented control on Landing switches between them per participant.
+
+The original A/B (§16) assumed both conditions shared one flow shape (24-item sort → build → 3-archetype results). The study breaks that: the two new flows have different step structures, score **four** RC.org categories instead of three archetypes, and share a new results experience. So `QuestionSet` grew a sibling: the **flow**.
+
+### The three flows
+
+| Flow | `kind` | Shape | Results |
+|---|---|---|---|
+| **Classic** | `classic` | The Phase 1 experience, wrapping set A by reference. | 3 role cards (archetype pipeline, unchanged) |
+| **Narrative** | `narrative` | 5 intro MC questions (Q1 branches), then 7 day-in-the-life **scenes** (drag a pick into a zone). | category node map |
+| **Exam** | `exam` | 2 background MC + 1 mapped MC, then a **30-statement sort** into 3 buckets. | category node map |
+
+### The four categories
+
+The study flows score `CategoryId = 'operate' | 'repair' | 'program' | 'plan'`, each mapped to a role: Operate→Operator, Repair→Technician, Program→Specialist, Plan→Integrator. This is **parallel to, not an extension of**, the three-archetype model — `ArchetypeId`/`RoleId`/`ARCHETYPE_TO_ROLE` and the classic pipeline are untouched. The new fourth role (Operator) exists only in the category world, and the results screen renders entirely from new `roleDetails` data (keyed by `CategoryId`), so `roles.ts` and the "exactly three role families" rule are not violated for the classic experience. See the CLAUDE.md hard-rule carve-out.
+
+### Shapes
+
+```ts
+type Flow = ClassicFlow | CategoryFlow;
+interface ClassicFlow { kind: 'classic'; id; name; landingCopy; questionSet: QuestionSet; }
+interface CategoryFlow {
+  kind: 'narrative' | 'exam'; id; name; landingCopy;
+  steps: FlowStep[];                 // discriminated by `type`
+  expectedCategoryMax: CategoryWeights; // declared full-path ceiling; tests assert == computed
+  resultsCopy: FlowResultsCopy;      // node-map + role-sheet chrome
+}
+type FlowStep = MCStep | SceneStep | StatementSortStep;
+// MCStep: optional prompt, question, choices[] — each choice maps to 0+ categories
+//   (0 = unscored background) and may carry branchTo (a step id; Q1 "No" skips Q2).
+// SceneStep: prompt + question + exactly 4 choices, one per category.
+// StatementSortStep: 30 statements (order fixed in data, interleaved) + 3 buckets.
+interface CategoryResult { raw; matchPercentages; ranking; primaryCategory; } // CategoryWeights
+```
+
+### Scoring (`lib/categoryScoring.ts` — pure, mirrors §9)
+
+`calculateCategoryScores(flow, answers, statementBuckets)` walks the **path the answers actually took** (branch-aware: a skipped Q2 contributes to neither raw nor max), tallying per category: each scored MC choice and each scene/statement adds 1 to its category's `max`; the chosen answer adds 1 to `raw` (a two-category MC choice feeds both). Statement buckets: `thats-me` → 1, `maybe` → `MAYBE_WEIGHT` (a tunable constant, **0** today — the prior study asked for a maybe option but the team wants it scored as a no for now), `not-me` → 0. Each category normalizes against its own max; `ranking` is sorted desc with the stable `operate > repair > program > plan` tiebreak.
+
+### Results (both new flows — the team's two wireframes)
+
+- **Layer 1 — node map:** four concentric rings; each category node sits on the ring of its match rank (innermost = best). Tap a category to reveal its `commonJobTitles`; tap a title for Layer 2. (Titles currently render in a tray below the map rather than scattered on-canvas — the wireframe's scatter collided badly with 3-5 wide titles; flagged for a polish pass.)
+- **Layer 2 — role sheet:** the RC.org role-card content (description, activities, education, titles, salary) + a stub "Add this Role to your profile" link + a four-axis **fit radar** of the user's category percentages.
+
+### Robot build: skipped (this iteration)
+
+Both new flows **skip the robot build + build beat** — the study keeps presentation minimal so participants focus on the questions. Category flows never touch `robot` state and never route through `/build`. Re-enabling later is a per-flow `'build'` step or flag routed through `/build`; documented, not built.
+
+### Runtime model
+
+- Registry: `flows/index.ts` (`flows`, `flowList` ordered Narrative/Exam/Classic, `defaultFlowId` = `'classic'`). The store holds `flowId` **next to** session state (same survives-`reset()` mechanism as §16's `questionSetId`). The landing switcher calls `selectFlow`; the CTA routes by kind (`classic` → `/sort`, else → `/flow`).
+- `FlowRunner` (`/flow`) renders the current step by type and advances via `recordAnswer`/`recordStatement`/`advanceStep`/`completeFlow`; navigation is declarative off `currentScreen` so completion can't race the redirect. `/results` dispatches to `ClassicResults` or `CategoryResults` by kind.
+
+### Invariants (enforced per flow by `data-integrity.test.ts`)
+
+- Narrative: exactly 7 scenes, each with 4 choices covering all four categories; every `branchTo` resolves forward; computed full-path category max equals declared `expectedCategoryMax`.
+- Exam: exactly 30 statements counted 8/7/7/8 (operate/repair/program/plan), interleaved (no two adjacent share a category), 3 buckets in order.
+- Both: unique step + choice + statement ids; all owned copy non-empty; four `roleDetails` resolve to four distinct role names.
+
+### Open item
+
+The background questions (narrative Q1–Q3, exam Q1–Q2) carry **empty category mappings** — the team intends them to shape the experience, but the mapping rationale is unrecovered. The `MCChoice.categories` field keeps them schema-ready: adding weights later is a data edit, no code change. See D-017.
