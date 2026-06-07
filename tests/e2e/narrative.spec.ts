@@ -64,19 +64,20 @@ test('narrative: branch over Q2, tap through all scenes, results match the engin
     await page.getByTestId('scene-card').filter({ hasText: labelFor(sceneId) }).click();
   }
 
-  // Category results: displayed percentages equal the engine's read of the same answers.
+  // Category results: the node graph. The top match (program → Specialist) is named at the top
+  // and starts front-and-center; displayed percentages equal the engine's read of the answers.
   await expect(page).toHaveURL(/\/results$/, { timeout: 7000 });
   const expected = calculateCategoryScores(narrativeFlow, answers, {});
   expect(expected.primaryCategory).toBe('program'); // every scene pick was program
+  await expect(page.getByRole('heading', { name: 'Specialist' })).toBeVisible();
   for (const category of ['operate', 'repair', 'program', 'plan'] as const) {
     await expect(page.getByTestId(`category-pct-${category}`)).toHaveText(
       `${expected.matchPercentages[category]}%`,
     );
   }
 
-  // Layer 1 → Layer 2: tap the top category node, a job title fans out, the role
-  // sheet opens with the RC.org content + fit radar, and closes back to the map.
-  await page.getByTestId('category-node-program').click();
+  // The active category's job titles branch off the front — tap one for the role sheet
+  // (RC.org content + fit radar), then close it.
   await page.getByTestId('title-node').filter({ hasText: 'Robotics Specialist' }).click();
   await expect(page.getByTestId('role-sheet')).toBeVisible();
   await expect(page.getByTestId('role-sheet')).toContainText('Specialist');
@@ -84,6 +85,11 @@ test('narrative: branch over Q2, tap through all scenes, results match the engin
   await expect(page.getByTestId('fit-radar')).toBeVisible();
   await page.getByTestId('sheet-close').click();
   await expect(page.getByTestId('role-sheet')).not.toBeVisible();
+
+  // Tapping a behind-node swaps it into the center: the heading and its branched titles update.
+  await page.getByTestId('category-node-repair').click();
+  await expect(page.getByRole('heading', { name: 'Technician' })).toBeVisible();
+  await expect(page.getByTestId('title-node').filter({ hasText: 'Automation Technician' })).toBeVisible();
 
   // "Start over" returns to Landing with the condition still selected (reset-survival).
   await page.getByTestId('retake').click();

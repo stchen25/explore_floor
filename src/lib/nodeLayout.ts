@@ -19,15 +19,29 @@ export const CATEGORY_ANGLES: Record<CategoryId, number> = {
   repair: 180,
 };
 
-/** Ring radius for a match rank (0 = best = innermost), growing outward evenly. */
-export function ringRadius(rank: number, innerRadius: number, gap: number): number {
-  return innerRadius + rank * gap;
-}
-
 /** Polar → SVG cartesian around (0,0). SVG y grows downward, so -90° is straight up. */
 export function polarPoint(radius: number, angleDeg: number): Point {
   const radians = (angleDeg * Math.PI) / 180;
   return { x: radius * Math.cos(radians), y: radius * Math.sin(radians) };
+}
+
+/** Fan `count` points around `baseAngleDeg` at `distance` from `origin`, spread evenly
+ *  across `spreadDeg` (a single point goes straight along the base angle). Used to arc the
+ *  alternative category nodes (up, behind the active one) and its job-title nodes (down,
+ *  off the front). */
+export function fanPoints(
+  origin: Point,
+  baseAngleDeg: number,
+  count: number,
+  distance: number,
+  spreadDeg: number,
+): Point[] {
+  return Array.from({ length: count }, (_, i) => {
+    const angle =
+      count === 1 ? baseAngleDeg : baseAngleDeg - spreadDeg / 2 + (spreadDeg * i) / (count - 1);
+    const offset = polarPoint(distance, angle);
+    return { x: origin.x + offset.x, y: origin.y + offset.y };
+  });
 }
 
 /** Radar polygon vertices in CATEGORIES order: each category's match percentage

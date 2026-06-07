@@ -196,8 +196,8 @@ export const narrativeFlow: CategoryFlow = {
   expectedCategoryMax: { operate: 9, repair: 9, program: 9, plan: 9 },
   resultsCopy: {
     heading: 'Here’s how your day matches up',
-    mapHint: 'The closer a role sits to the center, the more your choices match it. Tap a role to see its job titles, then tap a title to learn more.',
-    centerLabel: 'Recommended titles',
+    mapHint: 'Tap another role to bring it front and center, then tap a job title to learn more.',
+    centerLabel: 'Your top match',
     retake: 'Start over',
     sheet: {
       activities: 'Job activities',

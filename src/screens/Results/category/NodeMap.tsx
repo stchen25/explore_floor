@@ -1,139 +1,156 @@
 import { AnimatePresence, motion } from 'motion/react';
 
+import { CATEGORY_ACCENT_TEXT } from '@/components/categoryAccent';
 import { roleDetails } from '@/data';
 import type { CategoryId, CategoryResult } from '@/data/types';
-import { CATEGORIES } from '@/data/types';
-import { CATEGORY_ANGLES, durations, easings, polarPoint, ringRadius } from '@/lib';
+import { durations, easings, fanPoints, type Point } from '@/lib';
 
 interface NodeMapProps {
   result: CategoryResult;
-  centerLabel: string;
-  selectedCategory: CategoryId | null;
-  onSelectCategory: (category: CategoryId | null) => void;
+  /** The centered/front category — its job titles branch off; the other three sit behind. */
+  activeCategory: CategoryId;
+  /** Swap a behind-node into the center. */
+  onSelectCategory: (category: CategoryId) => void;
   onOpenTitle: (category: CategoryId, title: string) => void;
   reduce: boolean;
 }
 
-// Layer 1 of the category results (the team's results wireframe 1): four concentric
-// rings; each category node sits on the ring of its match rank — innermost is the
-// best match. Clicking a category reveals its common job titles in a tray below the
-// map; clicking a title opens the role sheet (Layer 2). The wireframe scatters title
-// nodes around the category on the canvas — with 3-5 wide titles per category that
-// collides on the outer rings, so the tray keeps the study build legible; revisit
-// the scatter with the team in a polish pass. Geometry is pure (lib/nodeLayout); the
-// SVG only draws rings — nodes and title pills are positioned HTML buttons, so text
-// wraps and keyboards work. Neutral styling by design: the study presentation stays
-// minimal.
+// The category map, rebuilt as a simple node graph (D-017 redesign — the concentric orbital
+// rings read as "funky"). The top-matched category sits front and center; the other three sit
+// behind it (arced above, faded). Tapping a behind-node swaps it into the center (Motion
+// `layout` animates the move). The active category's recommended job titles branch off the
+// front (arced below) on thin connector lines; tapping one opens the role sheet. Obsidian-graph
+// plain: small nodes, hairline links, a restrained category tint on the active node. Circles are
+// anchored exactly on their geometry points; labels float above/below so they never shift the
+// node (and the connector lines always meet the dots).
 
-const VIEW = 900; // SVG viewBox units
-const CENTER = VIEW / 2;
-const RING_INNER = 130;
-const RING_GAP = 62;
+const VIEW = 900;
+const CENTER: Point = { x: VIEW / 2, y: VIEW / 2 };
+const ALT_DISTANCE = 250;
+const ALT_SPREAD = 110; // tight upper arc, clear of the downward title cone
+const TITLE_DISTANCE = 285;
 
-/** SVG-space point → percentage offsets for absolutely-positioned HTML. */
-const toPercent = (value: number) => `${((CENTER + value) / VIEW) * 100}%`;
+const pct = (value: number) => `${(value / VIEW) * 100}%`;
 
 export function NodeMap({
   result,
-  centerLabel,
-  selectedCategory,
+  activeCategory,
   onSelectCategory,
   onOpenTitle,
   reduce,
 }: NodeMapProps) {
-  const nodePosition = (category: CategoryId) => {
-    const rank = result.ranking.indexOf(category);
-    return polarPoint(ringRadius(rank, RING_INNER, RING_GAP), CATEGORY_ANGLES[category]);
-  };
+  const others = result.ranking.filter((category) => category !== activeCategory);
+  const altPositions = fanPoints(CENTER, -90, others.length, ALT_DISTANCE, ALT_SPREAD);
+
+  const titles = roleDetails[activeCategory].commonJobTitles;
+  const titleSpread = Math.min(130, Math.max(60, (titles.length - 1) * 30));
+  const titlePositions = fanPoints(CENTER, 90, titles.length, TITLE_DISTANCE, titleSpread);
+
+  // Stable slot per category so Motion `layout` animates the swap rather than cross-fading.
+  const positionFor = (category: CategoryId): Point =>
+    category === activeCategory ? CENTER : altPositions[others.indexOf(category)];
+
+  const transition = reduce ? { duration: 0 } : { duration: durations.glide, ease: easings.soft };
 
   return (
-    <div className="flex w-full flex-col items-center gap-space-3">
-      <div className="relative aspect-square w-full" data-testid="node-map">
-        <svg
-          viewBox={`0 0 ${VIEW} ${VIEW}`}
-          className="absolute inset-0 h-full w-full"
-          aria-hidden="true"
-        >
-          {[0, 1, 2, 3].map((rank) => (
-            <circle
-              key={rank}
-              cx={CENTER}
-              cy={CENTER}
-              r={ringRadius(rank, RING_INNER, RING_GAP)}
-              className="fill-none stroke-border-default"
-              strokeWidth={2}
-            />
-          ))}
-        </svg>
-
-        <p className="absolute left-1/2 top-1/2 w-28 -translate-x-1/2 -translate-y-1/2 text-center text-overline uppercase text-text-faint">
-          {centerLabel}
-        </p>
-
-        {CATEGORIES.map((category) => {
-          const position = nodePosition(category);
-          const active = category === selectedCategory;
-          return (
-            <button
-              key={category}
-              type="button"
-              data-testid={`category-node-${category}`}
-              onClick={() => onSelectCategory(active ? null : category)}
-              className={[
-                'absolute flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 text-center shadow-card transition-colors',
-                active
-                  ? 'border-near-black bg-bg-section text-text-strong'
-                  : 'border-border-default bg-bg text-text-default hover:bg-bg-section',
-              ].join(' ')}
-              style={{ left: toPercent(position.x), top: toPercent(position.y) }}
-            >
-              <span className="font-heading text-small font-bold">
-                {roleDetails[category].roleName}
-              </span>
-              <span className="text-small text-text-muted" data-testid={`category-pct-${category}`}>
-                {result.matchPercentages[category]}%
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      <AnimatePresence mode="wait">
-        {selectedCategory && (
-          <motion.div
-            key={selectedCategory}
-            className="flex flex-col items-center gap-space-2"
-            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+    <div className="relative aspect-square w-full overflow-visible" data-testid="node-map">
+      <svg viewBox={`0 0 ${VIEW} ${VIEW}`} className="absolute inset-0 h-full w-full" aria-hidden="true">
+        <AnimatePresence mode="wait">
+          <motion.g
+            key={activeCategory}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: durations.snap, ease: easings.soft }}
-            data-testid="title-tray"
+            transition={{ duration: reduce ? 0 : durations.snap }}
           >
-            <p className="text-overline uppercase text-text-faint">
-              {roleDetails[selectedCategory].roleName} job titles
-            </p>
-            <div className="flex max-w-md flex-wrap items-center justify-center gap-space-2">
-              {roleDetails[selectedCategory].commonJobTitles.map((title, index) => (
-                <motion.button
-                  key={title}
-                  type="button"
-                  data-testid="title-node"
-                  onClick={() => onOpenTitle(selectedCategory, title)}
-                  initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
-                  animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-                  transition={{
-                    duration: durations.snap,
-                    ease: easings.soft,
-                    delay: reduce ? 0 : index * 0.05,
-                  }}
-                  className="rounded-full border border-border-default bg-bg px-space-3 py-space-1 text-small text-text-default shadow-card transition-colors hover:bg-bg-section"
+            {titlePositions.map((point, i) => (
+              <line
+                key={titles[i]}
+                x1={CENTER.x}
+                y1={CENTER.y}
+                x2={point.x}
+                y2={point.y}
+                className="stroke-border-default"
+                strokeWidth={2}
+              />
+            ))}
+          </motion.g>
+        </AnimatePresence>
+      </svg>
+
+      {/* Category nodes — active front-and-center, the rest behind. `layout` animates swaps. */}
+      {result.ranking.map((category) => {
+        const position = positionFor(category);
+        const active = category === activeCategory;
+        return (
+          <motion.button
+            key={category}
+            type="button"
+            layout
+            transition={transition}
+            data-testid={`category-node-${category}`}
+            aria-pressed={active}
+            aria-label={`${roleDetails[category].roleName} ${result.matchPercentages[category]}%`}
+            onClick={() => !active && onSelectCategory(category)}
+            className="absolute -translate-x-1/2 -translate-y-1/2"
+            style={{ left: pct(position.x), top: pct(position.y), zIndex: active ? 3 : 2 }}
+          >
+            {active ? (
+              // The active node carries only its % (named in the page heading) — no external
+              // label to collide with the behind-nodes arced just above it.
+              <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-near-black bg-bg-section shadow-card">
+                <span
+                  className={`font-heading text-h5 ${CATEGORY_ACCENT_TEXT[category]}`}
+                  data-testid={`category-pct-${category}`}
                 >
-                  {title}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-        )}
+                  {result.matchPercentages[category]}%
+                </span>
+              </span>
+            ) : (
+              <>
+                <span className="block h-12 w-12 rounded-full border-2 border-border-default bg-bg opacity-70 shadow-card transition-opacity hover:opacity-100" />
+                <span className="absolute left-1/2 top-full mt-space-1 flex w-28 -translate-x-1/2 flex-col items-center leading-tight">
+                  <span className="font-heading text-small text-text-muted">
+                    {roleDetails[category].roleName}
+                  </span>
+                  <span className="text-small text-text-faint" data-testid={`category-pct-${category}`}>
+                    {result.matchPercentages[category]}%
+                  </span>
+                </span>
+              </>
+            )}
+          </motion.button>
+        );
+      })}
+
+      {/* Job-title nodes — branch off the front of the active category. */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeCategory}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduce ? 0 : durations.snap }}
+        >
+          {titlePositions.map((point, i) => (
+            <motion.button
+              key={titles[i]}
+              type="button"
+              data-testid="title-node"
+              onClick={() => onOpenTitle(activeCategory, titles[i])}
+              initial={reduce ? false : { scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: durations.snap, ease: easings.soft, delay: reduce ? 0 : i * 0.04 }}
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{ left: pct(point.x), top: pct(point.y), zIndex: 1 }}
+            >
+              <span className="block h-3 w-3 rounded-full bg-text-muted" />
+              <span className="absolute left-1/2 top-full mt-space-0 flex w-28 -translate-x-1/2 justify-center text-center text-small leading-tight text-text-default">
+                {titles[i]}
+              </span>
+            </motion.button>
+          ))}
+        </motion.div>
       </AnimatePresence>
     </div>
   );

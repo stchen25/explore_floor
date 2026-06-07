@@ -1,13 +1,25 @@
 import { CATEGORIES, type CategoryWeights } from '@/data/types';
-import { CATEGORY_ANGLES, polarPoint, radarPoints, ringRadius } from '@/lib/nodeLayout';
+import { CATEGORY_ANGLES, fanPoints, polarPoint, radarPoints } from '@/lib/nodeLayout';
 
-describe('ringRadius', () => {
-  it('places rank 0 innermost and grows monotonically with rank', () => {
-    const radii = [0, 1, 2, 3].map((rank) => ringRadius(rank, 80, 70));
-    expect(radii[0]).toBe(80);
-    for (let i = 1; i < radii.length; i++) {
-      expect(radii[i]).toBeGreaterThan(radii[i - 1]);
+describe('fanPoints', () => {
+  it('places a single point straight along the base angle', () => {
+    const [p] = fanPoints({ x: 100, y: 50 }, 0, 1, 80, 140);
+    expect(p.x).toBeCloseTo(180);
+    expect(p.y).toBeCloseTo(50);
+  });
+
+  it('spreads n points symmetrically around the base angle at the given distance', () => {
+    const origin = { x: 0, y: 0 };
+    const points = fanPoints(origin, 90, 3, 100, 120);
+    expect(points).toHaveLength(3);
+    for (const p of points) {
+      expect(Math.hypot(p.x - origin.x, p.y - origin.y)).toBeCloseTo(100);
     }
+    // Middle point sits on the base angle (straight down, +y); flanks mirror in x.
+    expect(points[1].x).toBeCloseTo(0);
+    expect(points[1].y).toBeCloseTo(100);
+    expect(points[0].x).toBeCloseTo(-points[2].x);
+    expect(points[0].y).toBeCloseTo(points[2].y);
   });
 });
 

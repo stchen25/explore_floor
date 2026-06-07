@@ -9,11 +9,11 @@ import { useFlow, useSessionStore } from '@/state';
 import { NodeMap } from './NodeMap';
 import { RoleDetailSheet } from './RoleDetailSheet';
 
-// The shared results for the study flows (DATA_MODEL §17), per the team's two results
-// wireframes. Layer 1: the node map — categories on concentric rings by match rank,
-// tap one to fan out its job titles. Layer 2: tap a title for the role sheet (RC.org
-// role-card content + fit radar). This screen only orchestrates: layer state, retake,
-// and the dispatch between the two layers.
+// The narrative flow's results (DATA_MODEL §17): a node graph. The recommended (top-matched)
+// role is stated up top and starts front-and-center on the map; the other three sit behind it
+// and swap in on tap. The active category's job titles branch off the front — tap one for the
+// role sheet (RC.org content + fit radar). This screen orchestrates: which category is centered,
+// which title's sheet is open, and retake.
 export function CategoryResults() {
   const navigate = useNavigate();
   const reduce = !!useReducedMotion();
@@ -21,7 +21,7 @@ export function CategoryResults() {
   const categoryResult = useSessionStore((s) => s.state.categoryResult);
   const reset = useSessionStore((s) => s.reset);
 
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
+  const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
   const [openTitle, setOpenTitle] = useState<{ category: CategoryId; title: string } | null>(null);
 
   if (flow.kind === 'classic' || !categoryResult) {
@@ -36,6 +36,12 @@ export function CategoryResults() {
     );
   }
 
+  // Defaults to the top match; a swap overrides it until retake. The heading names whichever
+  // role is centered — at default that's the recommendation (centerLabel overline); on a swap
+  // it names the role being explored.
+  const active = activeCategory ?? categoryResult.primaryCategory;
+  const isTopMatch = active === categoryResult.primaryCategory;
+
   function handleRetake() {
     reset();
     navigate('/');
@@ -43,17 +49,19 @@ export function CategoryResults() {
 
   return (
     <main className="mx-auto flex min-h-full max-w-md flex-col items-center gap-space-4 p-space-5">
-      <h2 className="font-heading text-h2 text-center text-text-strong">
-        {flow.resultsCopy.heading}
-      </h2>
+      <div className="flex flex-col items-center gap-space-1 text-center">
+        <p className="text-overline uppercase text-text-faint">
+          {isTopMatch ? flow.resultsCopy.centerLabel : 'You’re exploring'}
+        </p>
+        <h2 className="font-heading text-h2 text-text-strong">{roleDetails[active].roleName}</h2>
+      </div>
       <p className="max-w-md text-center text-small text-text-faint">{flow.resultsCopy.mapHint}</p>
 
       <div className="w-full max-w-sm">
         <NodeMap
           result={categoryResult}
-          centerLabel={flow.resultsCopy.centerLabel}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          activeCategory={active}
+          onSelectCategory={setActiveCategory}
           onOpenTitle={(category, title) => setOpenTitle({ category, title })}
           reduce={reduce}
         />
