@@ -67,11 +67,23 @@ test('narrative: branch over Q2, tap through all scenes, results match the engin
   // Category results: displayed percentages equal the engine's read of the same answers.
   await expect(page).toHaveURL(/\/results$/, { timeout: 7000 });
   const expected = calculateCategoryScores(narrativeFlow, answers, {});
+  expect(expected.primaryCategory).toBe('program'); // every scene pick was program
   for (const category of ['operate', 'repair', 'program', 'plan'] as const) {
     await expect(page.getByTestId(`category-pct-${category}`)).toHaveText(
       `${expected.matchPercentages[category]}%`,
     );
   }
+
+  // Layer 1 → Layer 2: tap the top category node, a job title fans out, the role
+  // sheet opens with the RC.org content + fit radar, and closes back to the map.
+  await page.getByTestId('category-node-program').click();
+  await page.getByTestId('title-node').filter({ hasText: 'Robotics Specialist' }).click();
+  await expect(page.getByTestId('role-sheet')).toBeVisible();
+  await expect(page.getByTestId('role-sheet')).toContainText('Specialist');
+  await expect(page.getByTestId('role-sheet')).toContainText('national median $105,000/yr');
+  await expect(page.getByTestId('fit-radar')).toBeVisible();
+  await page.getByTestId('sheet-close').click();
+  await expect(page.getByTestId('role-sheet')).not.toBeVisible();
 
   // "Start over" returns to Landing with the condition still selected (reset-survival).
   await page.getByTestId('retake').click();

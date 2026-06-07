@@ -65,10 +65,12 @@ test('exam: questions + 30-statement sort across three buckets, results match th
     }
   }
 
-  // Category results: displayed percentages equal the engine's read of the same inputs.
+  // Category results: displayed percentages equal the engine's read of the same inputs,
+  // and all four category nodes render on the map.
   await expect(page).toHaveURL(/\/results$/, { timeout: 7000 });
   const expected = calculateCategoryScores(examFlow, answers, statementBuckets);
   for (const category of ['operate', 'repair', 'program', 'plan'] as const) {
+    await expect(page.getByTestId(`category-node-${category}`)).toBeVisible();
     await expect(page.getByTestId(`category-pct-${category}`)).toHaveText(
       `${expected.matchPercentages[category]}%`,
     );
