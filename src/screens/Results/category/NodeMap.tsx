@@ -26,9 +26,9 @@ interface NodeMapProps {
 
 const VIEW = 900;
 const CENTER: Point = { x: VIEW / 2, y: VIEW / 2 };
-const ALT_DISTANCE = 250;
-const ALT_SPREAD = 110; // tight upper arc, clear of the downward title cone
-const TITLE_DISTANCE = 285;
+const ALT_DISTANCE = 275;
+const ALT_SPREAD = 115; // tight upper arc, clear of the downward title cone
+const TITLE_DISTANCE = 310;
 
 const pct = (value: number) => `${(value / VIEW) * 100}%`;
 
@@ -43,7 +43,7 @@ export function NodeMap({
   const altPositions = fanPoints(CENTER, -90, others.length, ALT_DISTANCE, ALT_SPREAD);
 
   const titles = roleDetails[activeCategory].commonJobTitles;
-  const titleSpread = Math.min(130, Math.max(60, (titles.length - 1) * 30));
+  const titleSpread = Math.min(160, Math.max(70, (titles.length - 1) * 38));
   const titlePositions = fanPoints(CENTER, 90, titles.length, TITLE_DISTANCE, titleSpread);
 
   // Stable slot per category so Motion `layout` animates the swap rather than cross-fading.
@@ -98,9 +98,9 @@ export function NodeMap({
             {active ? (
               // The active node carries only its % (named in the page heading) — no external
               // label to collide with the behind-nodes arced just above it.
-              <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-near-black bg-bg-section shadow-card">
+              <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-near-black bg-bg-section shadow-card">
                 <span
-                  className={`font-heading text-h5 ${CATEGORY_ACCENT_TEXT[category]}`}
+                  className={`font-heading text-h4 ${CATEGORY_ACCENT_TEXT[category]}`}
                   data-testid={`category-pct-${category}`}
                 >
                   {result.matchPercentages[category]}%
@@ -108,7 +108,7 @@ export function NodeMap({
               </span>
             ) : (
               <>
-                <span className="block h-12 w-12 rounded-full border-2 border-border-default bg-bg opacity-70 shadow-card transition-opacity hover:opacity-100" />
+                <span className="block h-16 w-16 rounded-full border-2 border-border-default bg-bg opacity-70 shadow-card transition-opacity hover:opacity-100" />
                 <span className="absolute left-1/2 top-full mt-space-1 flex w-28 -translate-x-1/2 flex-col items-center leading-tight">
                   <span className="font-heading text-small text-text-muted">
                     {roleDetails[category].roleName}
@@ -141,11 +141,12 @@ export function NodeMap({
               initial={reduce ? false : { scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: durations.snap, ease: easings.soft, delay: reduce ? 0 : i * 0.04 }}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
+              className="group absolute -translate-x-1/2 -translate-y-1/2"
               style={{ left: pct(point.x), top: pct(point.y), zIndex: 1 }}
             >
-              <span className="block h-3 w-3 rounded-full bg-text-muted" />
-              <span className="absolute left-1/2 top-full mt-space-0 flex w-28 -translate-x-1/2 justify-center text-center text-small leading-tight text-text-default">
+              {/* A real button-sized target (≥48px), not a dot — obvious it's tappable. */}
+              <span className="block h-14 w-14 rounded-full border-2 border-border-default bg-bg shadow-card transition-colors group-hover:bg-bg-section" />
+              <span className="absolute left-1/2 top-full mt-space-1 flex w-28 -translate-x-1/2 justify-center text-center text-small leading-tight text-text-default">
                 {titles[i]}
               </span>
             </motion.button>
