@@ -663,10 +663,14 @@ interface CategoryResult { raw; matchPercentages; ranking; primaryCategory; } //
 
 `calculateCategoryScores(flow, answers, statementBuckets)` walks the **path the answers actually took** (branch-aware: a skipped Q2 contributes to neither raw nor max), tallying per category: each scored MC choice and each scene/statement adds 1 to its category's `max`; the chosen answer adds 1 to `raw` (a two-category MC choice feeds both). Statement buckets: `thats-me` → 1, `maybe` → `MAYBE_WEIGHT` (a tunable constant, **0** today — the prior study asked for a maybe option but the team wants it scored as a no for now), `not-me` → 0. Each category normalizes against its own max; `ranking` is sorted desc with the stable `operate > repair > program > plan` tiebreak.
 
-### Results (both new flows — the team's two wireframes)
+### Results — one per flow (the study compares presentations too)
 
-- **Layer 1 — node map:** four concentric rings; each category node sits on the ring of its match rank (innermost = best). Tap a category to reveal its `commonJobTitles`; tap a title for Layer 2. (Titles currently render in a tray below the map rather than scattered on-canvas — the wireframe's scatter collided badly with 3-5 wide titles; flagged for a polish pass.)
-- **Layer 2 — role sheet:** the RC.org role-card content (description, activities, education, titles, salary) + a stub "Add this Role to your profile" link + a four-axis **fit radar** of the user's category percentages.
+Each new flow has its **own** results presentation; they share the `categoryResult` data and the role-detail **sheet**, not the layout.
+
+- **Narrative → node map** (`Results/category/`): four concentric rings; each category node sits on the ring of its match rank (innermost = best). Tap a category to reveal its `commonJobTitles`; tap a title for the role sheet. (Titles currently render in a tray below the map rather than scattered on-canvas — the wireframe's scatter collided badly with 3-5 wide titles; flagged for a polish pass.)
+- **Exam → dashboard** (`Results/exam/`): a robot anchor (static `RobotPlaceholder`, tinted by the top category via `CATEGORY_ACCENT_TEXT`) + four category **bars**; then **"Why you scored that way"** (score provenance from `categoryContributions` — the items you said yes to, n of m, walking the same path the scorer did) and **"Your roles"** (top-2 ranked → the role sheet).
+- **Shared role sheet** (`category/RoleDetailSheet`): the RC.org role-card content (description, activities, education, titles, salary) + a stub "Add this Role to your profile" link + a four-axis **fit radar** of the user's category percentages. Opened with a specific job title (node map) or on the role itself (exam "your roles" — `jobTitle` omitted).
+- `Results.tsx` dispatches three ways by `flow.kind`: classic → `ClassicResults`, narrative → node map, exam → dashboard.
 
 ### Robot build: skipped (this iteration)
 
