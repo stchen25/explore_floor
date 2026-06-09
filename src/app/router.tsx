@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 
 import { Build } from '@/screens/Build';
 import { FlowRunner } from '@/screens/Flow';
@@ -7,8 +7,10 @@ import { Results } from '@/screens/Results';
 import { Sort } from '@/screens/Sort';
 
 /** Navigation is driven by store actions + these routes. /sort and /build belong to the
- *  classic flow; /flow is the step runner for the study flows; /results dispatches by kind. */
-export const router = createBrowserRouter([
+ *  classic flow; /flow is the step runner for the study flows; /results dispatches by kind.
+ *  HashRouter (not browser history) so static GitHub Pages hosting survives refresh and
+ *  deep links under the /explore_floor/ subpath without server-side rewrites. */
+export const router = createHashRouter([
   { path: '/', element: <Landing /> },
   { path: '/sort', element: <Sort /> },
   { path: '/flow', element: <FlowRunner /> },

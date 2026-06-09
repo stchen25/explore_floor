@@ -7,6 +7,9 @@ import { defineConfig } from 'vite';
 
 // `__dirname` does not exist in ESM config files; derive the src path from import.meta.url.
 export default defineConfig({
+  // GitHub Pages serves this project repo from /explore_floor/, not root.
+  // Keep this in sync with the repo name; '/' would 404 every built asset.
+  base: '/explore_floor/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
