@@ -45,15 +45,21 @@ export function categoryContributions(
         }
         break;
       }
-      case 'scene': {
-        const chosen = step.choices.find((choice) => choice.id === answers[step.id]);
-        for (const choice of step.choices) out[choice.category].totalCount += 1;
-        if (chosen) {
-          out[chosen.category].earned.push(chosen.label);
-          out[chosen.category].earnedCount += 1;
+      case 'scene':
+        // Each scene choice is bucketed like a statement (D-018): "That's me" earns,
+        // "Kinda me" ('maybe') is on-the-fence, "Not me"/unanswered earns nothing.
+        for (const choice of step.choices) {
+          const entry = out[choice.category];
+          entry.totalCount += 1;
+          const bucket = statementBuckets[choice.id];
+          if (bucket === 'thats-me') {
+            entry.earned.push(choice.label);
+            entry.earnedCount += 1;
+          } else if (bucket === 'maybe') {
+            entry.maybe.push(choice.label);
+          }
         }
         break;
-      }
       case 'statementSort':
         for (const statement of step.statements) {
           const entry = out[statement.category];

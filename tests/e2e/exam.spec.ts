@@ -54,6 +54,8 @@ test('exam: questions + 30-statement sort across three buckets, results match th
   // The outgoing card is still exiting (popLayout) when the next one mounts, so target
   // the current card by its label rather than the bare testid.
   const progress = page.getByTestId('flow-progress');
+  // The middle bucket reads "Kinda me", not "Maybe" (D-018) — shared with the narrative.
+  await expect(page.getByTestId('bucket-maybe')).toContainText('Kinda me');
   for (let i = 0; i < sortStep.statements.length; i++) {
     const statement = sortStep.statements[i];
     await expect(
@@ -76,6 +78,10 @@ test('exam: questions + 30-statement sort across three buckets, results match th
     );
   }
   await expect(page.getByTestId('score-breakdown')).toBeVisible();
+
+  // Screener fit line (D-020): the exam asks education only, so one fit line for the top role.
+  await expect(page.getByTestId('fit-note')).toBeVisible();
+  await expect(page.getByTestId('fit-education')).toBeVisible();
 
   // "Your roles" → tap the top role card → the shared role detail sheet opens with the radar.
   const topRole = expected.ranking[0];

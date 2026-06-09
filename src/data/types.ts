@@ -150,8 +150,14 @@ export interface RoleDetail {
   description: string;
   jobActivities: string[];
   education: string;
+  /** Education ladder for the screener fit line (D-020): 0 = HS/GED, 1 = associate/cert,
+   *  2 = bachelor's+. Compared against the user's stated school appetite. */
+  educationLevel: 0 | 1 | 2;
   commonJobTitles: string[];
   salary: string;
+  /** Pay ladder for the screener fit line (D-020): 0 = ~$40k, 1 = ~$66k, 2 = $105k+.
+   *  Compared against the user's stated pay expectation (narrative only). */
+  payLevel: 0 | 1 | 2;
 }
 
 // ---------- Flows (study instrument — DATA_MODEL §17) ----------
@@ -193,7 +199,11 @@ export interface SceneChoice {
   category: CategoryId; // exactly one; the four choices in a scene cover all four
 }
 
-/** A day-in-the-life story beat. Interaction: drag your pick into the drop zone. */
+/** A day-in-the-life story beat. Interaction (D-018): sort each of the four choices into
+ *  the three buckets (That's me / Kinda me / Not me), one card at a time — the same sort
+ *  mechanic as the exam, with story framing. A choice's bucket is recorded in the shared
+ *  statementBuckets slice keyed by SceneChoice.id; the buckets are fixed chrome
+ *  (SORT_BUCKETS), so they aren't per-scene data. */
 export interface SceneStep {
   type: 'scene';
   id: string;

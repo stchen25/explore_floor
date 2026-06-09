@@ -4,8 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { roleDetails } from '@/data';
 import type { CategoryId } from '@/data/types';
+import { deriveScreenerProfile, screenerFitLines } from '@/lib';
 import { useFlow, useSessionStore } from '@/state';
 
+import { FitNote } from './FitNote';
 import { NodeMap } from './NodeMap';
 import { RoleDetailSheet } from './RoleDetailSheet';
 
@@ -19,6 +21,7 @@ export function CategoryResults() {
   const reduce = !!useReducedMotion();
   const flow = useFlow();
   const categoryResult = useSessionStore((s) => s.state.categoryResult);
+  const answers = useSessionStore((s) => s.state.answers);
   const reset = useSessionStore((s) => s.reset);
 
   const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
@@ -41,6 +44,8 @@ export function CategoryResults() {
   // it names the role being explored.
   const active = activeCategory ?? categoryResult.primaryCategory;
   const isTopMatch = active === categoryResult.primaryCategory;
+  // The fit read follows whichever role is centered (defaults to the top match, swaps with it).
+  const fitLines = screenerFitLines(active, deriveScreenerProfile(flow.id, answers));
 
   function handleRetake() {
     reset();
@@ -56,6 +61,8 @@ export function CategoryResults() {
         <h2 className="font-heading text-h2 text-text-strong">{roleDetails[active].roleName}</h2>
       </div>
       <p className="max-w-md text-center text-small text-text-faint">{flow.resultsCopy.mapHint}</p>
+
+      <FitNote lines={fitLines} />
 
       <div className="w-full max-w-sm">
         <NodeMap

@@ -32,6 +32,13 @@ pnpm lint         # ESLint
 pnpm typecheck    # tsc --noEmit
 ```
 
+**Start / stop the dev server**
+```bash
+pnpm dev                       # start — serves on http://localhost:5174
+# stop — press Ctrl+C in the terminal running it
+lsof -ti:5174 | xargs kill     # stop a stray/backgrounded server holding the port
+```
+
 ## Tooling / MCP setup
 
 The harness uses three MCP servers — **figma** (design↔code round-trip), **playwright** (review/E2E), **firecrawl** (scrape). Configure them once, either way:

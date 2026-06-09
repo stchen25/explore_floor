@@ -197,6 +197,11 @@ describe('§17 exam flow shape', () => {
     expect(sort.buckets.map((b) => b.id)).toEqual(['thats-me', 'maybe', 'not-me']);
     for (const bucket of sort.buckets) expect(bucket.label.trim()).not.toBe('');
   });
+
+  it('labels the shared middle bucket "Kinda me" (SORT_BUCKETS, D-018)', () => {
+    if (sort?.type !== 'statementSort') return;
+    expect(sort.buckets.find((b) => b.id === 'maybe')?.label).toBe('Kinda me');
+  });
 });
 
 describe('§17 cross-flow invariants', () => {
@@ -227,6 +232,17 @@ describe('§17 cross-flow invariants', () => {
       }
       expect(detail.jobActivities.length).toBeGreaterThan(0);
       expect(detail.commonJobTitles.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('gives every role detail an education and pay level in 0..2 (screener fit, D-020)', () => {
+    for (const category of CATEGORIES) {
+      const detail = roleDetails[category];
+      for (const level of [detail.educationLevel, detail.payLevel]) {
+        expect(Number.isInteger(level), category).toBe(true);
+        expect(level).toBeGreaterThanOrEqual(0);
+        expect(level).toBeLessThanOrEqual(2);
+      }
     }
   });
 

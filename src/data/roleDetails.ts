@@ -20,8 +20,10 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Work with the team to identify and solve issues.',
     ],
     education: 'High school diploma or GED certificate required',
+    educationLevel: 0,
     commonJobTitles: ['Robot Operator', 'Entry Level Robotics', 'Assembly Operator'],
     salary: 'National median $40,300/yr',
+    payLevel: 0,
   },
   repair: {
     categoryId: 'repair',
@@ -34,6 +36,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Understand computers, electrical and electronic systems, sensor and feedback principles, and how robots work as machines.',
     ],
     education: "Associate's degree or a post-secondary certificate required",
+    educationLevel: 1,
     commonJobTitles: [
       'Automation Technician',
       'Robotics Maintenance Technician',
@@ -41,6 +44,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Robotics Process Controls Technician',
     ],
     salary: '$54,000 to $78,000/yr; national median $66,000/yr',
+    payLevel: 1,
   },
   program: {
     categoryId: 'program',
@@ -55,6 +59,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Evaluate robotic systems or prototypes.',
     ],
     education: "Bachelor's Degree (preferred), Associate's Degree (required)",
+    educationLevel: 2,
     commonJobTitles: [
       'Robotics Specialist',
       'Robotics Engineer',
@@ -63,6 +68,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Robotic Systems Engineer',
     ],
     salary: '$86,000 to $124,000/yr; national median $105,000/yr',
+    payLevel: 2,
   },
   plan: {
     categoryId: 'plan',
@@ -75,6 +81,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Determine an automation plan and oversee the implementation and testing processes to ensure improvement goals are met.',
     ],
     education: "Bachelor's Degree (required) or Master's Degree (sometimes preferred)",
+    educationLevel: 2,
     commonJobTitles: [
       'Robotics Integrator',
       'Robotic Integration Design Engineer',
@@ -83,5 +90,6 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Advanced Industrial Integrator',
     ],
     salary: '$87,000 to $153,000/yr; national median $127,000/yr',
+    payLevel: 2,
   },
 };

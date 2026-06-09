@@ -8,6 +8,12 @@ Format per entry: **L-### — one-line takeaway** · context · what to do.
 
 ---
 
+## 2026-06-08
+
+### L-007 — AnimatePresence `mode="wait"`: the exiting screen's buttons still absorb clicks
+- **Context:** The flow runner transitions MC questions with `mode="wait"`; the outgoing question's card lingers (fading) through the ~200ms exit. An opacity fade keeps the buttons hit-testable and their bounding box stable, so a fast click meant for the NEXT question — Playwright, or a quick human double-tap — lands on the EXITING question's button. Its stale handler overwrites that answer and advances past the next step. Invisible until the screener questions started scoring (D-019); then it silently corrupted results (e-q1 "Maybe" became "No"). Reproduced live in the store before fixing — cf. L-004, same `mode="wait"` family.
+- **Do:** Lock a single-select step once answered — local `chosen` state → `disabled` on its buttons. The runner keys the card by step id, so the lock resets per question. Disabled buttons aren't actionable, so the click waits for the live next-question button instead of corrupting the old one. General rule: under `mode="wait"`, make the exiting interactive surface inert (disable / `pointer-events-none`); don't assume it's already unmounted.
+
 ## 2026-05-30
 
 ### L-006 — GSAP DrawSVG: ellipses not circles; register once; scope + matchMedia

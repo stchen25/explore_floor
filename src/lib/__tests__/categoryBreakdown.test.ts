@@ -73,6 +73,34 @@ describe('categoryContributions', () => {
     expect(result.program.earnedCount).toBe(0);
   });
 
+  it('breaks a scene down by bucket like statements (earned vs on-the-fence)', () => {
+    const sceneFlow = makeFlow([
+      {
+        type: 'scene',
+        id: 's',
+        prompt: 'p',
+        question: 'q',
+        choices: [
+          { id: 's-op', label: 'Walk my dog', category: 'operate' },
+          { id: 's-rep', label: 'Make breakfast', category: 'repair' },
+          { id: 's-prog', label: 'To-do list', category: 'program' },
+          { id: 's-plan', label: 'Planned outfit', category: 'plan' },
+        ],
+      },
+    ]);
+    const result = categoryContributions(sceneFlow, {}, {
+      's-op': 'thats-me',
+      's-rep': 'maybe',
+      's-prog': 'not-me',
+    });
+    expect(result.operate.earned).toEqual(['Walk my dog']);
+    expect(result.operate.earnedCount).toBe(1);
+    expect(result.repair.maybe).toEqual(['Make breakfast']);
+    expect(result.repair.earned).toEqual([]);
+    expect(result.program.earned).toEqual([]);
+    expect(result.plan.totalCount).toBe(1); // every scene choice counts toward its max
+  });
+
   it('counts a chosen scored MC pick as an earned contribution for its category', () => {
     const result = categoryContributions(makeFlow(steps), { q: 'q-prog' }, {});
     expect(result.program.earned).toContain('Coding it');

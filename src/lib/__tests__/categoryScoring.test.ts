@@ -131,34 +131,50 @@ describe('computeCategoryMax', () => {
 
 describe('calculateCategoryScores', () => {
   it('tallies a scored MC answer into every category the choice maps to', () => {
-    const result = calculateCategoryScores(makeFlow(branchingSteps), {
-      q1: 'yes',
-      q2: 'typical',
-      q3: 'hands',
-      s1: 's1-program',
-    }, {});
+    const result = calculateCategoryScores(
+      makeFlow(branchingSteps),
+      { q1: 'yes', q2: 'typical', q3: 'hands' },
+      { 's1-program': 'thats-me' },
+    );
     expect(result.raw).toEqual({ operate: 1, repair: 1, program: 1, plan: 0 });
   });
 
   it('normalizes each category against its own max on the path taken', () => {
-    const result = calculateCategoryScores(makeFlow(branchingSteps), {
-      q1: 'yes',
-      q2: 'typical',
-      q3: 'typing',
-      s1: 's1-program',
-    }, {});
-    // program: 2 of 2 on this path; others 0.
+    const result = calculateCategoryScores(
+      makeFlow(branchingSteps),
+      { q1: 'yes', q2: 'typical', q3: 'typing' },
+      { 's1-program': 'thats-me' },
+    );
+    // program: 2 of 2 on this path (q3 typing + the scene's program choice); others 0.
     expect(result.matchPercentages).toEqual({ operate: 0, repair: 0, program: 100, plan: 0 });
     expect(result.primaryCategory).toBe('program');
   });
 
+  it('buckets each scene choice independently — several categories (or none) can score', () => {
+    // No path: q1 no → q3 (skips q2). The scene has one choice per category; bucket three
+    // of them and leave plan as a no — a scene is no longer a single pick (D-018).
+    const result = calculateCategoryScores(
+      makeFlow(branchingSteps),
+      { q1: 'no', q3: 'leading' },
+      {
+        's1-operate': 'thats-me',
+        's1-program': 'thats-me',
+        's1-repair': 'maybe', // scores MAYBE_WEIGHT
+        's1-plan': 'not-me',
+      },
+    );
+    // q3 leading → plan; scene: operate +1, program +1, repair +MAYBE_WEIGHT, plan +0.
+    expect(result.raw).toEqual({ operate: 1, repair: MAYBE_WEIGHT, program: 1, plan: 1 });
+  });
+
   it('excludes branched-over steps from raw and max (the No path skips q2)', () => {
     const flow = makeFlow(branchingSteps);
-    const noPath = calculateCategoryScores(flow, { q1: 'no', q3: 'leading', s1: 's1-plan' }, {});
+    const buckets: Record<string, BucketId> = { 's1-plan': 'thats-me' };
+    const noPath = calculateCategoryScores(flow, { q1: 'no', q3: 'leading' }, buckets);
     const yesPath = calculateCategoryScores(
       flow,
-      { q1: 'yes', q2: 'short', q3: 'leading', s1: 's1-plan' },
-      {},
+      { q1: 'yes', q2: 'short', q3: 'leading' },
+      buckets,
     );
     // q2 is unscored, so both paths see identical category ceilings — but the walk
     // itself must not visit q2 on the No path (robust to q2 gaining weights later).
@@ -237,9 +253,10 @@ describe('calculateCategoryScores', () => {
 
   it('is pure — identical input yields a deeply equal result', () => {
     const flow = makeFlow(branchingSteps);
-    const answers = { q1: 'no', q3: 'hands', s1: 's1-operate' };
-    expect(calculateCategoryScores(flow, answers, {})).toEqual(
-      calculateCategoryScores(flow, answers, {}),
+    const answers = { q1: 'no', q3: 'hands' };
+    const buckets: Record<string, BucketId> = { 's1-operate': 'thats-me' };
+    expect(calculateCategoryScores(flow, answers, buckets)).toEqual(
+      calculateCategoryScores(flow, answers, buckets),
     );
   });
 });

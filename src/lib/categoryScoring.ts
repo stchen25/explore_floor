@@ -14,9 +14,10 @@ import { CATEGORIES } from '@/data/types';
 // computed over the path the user actually took — a branched-over step (Q2 on the
 // "No" path) contributes to neither raw nor max.
 
-/** How much a 'maybe' bucket counts toward its statement's category. The prior user
- *  study asked for a maybe option; the team wants it scored as a no FOR NOW. Tunable
- *  here, in one place — flipping this re-weights every maybe with no other change. */
+/** How much the middle bucket ("Kinda me", id 'maybe') counts toward its item's category
+ *  — for both exam statements and narrative scene choices (D-018). The prior user study
+ *  asked for a middle option; the team wants it scored as a no FOR NOW. Tunable here, in
+ *  one place — flipping this re-weights every "Kinda me" with no other change. */
 export const MAYBE_WEIGHT = 0;
 
 export function calculateCategoryScores(
@@ -107,11 +108,13 @@ function addStepRaw(
       for (const category of chosen?.categories ?? []) raw[category] += 1;
       break;
     }
-    case 'scene': {
-      const chosen = step.choices.find((choice) => choice.id === answers[step.id]);
-      if (chosen) raw[chosen.category] += 1;
+    case 'scene':
+      // Each scene choice is sorted into a bucket (keyed by choice id in statementBuckets),
+      // exactly like a statement — a scene can credit several categories, or none (D-018).
+      for (const choice of step.choices) {
+        raw[choice.category] += bucketWeight(statementBuckets[choice.id]);
+      }
       break;
-    }
     case 'statementSort':
       for (const statement of step.statements) {
         raw[statement.category] += bucketWeight(statementBuckets[statement.id]);

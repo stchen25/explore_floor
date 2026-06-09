@@ -6,7 +6,7 @@ import { durations, easings } from '@/lib';
 import { useFlow, useSessionStore } from '@/state';
 
 import { MCQuestion } from './MCQuestion';
-import { SceneStepView } from './SceneStepView';
+import { SceneSortView } from './SceneSortView';
 import { StatementSortView } from './StatementSortView';
 
 // The step runner for the study flows (DATA_MODEL §17): one screen that renders the
@@ -40,24 +40,33 @@ export function FlowRunner() {
   if (!active) return null;
 
   const steps = flow.steps;
+  const sceneSteps = steps.filter((s) => s.type === 'scene');
   const step = steps[stepIndex];
   if (!step) return null;
 
-  /** Record a single-select answer, then follow the branch (or the sequence) — or finish
+  /** Record an MC answer, then follow the branch (or the sequence) — or finish
    *  (completeFlow flips currentScreen to 'results'; the effect above routes there). */
   function handleChoice(choiceId: string) {
-    if (!step || step.type === 'statementSort') return;
+    if (!step || step.type !== 'mc') return;
     recordAnswer(step.id, choiceId);
-    const branchTo =
-      step.type === 'mc'
-        ? step.choices.find((choice) => choice.id === choiceId)?.branchTo
-        : undefined;
+    const branchTo = step.choices.find((choice) => choice.id === choiceId)?.branchTo;
     const nextIndex =
       branchTo === undefined ? stepIndex + 1 : steps.findIndex((s) => s.id === branchTo);
     if (nextIndex < 0 || nextIndex >= steps.length) {
       completeFlow();
     } else {
       advanceStep(branchTo);
+    }
+  }
+
+  /** A scene records its choices itself (into statementBuckets); once all four are
+   *  bucketed it advances sequentially, or completes the flow if it's the last step.
+   *  Scenes never branch, so there's no target to follow. */
+  function handleSceneDone() {
+    if (stepIndex + 1 >= steps.length) {
+      completeFlow();
+    } else {
+      advanceStep();
     }
   }
 
@@ -74,7 +83,13 @@ export function FlowRunner() {
         >
           {step.type === 'mc' && <MCQuestion step={step} onChoose={handleChoice} />}
           {step.type === 'scene' && (
-            <SceneStepView step={step} reduce={reduce} onChoose={handleChoice} />
+            <SceneSortView
+              step={step}
+              sceneNumber={sceneSteps.findIndex((s) => s.id === step.id) + 1}
+              sceneTotal={sceneSteps.length}
+              reduce={reduce}
+              onDone={handleSceneDone}
+            />
           )}
           {step.type === 'statementSort' && (
             <StatementSortView step={step} reduce={reduce} onComplete={completeFlow} />

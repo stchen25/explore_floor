@@ -9,3 +9,5 @@ export { CATEGORY_ANGLES, fanPoints, polarPoint, radarPoints } from './nodeLayou
 export { selectProgramsForRole } from './programSelection';
 export { assembleRobot } from './robotAssembly';
 export { calculateScores } from './scoring';
+export type { FitLine, ScreenerProfile } from './screenerFit';
+export { deriveScreenerProfile, screenerFitLines } from './screenerFit';

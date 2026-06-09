@@ -633,7 +633,7 @@ The original A/B (§16) assumed both conditions shared one flow shape (24-item s
 | Flow | `kind` | Shape | Results |
 |---|---|---|---|
 | **Classic** | `classic` | The Phase 1 experience, wrapping set A by reference. | 3 role cards (archetype pipeline, unchanged) |
-| **Narrative** | `narrative` | 5 intro MC questions (Q1 branches), then 7 day-in-the-life **scenes** (drag a pick into a zone). | category node map |
+| **Narrative** | `narrative` | 5 intro MC questions (Q1 branches), then 7 day-in-the-life **scenes**; each scene's 4 choices are sorted into the 3 buckets, one card at a time (D-018). | category node map |
 | **Exam** | `exam` | 2 background MC + 1 mapped MC, then a **30-statement sort** into 3 buckets. | category node map |
 
 ### The four categories
@@ -654,14 +654,17 @@ interface CategoryFlow {
 type FlowStep = MCStep | SceneStep | StatementSortStep;
 // MCStep: optional prompt, question, choices[] — each choice maps to 0+ categories
 //   (0 = unscored background) and may carry branchTo (a step id; Q1 "No" skips Q2).
-// SceneStep: prompt + question + exactly 4 choices, one per category.
+// SceneStep: prompt + question + exactly 4 choices, one per category. Each choice is
+//   sorted into a bucket (like a statement), recorded in statementBuckets by choice id.
 // StatementSortStep: 30 statements (order fixed in data, interleaved) + 3 buckets.
+// Buckets (shared SORT_BUCKETS, both flows): thats-me "That's me" / maybe "Kinda me" /
+//   not-me "Not me". The middle label is "Kinda me" (D-018); its id stays `maybe`.
 interface CategoryResult { raw; matchPercentages; ranking; primaryCategory; } // CategoryWeights
 ```
 
 ### Scoring (`lib/categoryScoring.ts` — pure, mirrors §9)
 
-`calculateCategoryScores(flow, answers, statementBuckets)` walks the **path the answers actually took** (branch-aware: a skipped Q2 contributes to neither raw nor max), tallying per category: each scored MC choice and each scene/statement adds 1 to its category's `max`; the chosen answer adds 1 to `raw` (a two-category MC choice feeds both). Statement buckets: `thats-me` → 1, `maybe` → `MAYBE_WEIGHT` (a tunable constant, **0** today — the prior study asked for a maybe option but the team wants it scored as a no for now), `not-me` → 0. Each category normalizes against its own max; `ranking` is sorted desc with the stable `operate > repair > program > plan` tiebreak.
+`calculateCategoryScores(flow, answers, statementBuckets)` walks the **path the answers actually took** (branch-aware: a skipped Q2 contributes to neither raw nor max), tallying per category: each scored MC choice, each scene choice, and each statement adds 1 to its category's `max`. For `raw`, a scored MC choice adds 1 to each category it maps to (a two-category choice feeds both); **scene choices and statements are bucketed** — `thats-me` → 1, `maybe` (the "Kinda me" middle bucket) → `MAYBE_WEIGHT` (a tunable constant, **0** today — the prior study asked for a middle option but the team wants it scored as a no for now, D-018), `not-me`/unanswered → 0. Because a scene's four choices are each bucketed independently, one scene can credit several categories or none (unlike the old single-pick). Each category normalizes against its own max; `ranking` is sorted desc with the stable `operate > repair > program > plan` tiebreak.
 
 ### Results — one per flow (the study compares presentations too)
 
@@ -684,9 +687,13 @@ Both new flows **skip the robot build + build beat** — the study keeps present
 ### Invariants (enforced per flow by `data-integrity.test.ts`)
 
 - Narrative: exactly 7 scenes, each with 4 choices covering all four categories; every `branchTo` resolves forward; computed full-path category max equals declared `expectedCategoryMax`.
-- Exam: exactly 30 statements counted 8/7/7/8 (operate/repair/program/plan), interleaved (no two adjacent share a category), 3 buckets in order.
+- Exam: exactly 30 statements counted 8/7/7/8 (operate/repair/program/plan), interleaved (no two adjacent share a category), the 3 shared `SORT_BUCKETS` in order (`thats-me`/`maybe`/`not-me`) with the middle label asserted as "Kinda me" (D-018).
 - Both: unique step + choice + statement ids; all owned copy non-empty; four `roleDetails` resolve to four distinct role names.
+
+### Screener fit (D-020)
+
+The initial screener questions also produce an **always-on fit line** on results (`Results/category/FitNote`), separate from the match score. Each role carries an `educationLevel` and `payLevel` (0/1/2) in `roleDetails`. `lib/screenerFit.ts` (pure) `deriveScreenerProfile(flowId, answers)` reads the user's school/pay appetite (0/1/2) off the screener answers — exam Q1 directly; narrative Q1+Q2 for education, Q3 for pay — and `screenerFitLines(category, profile)` compares it to the role in focus, returning a line per axis: **green check** when appetite ≥ the role's level, **amber heads-up** when the role needs more school / pays a tier below the user's target. Education shows in both flows; pay is narrative-only. Levels + copy are data (`src/data/flows/screeners.ts`). Shown next to the top match (exam) / centered role (narrative).
 
 ### Open item
 
-The background questions (narrative Q1–Q3, exam Q1–Q2) carry **empty category mappings** — the team intends them to shape the experience, but the mapping rationale is unrecovered. The `MCChoice.categories` field keeps them schema-ready: adding weights later is a data edit, no code change. See D-017.
+Background-question mapping is **partly recovered**: the **exam** Q1/Q2 now nudge the match on a tier ladder (No→Operator, Maybe/Yes→Specialist+Integrator — "not planning" vs "open to it", D-019; max {operate 11, repair 8, program 10, plan 11}), and the 0/1/2 screener appetites feed the fit line (D-020). The exam **salary** isn't asked; the narrative salary stays fit-line-only (no score nudge). The **narrative** intro questions (Q1 college, Q2 how-long, Q3 salary) remain **unmapped for scoring** — they drive the fit line via their answers but carry empty `MCChoice.categories`. Adding their score weights later is a data edit. See D-017, D-019, D-020.

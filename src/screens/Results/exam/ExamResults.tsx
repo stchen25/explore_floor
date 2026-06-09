@@ -5,10 +5,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CATEGORY_ACCENT_TEXT } from '@/components/categoryAccent';
 import { roleDetails } from '@/data';
 import type { CategoryId } from '@/data/types';
-import { categoryContributions } from '@/lib';
+import { categoryContributions, deriveScreenerProfile, screenerFitLines } from '@/lib';
 import { RobotPlaceholder } from '@/scene/RobotPlaceholder';
 import { useFlow, useSessionStore } from '@/state';
 
+import { FitNote } from '../category/FitNote';
 import { RoleDetailSheet } from '../category/RoleDetailSheet';
 import { CategoryBars } from './CategoryBars';
 import { ScoreBreakdown } from './ScoreBreakdown';
@@ -43,6 +44,10 @@ export function ExamResults() {
   }
 
   const contributions = categoryContributions(flow, answers, statementBuckets);
+  const fitLines = screenerFitLines(
+    categoryResult.primaryCategory,
+    deriveScreenerProfile(flow.id, answers),
+  );
 
   function handleRetake() {
     reset();
@@ -59,6 +64,8 @@ export function ExamResults() {
         </div>
         <CategoryBars matchPercentages={categoryResult.matchPercentages} />
       </div>
+
+      <FitNote lines={fitLines} />
 
       <ScoreBreakdown contributions={contributions} />
 

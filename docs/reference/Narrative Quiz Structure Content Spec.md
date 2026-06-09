@@ -81,7 +81,7 @@ Note: Q1-Q3 carry no category mappings on the board. They gather background cont
 
 Transition line before Scene 1: **"Alright, let's get started."**
 
-Seven scenes walk through a school day. Every scene has four choices, one per category.
+Seven scenes walk through a school day. Every scene has four choices, one per category. _(As built, D-018: the user sorts **each** of the four choices into the three buckets — That's me / Kinda me / Not me — one card at a time, the same structure as Version 2's statement sort. This corrected an earlier "pick one choice" build. See the board-notes section.)_
 
 **Scene 1.** Prompt: "Your alarm goes off in the morning. You're getting ready for your first day of school." **How do you start the day?**
 
@@ -287,7 +287,7 @@ A sheet opens over the map explaining the category that the title belongs to. Co
 
 - The wireframe sketch shows three job-title nodes per category; the actual title lists above run three to five. The board doesn't say whether to cap at three.
 - Two choices carry question marks on the board, meaning the team wasn't settled on them: "IT club" (Version 1, Scene 4) and "Writing code" (Version 1, Scene 6).
-- _(Corrected 2026-06-07, verified against the live board.)_ Page 1's two format labels, "Multiple choice" (pink) and "Drag and drop" (blue), are a **color legend**, not unattached: the intro questions are pink (multiple choice, tap-to-select) and all seven story scenes are blue (drag and drop). As built (D-017): intro questions are single-select MC; scenes are drag-your-pick-into-a-zone (with a tap fallback).
-- _(Corrected 2026-06-07.)_ The statement sort uses **three** buckets — "That's me" / "Maybe" / "Not me" — not two. A prior user study asked for a maybe option; it currently scores as a no (`MAYBE_WEIGHT = 0`, tunable). See D-017.
+- _(Corrected 2026-06-07, verified against the live board.)_ Page 1's two format labels, "Multiple choice" (pink) and "Drag and drop" (blue), are a **color legend**, not unattached: the intro questions are pink (multiple choice, tap-to-select) and all seven story scenes are blue (drag and drop). As built: intro questions are single-select MC. _(Revised D-018:)_ each scene is a **per-choice sort** — the user judges all four choices, sorting each into one of three buckets (drag or tap), the same structure as Version 2's statement sort. This replaced the D-017 "drag your one pick into a zone" build after the team clarified the board's intent.
+- _(Corrected 2026-06-07; relabeled D-018.)_ The sort uses **three** buckets — "That's me" / **"Kinda me"** / "Not me" — not two, shared by both the statement sort (Version 2) and the narrative scenes (Version 1). The middle bucket reads "Kinda me" (renamed from "Maybe"). A prior user study asked for a middle option; it currently scores as a no (`MAYBE_WEIGHT = 0`, tunable). See D-017, D-018.
 - Page 2 of the board also holds an earlier rough results sketch (robot character, four-category percentage breakdown, "Breakdowns" and "Your roles" panels). The node-map flow described above is the intended results experience.
 - _As built:_ results wireframe 1 was reworked into an Obsidian-style node graph — the top-matched role sits front-and-center, the other three sit behind it and swap in on tap, and the active role's job titles branch off the front on connector lines (all titles shown, no cap at three). This replaced an earlier concentric-rings version that read as "funky" (D-017).
