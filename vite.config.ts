@@ -7,6 +7,7 @@ import { defineConfig } from 'vite';
 
 // `__dirname` does not exist in ESM config files; derive the src path from import.meta.url.
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? '/explore_floor/' : '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
