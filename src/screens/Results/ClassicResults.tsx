@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { roles } from '@/data';
 import type { ArchetypeId, RoleId } from '@/data/types';
 import { durations, easings, isLowSignal } from '@/lib';
-import { RobotPlaceholder } from '@/scene/RobotPlaceholder';
+import { Robot } from '@/scene/robot/Robot';
 import { useQuestionSet, useSessionStore } from '@/state';
 
 import { Pedestal } from './Pedestal';
@@ -24,6 +24,7 @@ export function ClassicResults() {
   // Results copy is owned by the active question set; roles/scores are shared data.
   const { resultsCopy } = useQuestionSet();
   const scoreResult = useSessionStore((s) => s.state.scoreResult);
+  const robot = useSessionStore((s) => s.state.robot);
   const currentlyTryingOn = useSessionStore((s) => s.state.currentlyTryingOn);
   const tryOnRole = useSessionStore((s) => s.tryOnRole);
   const reset = useSessionStore((s) => s.reset);
@@ -98,7 +99,7 @@ export function ClassicResults() {
           onDragEnd={(event) => handleRobotDragEnd(event)}
           className="cursor-grab touch-none active:cursor-grabbing"
         >
-          <RobotPlaceholder archetype={activeArchetype} />
+          <Robot robotState={robot} archetype={activeArchetype} size={116} />
         </motion.div>
       </Pedestal>
       <p className="text-small text-text-faint">{resultsCopy.compareHint}</p>

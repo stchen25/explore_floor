@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { DragSortCard, DropZone, ProgressBar, RoundIndicator } from '@/components';
 import type { Decision } from '@/data/types';
 import { durationsMs } from '@/lib';
+import { SortScene } from '@/scene/SortScene';
 import { useQuestionSet, useSessionStore } from '@/state';
 
 import { RoundBeat } from './RoundBeat';
@@ -90,49 +91,55 @@ export function Sort() {
   }
 
   return (
-    <main className="mx-auto flex min-h-full max-w-md flex-col gap-space-5 p-space-5">
+    <main className="mx-auto flex min-h-full max-w-md flex-col gap-space-4 p-space-4">
       <header className="flex flex-col gap-space-3">
         <RoundIndicator round={currentRound} total={4} />
         <ProgressBar value={decidedCount} total={items.length} />
       </header>
 
-      <div className="relative flex flex-1 flex-col items-center justify-center gap-space-5">
-        <div className="flex items-center justify-center gap-space-5">
-          <DropZone<Decision>
-            ref={binRefs.pass}
-            id="pass"
-            testId="sort-pass"
-            label={sortCopy.passLabel}
-            active={activeBin === 'pass'}
-            onChoose={choose}
-          />
+      {/* Phase 2 scene: robot + belt wrap the card and bins */}
+      <div className="relative flex flex-1 flex-col">
+        <SortScene>
+          {/* Card area centered over the belt */}
+          <div className="flex flex-col items-center gap-space-4 pt-2">
+            <div className="relative flex h-44 w-72 shrink-0 items-center justify-center">
+              <AnimatePresence mode="popLayout">
+                {currentItem && (
+                  <DragSortCard<Decision>
+                    key={currentItem.id}
+                    label={currentItem.label}
+                    reduce={reduce}
+                    resolveDrop={resolveDrop}
+                    onHover={setActiveBin}
+                    onCommit={choose}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
 
-          <div className="relative flex h-52 w-80 shrink-0 items-center justify-center">
-            <AnimatePresence mode="popLayout">
-              {currentItem && (
-                <DragSortCard<Decision>
-                  key={currentItem.id}
-                  label={currentItem.label}
-                  reduce={reduce}
-                  resolveDrop={resolveDrop}
-                  onHover={setActiveBin}
-                  onCommit={choose}
-                />
-              )}
-            </AnimatePresence>
+            {/* Bins below the belt */}
+            <div className="flex items-start justify-center gap-space-5">
+              <DropZone<Decision>
+                ref={binRefs.pass}
+                id="pass"
+                testId="sort-pass"
+                label={sortCopy.passLabel}
+                active={activeBin === 'pass'}
+                onChoose={choose}
+              />
+              <DropZone<Decision>
+                ref={binRefs.keep}
+                id="keep"
+                testId="sort-keep"
+                label={sortCopy.keepLabel}
+                active={activeBin === 'keep'}
+                onChoose={choose}
+              />
+            </div>
+
+            <p className="text-small text-text-faint">{sortCopy.dragHint}</p>
           </div>
-
-          <DropZone<Decision>
-            ref={binRefs.keep}
-            id="keep"
-            testId="sort-keep"
-            label={sortCopy.keepLabel}
-            active={activeBin === 'keep'}
-            onChoose={choose}
-          />
-        </div>
-
-        <p className="text-small text-text-faint">{sortCopy.dragHint}</p>
+        </SortScene>
 
         <AnimatePresence>
           {beatCopy && <RoundBeat copy={beatCopy} reduce={reduce} />}
