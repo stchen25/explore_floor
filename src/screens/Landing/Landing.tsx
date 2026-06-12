@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Button, SegmentedControl } from '@/components';
 import { flowList } from '@/data';
@@ -68,6 +68,16 @@ export function Landing() {
           onChange={selectFlow}
           data-testid="flow"
         />
+
+        {/* Researcher control like the switcher above: the "skip the quiz" comparator
+            for the industry-professional study arm. A plain route, not a flow. */}
+        <Link
+          to="/select"
+          data-testid="role-select-link"
+          className="text-small text-text-faint underline transition-colors hover:text-text-default"
+        >
+          Role select (no quiz)
+        </Link>
       </motion.div>
 
       <div ref={sceneRef} className="w-full max-w-md" aria-hidden="true">

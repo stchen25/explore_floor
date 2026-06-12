@@ -11,7 +11,8 @@ interface RoleDetailSheetProps {
    *  the overline (node map). Omitted when opened from a role itself (exam "your roles"):
    *  the role name becomes the headline and the overline is dropped. */
   jobTitle?: string;
-  matchPercentages: CategoryWeights;
+  /** Omitted by callers with no scores (the /select comparator) — the fit radar section drops. */
+  matchPercentages?: CategoryWeights;
   copy: FlowResultsCopy['sheet'];
   reduce: boolean;
   onClose: () => void;
@@ -102,10 +103,12 @@ export function RoleDetailSheet({
             <p className="text-body text-text-default">{detail.salary}</p>
           </section>
 
-          <section className="flex flex-col gap-space-2">
-            <h3 className="text-overline uppercase text-text-faint">{copy.fit}</h3>
-            <FitRadar matchPercentages={matchPercentages} />
-          </section>
+          {matchPercentages && (
+            <section className="flex flex-col gap-space-2">
+              <h3 className="text-overline uppercase text-text-faint">{copy.fit}</h3>
+              <FitRadar matchPercentages={matchPercentages} />
+            </section>
+          )}
         </div>
       </motion.div>
     </div>

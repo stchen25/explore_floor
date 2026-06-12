@@ -8,6 +8,7 @@ export { resultsCopy } from './resultsCopy';
 export { robotParts } from './robotParts';
 export { roleDetails } from './roleDetails';
 export { roles } from './roles';
+export { roleSelectCopy, roleSelectSheetCopy } from './roleSelect';
 export { rounds } from './rounds';
 export { essentialSkills } from './skills';
 export * from './types';
