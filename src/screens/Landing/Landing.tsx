@@ -3,8 +3,8 @@ import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, SegmentedControl } from '@/components';
-import { flowList } from '@/data';
-import type { FlowId } from '@/data/types';
+import { flowList, roleSelectLanding } from '@/data';
+import type { LandingConditionId } from '@/data/types';
 import { durations, easings } from '@/lib';
 import { gsap, useGSAP } from '@/lib/gsap';
 import { LandingSceneHint } from '@/scene/LandingSceneHint';
@@ -15,14 +15,15 @@ import { useFlow, useSessionStore } from '@/state';
 // nodes, so the two engines never touch the same property (scene-motion ownership rule).
 // The flow switcher is a researcher control for the question-structure study (DATA_MODEL §17):
 // flipped here before the laptop is handed over; the choice survives "Start over". The CTA
-// routes by flow kind — classic walks the Phase 1 sort, the study flows enter the step runner.
+// routes by condition — classic walks the Phase 1 sort, the study flows enter the step
+// runner, and 'select' goes to the /select comparator without starting a session.
 export function Landing() {
   const navigate = useNavigate();
   const startSession = useSessionStore((s) => s.startSession);
   const flowId = useSessionStore((s) => s.flowId);
   const selectFlow = useSessionStore((s) => s.selectFlow);
   const flow = useFlow();
-  const { landingCopy } = flow;
+  const landingCopy = flowId === 'select' ? roleSelectLanding : flow.landingCopy;
   const reduce = !!useReducedMotion();
   const sceneRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +44,10 @@ export function Landing() {
   );
 
   const begin = () => {
+    if (flowId === 'select') {
+      navigate('/select');
+      return;
+    }
     startSession();
     navigate(flow.kind === 'classic' ? '/sort' : '/flow');
   };
@@ -63,16 +68,16 @@ export function Landing() {
         </Button>
 
         {/* The study-condition switcher. Classic is dormant (kept in code, no UI entry — D-021);
-            its slot now holds the role-select comparator, which is a route, not a flow: tapping
-            it goes straight to /select rather than arming a condition for the CTA. */}
-        <SegmentedControl<FlowId | 'select'>
+            its slot holds the role-select comparator, which arms like the flows do (tap, then
+            start with the CTA) — but the CTA routes to /select instead of starting a session. */}
+        <SegmentedControl<LandingConditionId>
           label="Quiz flow"
           options={[
             ...flowList.filter((f) => f.kind !== 'classic').map((f) => ({ id: f.id, label: f.name })),
-            { id: 'select', label: 'Role select' },
+            { id: 'select', label: roleSelectLanding.switcherLabel },
           ]}
           value={flowId}
-          onChange={(id) => (id === 'select' ? navigate('/select') : selectFlow(id))}
+          onChange={selectFlow}
           data-testid="flow"
         />
       </motion.div>

@@ -164,6 +164,10 @@ export interface RoleDetail {
 
 export type FlowId = 'narrative' | 'exam' | 'classic';
 
+/** What the Landing condition switcher can arm: a study flow, or the standalone
+ *  /select role-select comparator (a route, not a flow — it never starts a session). */
+export type LandingConditionId = FlowId | 'select';
+
 /** Statement-sort buckets. 'maybe' exists because the prior user study asked for it;
  *  its scoring weight is MAYBE_WEIGHT in lib/categoryScoring.ts (0 for now). */
 export type BucketId = 'thats-me' | 'maybe' | 'not-me';

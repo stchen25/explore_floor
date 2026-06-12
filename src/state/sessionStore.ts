@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { classicFlow, defaultFlowId, flows } from '@/data';
-import type { BucketId, Decision, FlowId, RoleId, SessionState } from '@/data/types';
+import type { BucketId, Decision, LandingConditionId, RoleId, SessionState } from '@/data/types';
 import { assembleRobot, calculateCategoryScores, calculateScores, setMuted } from '@/lib';
 
 // The single session store (DATA_MODEL §12 + §17). Store actions are the ONLY place that
@@ -11,7 +11,10 @@ import { assembleRobot, calculateCategoryScores, calculateScores, setMuted } fro
 // `flowId` (the study condition, DATA_MODEL §17) deliberately lives NEXT TO `state`, not
 // inside it: `reset()` replaces only `state`, so the researcher's chosen flow survives
 // "Start over" between participants. Flows are resolved via `get()` INSIDE each action so
-// a flow switched on Landing is honored — never capture them at factory time.
+// a flow switched on Landing is honored — never capture them at factory time. The armed
+// condition can also be 'select' (the /select comparator, a route not a flow): Landing's
+// CTA routes there without starting a session, so flow actions never run with it armed;
+// `activeFlow()` still falls back to the default flow defensively.
 //
 // The classic actions (recordDecision/advanceRound/completeSorting) and the category-flow
 // actions (recordAnswer/recordStatement/advanceStep/completeFlow) are disjoint: category
@@ -20,8 +23,8 @@ import { assembleRobot, calculateCategoryScores, calculateScores, setMuted } fro
 
 interface SessionStore {
   state: SessionState;
-  flowId: FlowId;
-  selectFlow: (id: FlowId) => void;
+  flowId: LandingConditionId;
+  selectFlow: (id: LandingConditionId) => void;
   startSession: () => void;
   // ---- classic flow ----
   recordDecision: (itemId: string, decision: Decision) => void;
@@ -54,7 +57,10 @@ const createInitialState = (): SessionState => ({
 });
 
 export const useSessionStore = create<SessionStore>((set, get) => {
-  const activeFlow = () => flows[get().flowId];
+  const activeFlow = () => {
+    const { flowId } = get();
+    return flows[flowId === 'select' ? defaultFlowId : flowId];
+  };
   // Classic-action helper. Category flows never call the classic actions, but fall back to
   // the classic set defensively rather than crash if one ever fires out of band.
   const activeItems = () => {
