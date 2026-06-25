@@ -6,6 +6,14 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 ---
 
+## 2026-06-22
+
+### D-023 — Narrative intro questions (education + salary) nudge the category match
+- **Decision:** The narrative's intro screeners now carry category weights on the same **tier ladder** the exam uses (D-019), so the narrative no longer scores on the seven scenes alone. **Education** (Q1 "going to college?" + Q2 "how long?") and **salary** (Q3) each add **one point** to the role(s) at the answer's appetite level: **level 0** (no college / $40k) → operate (Operator); **level 1** (1-2 years / $60k) → repair (Technician); **level 2** (4+ years / $80k+) → program + plan (Specialist + Integrator). Education is split across Q1/Q2 — `n-q1-no` carries the point on the "No" branch, otherwise Q2 does. **Q0 (experience) stays unscored** (the routing it will drive is parked), and **Q2 "Whatever" stays unscored** (noncommittal). Unlike the exam, salary scores here too. `expectedCategoryMax` moves from `{9,9,9,9}` to `{11,11,11,11}` (intro adds +2 to every category: operate via Q1+Q3, repair/program/plan via Q2+Q3). Tags only — IDs, labels, prompts, and the Q1 branch are unchanged. This is the second half of the V3 narrative pass; the first was the language update (Q0 added, Q4/Q5 one-per-category, scene rewrites, two `??` choices settled).
+- **Why:** Testing found the two instruments disagree by construction — the narrative scored purely on the scenes and skewed people low (Operator in V2) while the exam's intro screeners nudge the match and landed people higher. Giving the narrative the same nudge closes the gap so the study comparison isn't confounded by the scoring model. It pairs with the results-screen "starting rung, not a verdict" reframing: tagging low appetite toward Operator is intended, and the reframing keeps that honest. The scenes still carry most of the weight (7 of 11), so the intro tilts the result, it doesn't decide it.
+- **Alternatives:** Keep the narrative intro unscored (rejected — that's the confound this fixes); score Q2 "Whatever" at its fit-line level 1 → repair (rejected — Caelan chose to leave a noncommittal answer out of the score; it still feeds the fit line); leave salary fit-line-only like the exam (rejected — the team let salary count on the narrative); distinguish Specialist vs Integrator at level 2 (kept tied — both get one point, mirroring the exam, so the scenes break the tie).
+- **Affected:** `src/data/flows/narrativeFlow.ts` (Q1/Q2/Q3 `categories` + `expectedCategoryMax` → 11), `data-integrity.test.ts` (recomputes + confirms the max — no edit), `tests/e2e/narrative.spec.ts` (re-verified — program stays top, percentages read from the engine — no edit needed), `docs/reference/Narrative Quiz Structure Content Spec.md`, `STATUS.md`, this entry. **Gates green: lint, typecheck, 99 unit, 7 E2E.**
+
 ## 2026-06-11
 
 ### D-022 — Role select arms on the switcher like the flows; the CTA launches it

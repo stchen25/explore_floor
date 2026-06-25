@@ -165,7 +165,9 @@ describe('§17 narrative flow shape', () => {
 
   it('has exactly 7 scenes after the intro questions', () => {
     expect(narrative.steps.filter((s) => s.type === 'scene')).toHaveLength(7);
-    expect(narrative.steps.filter((s) => s.type === 'mc')).toHaveLength(5);
+    // Six intro MC steps as of the V3 language pass: the new unscored Q0 (experience)
+    // ahead of the original Q1–Q5.
+    expect(narrative.steps.filter((s) => s.type === 'mc')).toHaveLength(6);
   });
 });
 

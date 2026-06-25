@@ -1,14 +1,19 @@
 import type { CategoryFlow } from '../types';
 
-// The Narrative study flow (DATA_MODEL §17): five intro questions, then a
+// The Narrative study flow (DATA_MODEL §17): six intro questions, then a
 // day-in-the-life story in seven scenes. Content verbatim from the team's board —
-// docs/reference/Narrative Quiz Structure Content Spec.md (Version 1).
+// docs/reference/Narrative Quiz Structure Content Spec.md (Version 1, V3 language pass).
 //
-// Q1–Q3 are background questions: the team intends them to shape the experience,
-// but the mapping rationale is unrecovered, so they carry empty `categories` for
-// now (DECISIONS D-017 open item). Adding weights later is a data edit only.
-// Two choices are flagged `??` on the board and included as-is pending the team:
-// "IT club" (scene 4) and "Writing code" (scene 6).
+// Q0 (experience) is an unscored background question (routing parked for later).
+// Education (Q1 "college?" + Q2 "how long?") and salary (Q3) now nudge the score on
+// the role tier ladder — one point each — mirroring the exam's intro screeners so the
+// two instruments stop disagreeing by construction (DECISIONS D-023, parallels D-019):
+// level 0 (no college / $40k) → operate, level 1 (1-2 yrs / $60k) → repair,
+// level 2 (4+ yrs / $80k+) → program + plan. Q2 "Whatever" stays unscored. These tags
+// are a parallel signal to the screener fit line (flows/screeners.ts), kept consistent
+// with its levels but not merged. Q4 and Q5 each map exactly one choice per category
+// (V3). The two previously `??`-flagged scene choices, "IT club" (scene 4) and
+// "Writing code" (scene 6), are now settled.
 
 export const narrativeFlow: CategoryFlow = {
   id: 'narrative',
@@ -24,12 +29,21 @@ export const narrativeFlow: CategoryFlow = {
   steps: [
     {
       type: 'mc',
-      id: 'n-q1',
+      id: 'n-q0',
       prompt: "Let's start with some basic questions...",
+      question: 'Do you have any experience in this field?',
+      choices: [
+        { id: 'n-q0-yes', label: 'Yes', categories: [] },
+        { id: 'n-q0-no', label: 'No', categories: [] },
+      ],
+    },
+    {
+      type: 'mc',
+      id: 'n-q1',
       question: 'Are you planning on going to college?',
       choices: [
-        { id: 'n-q1-yes', label: 'Yes', categories: [] },
-        { id: 'n-q1-no', label: 'No', categories: [], branchTo: 'n-q3' },
+        { id: 'n-q1-yes', label: 'Yes', categories: [] }, // education defers to Q2
+        { id: 'n-q1-no', label: 'No', categories: ['operate'], branchTo: 'n-q3' }, // level 0
       ],
     },
     {
@@ -37,10 +51,10 @@ export const narrativeFlow: CategoryFlow = {
       id: 'n-q2',
       question: 'How long?',
       choices: [
-        { id: 'n-q2-short', label: 'Little as possible (1-2 years)', categories: [] },
-        { id: 'n-q2-typical', label: 'Typical (4 years)', categories: [] },
-        { id: 'n-q2-long', label: 'Long as possible (4+ years)', categories: [] },
-        { id: 'n-q2-whatever', label: 'Whatever', categories: [] },
+        { id: 'n-q2-short', label: 'Little as possible (1-2 years)', categories: ['repair'] }, // level 1
+        { id: 'n-q2-typical', label: 'Typical (4 years)', categories: ['program', 'plan'] }, // level 2
+        { id: 'n-q2-long', label: 'Long as possible (4+ years)', categories: ['program', 'plan'] }, // level 2
+        { id: 'n-q2-whatever', label: 'Whatever', categories: [] }, // noncommittal — unscored (D-023)
       ],
     },
     {
@@ -49,9 +63,9 @@ export const narrativeFlow: CategoryFlow = {
       prompt: 'Keep in mind, the median is $60,000 in the US.',
       question: 'What is the lowest salary you would feel satisfied with?',
       choices: [
-        { id: 'n-q3-40', label: '$40,000', categories: [] },
-        { id: 'n-q3-60', label: '$60,000', categories: [] },
-        { id: 'n-q3-80', label: '$80,000+', categories: [] },
+        { id: 'n-q3-40', label: '$40,000', categories: ['operate'] }, // level 0
+        { id: 'n-q3-60', label: '$60,000', categories: ['repair'] }, // level 1
+        { id: 'n-q3-80', label: '$80,000+', categories: ['program', 'plan'] }, // level 2
       ],
     },
     {
@@ -60,7 +74,12 @@ export const narrativeFlow: CategoryFlow = {
       prompt: 'Workers in robotics do many different things throughout the day...',
       question: 'What would you be happy spending your day doing?',
       choices: [
-        { id: 'n-q4-hands', label: 'Doing hands-on work', categories: ['operate', 'repair'] },
+        { id: 'n-q4-hands', label: 'Doing hands-on work', categories: ['operate'] },
+        {
+          id: 'n-q4-maintain',
+          label: 'Making sure that things are working correctly',
+          categories: ['repair'],
+        },
         { id: 'n-q4-typing', label: 'Typing on a computer', categories: ['program'] },
         { id: 'n-q4-leading', label: 'Leading others', categories: ['plan'] },
       ],
@@ -72,12 +91,12 @@ export const narrativeFlow: CategoryFlow = {
       question: 'What do you think will bring you the most happiness?',
       choices: [
         { id: 'n-q5-inspiring', label: 'Inspiring others', categories: ['plan'] },
-        { id: 'n-q5-money', label: 'Earning a lot of money', categories: ['plan'] },
         {
           id: 'n-q5-helping',
           label: "Feeling like I'm helping people",
-          categories: ['operate', 'repair'],
+          categories: ['repair'],
         },
+        { id: 'n-q5-building', label: 'Building', categories: ['operate'] },
         { id: 'n-q5-solving', label: 'Solving difficult problems', categories: ['program'] },
       ],
     },
@@ -93,9 +112,9 @@ export const narrativeFlow: CategoryFlow = {
           label: 'Get dressed in the outfit I planned the night before',
           category: 'plan',
         },
-        { id: 'n-s1-repair', label: 'Help my parents make breakfast', category: 'repair' },
+        { id: 'n-s1-repair', label: 'Helping a younger sibling get ready', category: 'repair' },
         { id: 'n-s1-program', label: 'Write down a step-by-step to-do list', category: 'program' },
-        { id: 'n-s1-operate', label: 'Walk my dog', category: 'operate' },
+        { id: 'n-s1-operate', label: 'Make breakfast for myself', category: 'operate' },
       ],
     },
     {
@@ -122,7 +141,7 @@ export const narrativeFlow: CategoryFlow = {
       question: 'What are you most excited for?',
       choices: [
         { id: 'n-s3-plan', label: 'Taking the lead on a group project', category: 'plan' },
-        { id: 'n-s3-operate', label: 'Building a diorama', category: 'operate' },
+        { id: 'n-s3-operate', label: 'Building a 3D model', category: 'operate' },
         { id: 'n-s3-repair', label: 'Being a tutor to a younger student', category: 'repair' },
         {
           id: 'n-s3-program',
@@ -150,8 +169,8 @@ export const narrativeFlow: CategoryFlow = {
       question: 'What are you doing around the house?',
       choices: [
         { id: 'n-s5-program', label: 'Coding a game', category: 'program' },
-        { id: 'n-s5-repair', label: 'Helping my parents with some chores', category: 'repair' },
-        { id: 'n-s5-operate', label: 'Playing with Legos', category: 'operate' },
+        { id: 'n-s5-repair', label: 'Fix your bike', category: 'repair' },
+        { id: 'n-s5-operate', label: 'Assemble a bird house', category: 'operate' },
         { id: 'n-s5-plan', label: 'Planning the rest of my week', category: 'plan' },
       ],
     },
@@ -162,7 +181,7 @@ export const narrativeFlow: CategoryFlow = {
       question: 'Which assignment would you want to complete the most?',
       choices: [
         { id: 'n-s6-plan', label: 'Working on my presentation', category: 'plan' },
-        { id: 'n-s6-repair', label: 'Re-do a previous assignment', category: 'repair' },
+        { id: 'n-s6-repair', label: 'Editing an essay', category: 'repair' },
         { id: 'n-s6-program', label: 'Writing code', category: 'program' },
         { id: 'n-s6-operate', label: 'Make 10 posters for a club event', category: 'operate' },
       ],
@@ -173,27 +192,17 @@ export const narrativeFlow: CategoryFlow = {
       prompt: 'You finally have some time to relax. You decide to play a video game.',
       question: 'What are you playing?',
       choices: [
-        {
-          id: 'n-s7-program',
-          label: 'Puzzle-solving game like Portal or Outer Wilds',
-          category: 'program',
-        },
-        { id: 'n-s7-plan', label: 'Strategy game like Civ or TFT', category: 'plan' },
-        {
-          id: 'n-s7-operate',
-          label: 'Building game like Minecraft or Animal Crossing',
-          category: 'operate',
-        },
-        {
-          id: 'n-s7-repair',
-          label: 'Simulation game like Sims or Cities Skylines',
-          category: 'repair',
-        },
+        { id: 'n-s7-program', label: 'Puzzle-solving game', category: 'program' },
+        { id: 'n-s7-plan', label: 'Strategy game', category: 'plan' },
+        { id: 'n-s7-operate', label: 'Building game', category: 'operate' },
+        { id: 'n-s7-repair', label: 'Simulation games', category: 'repair' },
       ],
     },
   ],
-  // Q4 + Q5 (1 each, every category reachable) + 7 scenes (1 each) = 9 per category.
-  expectedCategoryMax: { operate: 9, repair: 9, program: 9, plan: 9 },
+  // Intro (+2 each: operate from Q1+Q3, repair/program/plan from Q2+Q3) + Q4 + Q5 (1 each)
+  // + 7 scenes (1 each) = 11 per category. computeCategoryMax sums each step's per-category
+  // presence over all steps, so the Q1/Q2 branch split doesn't change the ceiling.
+  expectedCategoryMax: { operate: 11, repair: 11, program: 11, plan: 11 },
   resultsCopy: {
     heading: 'Here’s how your day matches up',
     mapHint: 'Tap another role to bring it front and center, then tap a job title to learn more.',

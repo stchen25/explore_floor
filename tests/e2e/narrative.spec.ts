@@ -11,6 +11,7 @@ import { calculateCategoryScores } from '../../src/lib/categoryScoring';
 // match; displayed percentages match the scoring engine. Retake keeps the condition.
 
 const mcAnswers: Record<string, string> = {
+  'n-q0': 'n-q0-no', // new experience question, unscored
   'n-q1': 'n-q1-no', // branches over n-q2
   'n-q3': 'n-q3-60',
   'n-q4': 'n-q4-typing',
@@ -57,7 +58,12 @@ test('narrative: branch over Q2, sort every scene into buckets, results match th
   await page.getByTestId('start-cta').click();
   await expect(page).toHaveURL(/\/flow$/);
 
-  // Intro questions. Q1 = No branches straight to Q3 — Q2 ("How long?") must never appear.
+  // Intro questions. Q0 (experience) is a new unscored question shown first under the
+  // opening prompt; then Q1 = No branches straight to Q3 — Q2 ("How long?") must never appear.
+  await expect(
+    page.getByRole('heading', { name: 'Do you have any experience in this field?' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: mcLabel('n-q0'), exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Are you planning on going to college?' }),
   ).toBeVisible();

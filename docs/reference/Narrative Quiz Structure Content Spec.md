@@ -1,6 +1,6 @@
 # Narrative Quiz Structure, Content Spec
 
-Source: FigJam board "Narrative Quiz Structure" (figma.com/board/HP9OFVXI69y7tKaFUJP1Lz), pulled 2026-06-07.
+Source: FigJam board "Narrative Quiz Structure" (figma.com/board/HP9OFVXI69y7tKaFUJP1Lz), node 7:313, pulled 2026-06-22 (V3 language pass).
 
 **Purpose.** This document gives the questions, answer choices, category mappings, and flow for two versions of the Explore the Floor interest quiz. We're building both versions to test which style users prefer. This spec covers content and order only. It says nothing about visual design or implementation, and it isn't a recommendation for either.
 
@@ -29,7 +29,14 @@ One continuous flow in two parts: a short set of intro questions, then a day-in-
 
 ### Part 1: Intro questions
 
-Opening prompt, shown with Q1: **"Let's start with some basic questions..."**
+Opening prompt, shown with Q0: **"Let's start with some basic questions..."**
+
+**Q0. Do you have any experience in this field?** _(new in V3; background, unscored)_
+
+| Choice | Category mapping | Branch |
+|---|---|---|
+| Yes | none | go to Q1 |
+| No | none | go to Q1 |
 
 **Q1. Are you planning on going to college?**
 
@@ -61,7 +68,8 @@ Prompt: **"Workers in robotics do many different things throughout the day..."**
 
 | Choice | Category mapping |
 |---|---|
-| Doing hands-on work | Operate, Repair |
+| Doing hands-on work | Operate |
+| Making sure that things are working correctly | Repair |
 | Typing on a computer | Program |
 | Leading others | Plan |
 
@@ -71,11 +79,11 @@ Prompt: **"Okay, one last thing. What will bring you fulfillment?"**
 | Choice | Category mapping |
 |---|---|
 | Inspiring others | Plan |
-| Earning a lot of money | Plan |
-| Feeling like I'm helping people | Operate, Repair |
+| Feeling like I'm helping people | Repair |
+| Building | Operate |
 | Solving difficult problems | Program |
 
-Note: Q1-Q3 carry no category mappings on the board. They gather background context (education plans, salary expectations); the board doesn't specify how, or whether, they affect results.
+Note: On the board these questions carry no category mappings. As built (V3 intro-question scoring, D-023), education (Q1 "college?" combined with Q2 "how long?") and salary (Q3) now nudge the match one point each on the role tier ladder: level 0 (no college / $40k) → Operate, level 1 (1-2 years / $60k) → Repair, level 2 (4+ years / $80k+) → Program + Plan. This mirrors the exam's intro screeners so the two instruments stop disagreeing by construction. Q0 (experience) stays unscored (routing parked for later), and Q2 "Whatever" stays unscored as a noncommittal answer. These tags are a parallel signal to the always-on education/pay fit line, kept consistent with its levels but not merged.
 
 ### Part 2: Story
 
@@ -88,9 +96,9 @@ Seven scenes walk through a school day. Every scene has four choices, one per ca
 | Choice | Category |
 |---|---|
 | Get dressed in the outfit I planned the night before | Plan |
-| Help my parents make breakfast | Repair |
+| Helping a younger sibling get ready | Repair |
 | Write down a step-by-step to-do list | Program |
-| Walk my dog | Operate |
+| Make breakfast for myself | Operate |
 
 **Scene 2.** Prompt: "You arrive at school, but have some time to kill." **What do you want to check out in that time?**
 
@@ -106,7 +114,7 @@ Seven scenes walk through a school day. Every scene has four choices, one per ca
 | Choice | Category |
 |---|---|
 | Taking the lead on a group project | Plan |
-| Building a diorama | Operate |
+| Building a 3D model | Operate |
 | Being a tutor to a younger student | Repair |
 | Solving some difficult math problems | Program |
 
@@ -124,8 +132,8 @@ Seven scenes walk through a school day. Every scene has four choices, one per ca
 | Choice | Category |
 |---|---|
 | Coding a game | Program |
-| Helping my parents with some chores | Repair |
-| Playing with Legos | Operate |
+| Fix your bike | Repair |
+| Assemble a bird house | Operate |
 | Planning the rest of my week | Plan |
 
 **Scene 6.** Prompt: "You have to do some homework." **Which assignment would you want to complete the most?**
@@ -133,7 +141,7 @@ Seven scenes walk through a school day. Every scene has four choices, one per ca
 | Choice | Category |
 |---|---|
 | Working on my presentation | Plan |
-| Re-do a previous assignment | Repair |
+| Editing an essay | Repair |
 | Writing code | Program |
 | Make 10 posters for a club event | Operate |
 
@@ -141,10 +149,10 @@ Seven scenes walk through a school day. Every scene has four choices, one per ca
 
 | Choice | Category |
 |---|---|
-| Puzzle-solving game like Portal or Outer Wilds | Program |
-| Strategy game like Civ or TFT | Plan |
-| Building game like Minecraft or Animal Crossing | Operate |
-| Simulation game like Sims or Cities Skylines | Repair |
+| Puzzle-solving game | Program |
+| Strategy game | Plan |
+| Building game | Operate |
+| Simulation games | Repair |
 
 After Scene 7 the user goes to results.
 
@@ -286,7 +294,7 @@ A sheet opens over the map explaining the category that the title belongs to. Co
 ## Board notes and open items
 
 - The wireframe sketch shows three job-title nodes per category; the actual title lists above run three to five. The board doesn't say whether to cap at three.
-- Two choices carry question marks on the board, meaning the team wasn't settled on them: "IT club" (Version 1, Scene 4) and "Writing code" (Version 1, Scene 6).
+- _(Resolved in V3.)_ Two choices previously carried question marks on the board, meaning the team wasn't settled on them: "IT club" (Version 1, Scene 4) and "Writing code" (Version 1, Scene 6). The team has settled on both; they ship as-labeled.
 - _(Corrected 2026-06-07, verified against the live board.)_ Page 1's two format labels, "Multiple choice" (pink) and "Drag and drop" (blue), are a **color legend**, not unattached: the intro questions are pink (multiple choice, tap-to-select) and all seven story scenes are blue (drag and drop). As built: intro questions are single-select MC. _(Revised D-018:)_ each scene is a **per-choice sort** — the user judges all four choices, sorting each into one of three buckets (drag or tap), the same structure as Version 2's statement sort. This replaced the D-017 "drag your one pick into a zone" build after the team clarified the board's intent.
 - _(Corrected 2026-06-07; relabeled D-018.)_ The sort uses **three** buckets — "That's me" / **"Kinda me"** / "Not me" — not two, shared by both the statement sort (Version 2) and the narrative scenes (Version 1). The middle bucket reads "Kinda me" (renamed from "Maybe"). A prior user study asked for a middle option; it currently scores as a no (`MAYBE_WEIGHT = 0`, tunable). See D-017, D-018.
 - Page 2 of the board also holds an earlier rough results sketch (robot character, four-category percentage breakdown, "Breakdowns" and "Your roles" panels). The node-map flow described above is the intended results experience.
