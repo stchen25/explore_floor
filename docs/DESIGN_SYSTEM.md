@@ -6,12 +6,12 @@ This doc is the visual source of truth for the build. It pairs with the Figma fi
 
 ## 1. Philosophy
 
-We're modernizing RC.org's existing Material-Design-flavored visual identity into something warmer and more playful for the gamified high-school track, **without rebranding**. The brand colors are exact. The type system is preserved. The spacing, radius, and shadow conventions are honored as a foundation. On top of that foundation we add a Goose-game-adjacent playful layer (illustration style, motion language, micro-personality) that makes the assembly-line experience feel charming rather than corporate.
+The system is **kit-aligned** (`DECISIONS.md` D-024), snapped to the RC UI Kit so the quiz, the dashboard, and every RC.org prototype read as one product. We modernize RC.org's existing Material-flavored identity without rebranding: the kit brand colors are exact, the Montserrat + Roboto type system is preserved, the spacing and radius conventions are honored. The experience reads as calm, warm, and plainspoken through the kit itself, not through a separate illustrated layer.
 
 Three principles:
 
-- **Evolution, not rebrand.** A user who has seen RC.org should recognize this experience as part of the same product. ARM's gold, blue, teal, and orange are preserved verbatim and remain the dominant chromatic signature.
-- **Two layers, one product.** A "foundation" layer (forms, layout, navigation, professional surfaces) inherited from RC-CC. A "playful" layer (the assembly line, the robot, the conveyor, the result screen) layered on top. The two layers share tokens but use them differently.
+- **Evolution, not rebrand.** A user who has seen RC.org should recognize this as part of the same product. The kit's ARM Gold leads, Secondary Teal is the interactive voice, and the charcoal ink ramp carries text. (Full kit values: `REALIGNMENT.md` Appendix B and `career_dashboard`'s `DESIGN_SYSTEM.md` §3.5.)
+- **One system, kit-aligned.** This repo subscribes to the same kit-aligned tokens as the dashboard. The earlier "two layers" model (a Material foundation plus a Goose-game playful scene) is a **documented cut**: the scene was never built, so there is one layer, the kit. The shared `rc-design-system` package that would formalize the subscription is deferred (`REALIGNMENT.md` §10).
 - **The Make.md neons are dead.** Anywhere in earlier brainstorm material that referenced neon teal `#06ffa5`, electric blue `#00d9ff`, or magenta `#ff006e`: ignored. Those colors do not appear anywhere in this build.
 
 ## 2. Token alignment with Figma
@@ -20,11 +20,11 @@ The Figma file (RC-CC) is the source for tokens. The `@theme` block in `src/styl
 
 | Figma path | Tailwind name | Notes |
 |---|---|---|
-| `color/brand/yellow` | `arm-yellow` | The "ARM gold" |
-| `color/brand/yellow-soft` | `arm-yellow-soft` | |
-| `color/brand/orange` | `arm-orange` | |
-| `color/brand/blue` | `arm-blue` | |
-| `color/brand/teal` | `arm-teal` | |
+| `color/brand/gold` | `arm-gold` | The "ARM gold" (kit-aligned; renamed from `arm-yellow`, D-024) |
+| `color/brand/gold-soft` | `arm-gold-soft` | CTA hover tint |
+| `color/brand/orange` | `arm-orange` | Secondary Orange (kit `#BF5309`, AA-safe) |
+| `color/brand/blue` | `arm-blue` | TEMP holdout (program accent + links); retoned at step 8 |
+| `color/brand/teal` | `arm-teal` | Secondary Teal, the interactive voice |
 | `color/semantic/page-bg` | `page-bg` | |
 | `color/semantic/bg` | `bg` | |
 | `color/semantic/bg-soft` | `bg-soft` | |
@@ -83,28 +83,28 @@ Inherited verbatim from RC-CC. The product is light-mode by default.
 | `overlay` | `#262626F2` |
 | `near-black` | `#262626` |
 
-### 3.3 Archetype accents
+### 3.3 Category accents (live)
 
-> **Retired (kit-alignment, D-024).** The three-archetype→accent model below describes the abandoned classic experience. The live flows score four RC.org categories, and their accents (`categoryAccent.ts`) are being reconciled with the kit's restrained teal-led palette in the step-8 results redesign. Kept for the classic record until the Phase-2 spec sweep; see `docs/knowledge/REALIGNMENT.md`.
+The live flows score four RC.org categories, and each carries an accent. **Never invent a new color for a category** and never hardcode a hex per screen; the mapping lives in one place, `src/components/categoryAccent.ts` (`CATEGORY_ACCENT_TEXT`), so a screen reads the token, not a literal.
 
-The three role archetypes are tied to brand colors. **Never invent a new color for an archetype.** This is what keeps the playful layer feeling like RC.org and not like a different product.
-
-| Archetype | Role | Accent token |
+| Category | Role | Accent token |
 |---|---|---|
-| Builder | Robotics Technician | `arm-orange` `#F56A00` |
-| Innovator | Robotics Specialist | `arm-blue` `#38A5EE` |
-| Architect | Robotics Integrator | `arm-teal` `#117289` |
+| Operate | Operator | `arm-gold` |
+| Repair | Technician | `arm-orange` |
+| Program | Specialist | `arm-blue` |
+| Plan | Integrator | `arm-teal` |
 
-The accent shows up in:
+The accent shows up in the match indicator, the category bars (exam dashboard), and the centered-role chrome (narrative node map).
 
-- The role card border and primary action button.
-- A subtle tint behind the robot when it's on a given pedestal.
-- The match percentage indicator color.
-- The robot color scheme (selected based on dominant archetype after scoring; see `DATA_MODEL.md` section 7).
+> **Interim, being finalized at step 8.** This mapping reuses the four kit brand tokens so the study presentation stays minimal. Two known tensions resolve in the high-fidelity results redesign (`REALIGNMENT.md` step 8): `arm-blue` fails AA as text (2.7:1) and is retoned, and `arm-gold` is a fill rather than a text color on white in the kit (operate's `text-arm-gold` is the interim exception). The target is a restrained, teal-led category palette.
 
-`arm-yellow` is reserved for global product signature (the "this is RC.org" yellow) and is not used for any archetype.
+**Documented cut — classic archetype accents.** The dormant Classic flow tied three archetypes to brand colors (Builder→`arm-orange`, Innovator→`arm-blue`, Architect→`arm-teal`), driving the robot color scheme (`DATA_MODEL.md` §7, `colorSchemes.ts`). Parked with the rest of the classic pipeline.
 
-### 3.4 Playful layer palette additions
+`arm-gold` is the global product signature (the "this is RC.org" gold) and the primary CTA fill.
+
+### 3.4 Playful layer palette additions — documented cut
+
+> The `scene/*` tokens served the never-built assembly-line scene. They still sit in `globals.css` but are dead; their removal is bundled with the classic-conveyor archival (`DECISIONS.md` D-024 deferred it there). No live surface reads them. Parked.
 
 For the assembly-line scene specifically, we add a few muted, warm fills that work with the Goose-game aesthetic. These are scene-specific and live under a `scene/` token namespace so they don't bleed into the foundation surfaces.
 
@@ -170,14 +170,14 @@ fontSize: {
 - Hero / landing headline: H1.
 - Screen titles: H2.
 - Section titles: H3 or H4.
-- Role card titles on results: H4.
-- Interest card label: Body/Medium (the kid reads it easily, doesn't shout).
-- Match percentage on results: H2 in archetype accent color.
-- Overlines (`Label/Overline`) for round indicators ("ROUND 2 OF 4").
+- Role / category titles on results: H4.
+- Scene choice and statement labels: Body/Medium (the kid reads it easily, doesn't shout).
+- Match percentage on results: H2 in the category accent color (`categoryAccent.ts`).
+- Overlines (`Label/Overline`) for short labels. _(The classic "ROUND 2 OF 4" round indicator is a documented-cut use.)_
 
 ### 4.5 Playful layer additions
 
-For occasional character (the landing CTA, the robot reveal moment, friendly result framing), we leave room for a single playful display font added later. Candidates: a slightly-irregular geometric like **Recoleta** or **Fraunces**, used at small scale for accent words only. Treat this as a Phase 3 polish, not a Phase 0 dependency. The build works fully with just Montserrat + Roboto.
+For occasional character (the landing CTA, friendly result framing), we leave room for a single playful display font added later. Candidates: a slightly-irregular geometric like **Recoleta** or **Fraunces**, used at small scale for accent words only. Treat this as a Phase 3 polish, not a Phase 0 dependency. The build works fully with just Montserrat + Roboto.
 
 ## 5. Spacing
 
@@ -205,7 +205,7 @@ Inherited verbatim. The 0-indexed scale where `space/0 = 4px` is deliberate; it 
 | `container-px` | 16 (horizontal padding) |
 | `section-py` | 48 (vertical section padding) |
 
-The experience targets desktop primarily. Use `container-lg` (1248) as the typical layout max-width. The sort screen, with its conveyor scene, uses `container-xl` (1500) so the scene has room to breathe.
+The experience targets desktop primarily. Use `container-lg` (1248) as the typical layout max-width; the live flows and results sit comfortably within it. _(The wider `container-xl` (1500) was sized for the documented-cut conveyor scene.)_
 
 ## 6. Radius
 
@@ -213,7 +213,7 @@ The experience targets desktop primarily. Use `container-lg` (1248) as the typic
 |---|---|---|
 | `rounded-sm` | 4 | Inputs, small chips, secondary surfaces |
 | `rounded-md` | 8 | Cards, buttons, primary surfaces |
-| `rounded-full` | 9999 | Pills, badges, the avatar pedestal |
+| `rounded-full` | 9999 | Pills, badges, the node-map nodes |
 
 Minimal by design. Don't add new radius values.
 
@@ -224,7 +224,7 @@ The Figma file defines two effect styles. Both are triple-shadow stacks followin
 | Token | Composition | Use |
 |---|---|---|
 | `shadow-card` | Elev-3 stack (radius 1+1+3, offsets 2/1/1, alphas .20/.14/.12) | Default card lift |
-| `shadow-elev-2` | Elev-5 stack (radius 1+2+5, offsets 3/2/1, alphas .20/.14/.12) | Hover, raised dialogs, the result pedestal |
+| `shadow-elev-2` | Elev-5 stack (radius 1+2+5, offsets 3/2/1, alphas .20/.14/.12) | Hover, raised dialogs, the role-detail sheet |
 
 Use sparingly. The playful layer should rely more on warm fills, soft outlines, and motion than on shadows.
 
@@ -235,23 +235,23 @@ Motion tokens live in code, not in Figma. Figma Variables can't model easing cur
 | Token | Value | Use |
 |---|---|---|
 | `duration-instant` | 100ms | Hover state changes, taps |
-| `duration-snap` | 200ms | The robotic-arm snap, item dropping into a bin |
-| `duration-glide` | 400ms | Conveyor item travel, card transitions |
-| `duration-pour` | 700ms | Robot part assembly animations |
-| `duration-reveal` | 1000ms | Build-moment reveal, result entrance |
+| `duration-snap` | 200ms | A card settling into a bucket, segment switches |
+| `duration-glide` | 400ms | Flow-step and card transitions |
+| `duration-pour` | 700ms | Node-map swap, slower content reflow |
+| `duration-reveal` | 1000ms | Result entrance, the Landing reveal |
 
 Easing curves (also new):
 
 | Token | Curve | Use |
 |---|---|---|
 | `ease-soft` | `cubic-bezier(0.25, 0.46, 0.45, 0.94)` | Most UI |
-| `ease-snap` | `cubic-bezier(0.5, 0, 0.1, 1.5)` | Arm snapping, robot part settling (slight overshoot) |
+| `ease-snap` | `cubic-bezier(0.5, 0, 0.1, 1.5)` | A card settling into a bucket, the node-map swap (slight overshoot) |
 | `ease-physical` | spring `{ stiffness: 200, damping: 20 }` | Motion physical springs for UI; GSAP scene uses its own eases/`ease-snap`. |
 
 ### Motion principles
 
 - Nothing instant unless it's a tap. Even fast things get 100ms.
-- Use spring physics for the conveyor scene; tween for UI cards.
+- Spring physics for gesture motion (the bucket-sort drag); tweens for UI and flow-step transitions.
 - Respect `prefers-reduced-motion`. Motion-sensitive users get fast crossfades instead of physical motion.
 
 ## 9. Iconography
@@ -260,7 +260,9 @@ Easing curves (also new):
 - Component set in Figma: `Icon/Material` with size variants 16/18/24/32/40/56/72.
 - For the playful layer, the assembly-line scene uses bespoke SVG illustrations, not Material Icons. The two are kept distinct: Material Icons in UI chrome, custom SVG in the scene.
 
-## 10. The playful layer
+## 10. The playful layer — documented cut
+
+> **Parked.** The illustrated Goose-game scene (conveyor, robotic arm, robot) was never built. The live experience differentiates through the narrative content and the kit-aligned results screens, not an illustrated scene layer. The one surviving piece of "playful" motion is the Landing `DrawSVG` reveal. This section is the original direction, kept for the record. Its retired evaluation rubric (`goose-game-aesthetic.md`) is replaced by the results-screen rubric.
 
 This is what makes the experience feel different from a typical RC.org screen.
 
@@ -324,32 +326,30 @@ Figma variant names map to React prop values by the same convention (`Primary` t
 
 ## 12. Component additions for this build
 
-Components specific to this experience, to be created in both Figma and code. Each is named identically in both tools, by convention, so the code-to-canvas round-trip stays legible.
+Components specific to this experience. Each is named identically in code and (when captured) in Figma, by convention, so the code-to-canvas round-trip stays legible.
 
-- `ConveyorBelt` — the moving surface
-- `ConveyorItem` — the cards that come down the belt
-- `RoboticArm` — the user-controlled sorter
-- `SortBin` — "That's me" and "Not my thing" targets
-- `Robot` — the avatar being built (composes RobotParts)
-- `RobotPart` — modular parts (Wrench arm, Chip pin, Clipboard, etc.; see `DATA_MODEL.md` section 7)
-- `RoleCard` — the role recommendation cards on results (variants: `Primary`, `Ghosted`)
-- `Pedestal` — the avatar display on results
-- `ProgramList` — the "programs that get you there" list
-- `MatchIndicator` — the percentage score per archetype
-- `RoundIndicator` — "ROUND 2 OF 4" label
-- `SoundToggle` — the audio on/off control
+**Live (the narrative + exam flows):**
+- `SegmentedControl` — the researcher-facing flow switcher on Landing
+- `BucketSort` — the shared one-card-at-a-time sort into That's me / Kinda me / Not me (used by both the narrative scenes and the exam statements)
+- The flow-step views — `MCQuestion`, `SceneSortView`, `StatementSortView` under the `FlowRunner`
+- The narrative node map (`Results/category/`) — the centered top-match node, the behind-nodes, the job-title branches
+- The exam dashboard (`Results/exam/`) — the robot anchor, the four `CategoryBars`, the "why you scored that way" breakdown
+- `RoleDetailSheet` — the shared role sheet (RC.org role content + four-axis fit radar)
+- `FitNote` — the always-on education/pay fit line (D-020)
 
-Define these in Figma's `——— Components ———` section as new pages or grouped under a new `Quiz Experience` category page, named to match the React components.
+**Documented cut (the conveyor scene):** `ConveyorBelt`, `ConveyorItem`, `RoboticArm`, `SortBin`, `Robot`, `RobotPart`, `Pedestal`, the classic `RoleCard` / `ProgramList` / `MatchIndicator` / `RoundIndicator`, and `SoundToggle`. Parked with the rest of the classic pipeline; never authored as Figma components.
 
-## 13. Bridging the two layers
+Capture the live components into Figma at settled checkpoints (`/capture-figma`), grouped under a `Quiz Experience` page, named to match the React components.
 
-The tension between the foundation layer (Material-Design-flavored web product) and the playful layer (Goose-game-adjacent illustrated scene) is real. The rules that keep it coherent:
+## 13. Bridging the two layers — documented cut
 
-- **Type stays the same across both layers.** Montserrat headings, Roboto body. Always.
-- **Brand color usage stays consistent.** Yellow is the brand signature; orange/blue/teal are archetype-coded. No new colors.
-- **Foundation surfaces use Material conventions** (white cards on light-gray bg, 8px radius, elev-3 shadows).
-- **Scene surfaces use playful conventions** (paper cream background, soft strokes, custom illustration, ground shadows).
-- **Transitions between layers are explicit, not blurred.** The landing screen has both, with the scene clearly behind/around the UI card. The sort screen is almost entirely the scene with foundation buttons sitting on top. The results screen is mostly foundation with the robot pedestal as the one scene element. Each screen knows which layer it belongs to.
+> The two-layer model (a Material foundation plus a Goose-game illustrated scene) assumed a scene that was never built, so there is one layer now: the kit. The durable discipline from this section survives and applies to the whole build:
+
+- **Type is constant.** Montserrat headings, Roboto body. Always.
+- **Brand color usage stays consistent.** ARM Gold is the brand signature and CTA fill; the four category accents come from `categoryAccent.ts` (§3.3). No invented colors.
+- **Surfaces use kit conventions** (white cards on light surface, kit radii, the two soft shadow tiers, used sparingly).
+
+The retired two-layer rules (foundation-vs-scene namespacing, scene-on-top-of-foundation transitions) are parked with the conveyor vision.
 
 ## 14. What is explicitly out of scope
 

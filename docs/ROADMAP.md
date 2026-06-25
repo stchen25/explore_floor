@@ -1,8 +1,10 @@
 # Roadmap
 
-The build runs in four phases. Each phase has a clear goal, a concrete task list, and verifiable acceptance criteria. **Do not jump ahead.** Phase 1 must ship a working flow before Phase 2 adds the scene. Phase 2 must add the scene before Phase 3 polishes. The discipline of this ordering is what protects the timeline: at every phase boundary there's a working, demoable product, so if time runs short the team always has something to show.
+> **Realignment (2026-06): the original Phase 2–3 plan is superseded.** Phase 0 and Phase 1 shipped (the classic flow, scaffold through testable results). Then the product pivoted: a question-structure study (`DECISIONS.md` D-016–D-023) replaced the classic flow with the **Narrative** and **Exam** flows scoring four RC.org categories, and testing crowned the narrative. So the **conveyor "feel pass" (Phase 2) and most of Phase 3 are the documented cut**: the conveyor scene, the user-controlled arm, the live-building robot, the Build beat, and the results pedestal were never built and are no longer the plan. The real next product work is the **high-fidelity narrative results screen** (`REALIGNMENT.md` step 8), built on the kit-aligned tokens. Read Phase 2/§3 and the conveyor parts of Phase 3 as parked; the surviving Phase 3 polish (copy, light a11y, mobile, reduced-motion, Figma sync) still applies to the live flows.
 
-This doc is the operational counterpart to `PRD.md` (what we're building), `DATA_MODEL.md` (the schema), `ARCHITECTURE.md` (how the code is organized), and `DESIGN_SYSTEM.md` (how it looks). It points at all of those concretely as work progresses.
+The build ran in four phases. Each phase had a clear goal, a concrete task list, and verifiable acceptance criteria. Phase 0 and Phase 1 are complete; the realignment re-centered everything after them.
+
+This doc is the operational counterpart to `PRD.md` (what we're building), `DATA_MODEL.md` (the schema, §17 is the live model), `ARCHITECTURE.md` (how the code is organized), and `DESIGN_SYSTEM.md` (how it looks). It points at all of those concretely as work progresses.
 
 ---
 
@@ -10,12 +12,14 @@ This doc is the operational counterpart to `PRD.md` (what we're building), `DATA
 
 | Phase | Goal | Output |
 |---|---|---|
-| Phase 0 | Scaffold and foundation | Working skeleton, every screen clickable, scoring engine tested |
-| Phase 1 | Testable flow | Full flow end to end with simple sort interaction — **first user test** |
-| Phase 2 | Feel pass | Conveyor scene, robot building live, the experience has its character |
-| Phase 3 | Polish | Copy, sound, motion polish, mobile, light a11y, Figma sync — **demoable to ARM** |
+| Phase 0 | Scaffold and foundation | Working skeleton, every screen clickable, scoring engine tested — **complete** |
+| Phase 1 | Testable flow | Full flow end to end with simple sort interaction — **complete (first user test)** |
+| _Study insert_ | Question-structure study | Narrative + Exam flows, four categories, per-flow results (D-016–D-023) — **live** |
+| ~~Phase 2~~ | ~~Feel pass (conveyor scene, live robot)~~ | **Documented cut** — superseded by the narrative pivot |
+| Phase 3 | Polish | The surviving items (copy, light a11y, mobile, reduced-motion, Figma sync) apply to the live flows; the conveyor/robot/sound polish is cut |
+| Step 8 | High-fidelity narrative results | The real next product work (`REALIGNMENT.md` step 8), on kit-aligned tokens |
 
-Work proceeds phase by phase, not on a fixed schedule — each phase ships when its acceptance criteria are met. Time between and after phases absorbs iteration from each user test plus final ARM delivery prep.
+Work proceeds when acceptance criteria are met, not on a fixed schedule. The realignment sweep (`REALIGNMENT.md` §9) re-centers the docs and harness before step 8.
 
 ## 1. Phase 0 — Scaffold and foundation
 
@@ -35,7 +39,7 @@ Work proceeds phase by phase, not on a fixed schedule — each phase ships when 
 #### 1.2 Tailwind tokens
 
 - Author the `@theme` token block in `src/styles/globals.css` mirroring `DESIGN_SYSTEM.md` section 2 exactly (Tailwind v4 is CSS-first — no `tailwind.config.ts`).
-- All brand colors verbatim from the Figma file: `arm-yellow`, `arm-yellow-soft`, `arm-orange`, `arm-blue`, `arm-teal`.
+- All brand colors verbatim from the Figma file: `arm-gold`, `arm-gold-soft`, `arm-orange`, `arm-blue`, `arm-teal` (kit-aligned; `arm-gold`/`arm-gold-soft` renamed from `arm-yellow`/`arm-yellow-soft`, D-024).
 - All semantic colors, type scale, spacing scale, container widths, radii, shadows.
 - New motion tokens from `DESIGN_SYSTEM.md` section 8 (`duration-instant` through `duration-reveal`, plus easing curves).
 - `scene/` namespace tokens for the playful layer.
@@ -227,7 +231,9 @@ The output of this test is a list of changes that feed Phase 2's work as content
 
 ---
 
-## 3. Phase 2 — Feel pass
+## 3. Phase 2 — Feel pass (DOCUMENTED CUT, superseded)
+
+> **Superseded by the narrative pivot (2026-06).** Nothing in this phase was built. The conveyor scene, the user-controlled arm, the live-building robot, the Build beat, and the results pedestal are parked. The question-structure study replaced this work; the real next step is the high-fidelity narrative results screen (`REALIGNMENT.md` step 8). The section below is the original plan, kept for the record.
 
 **Goal:** turn the working flow into the experience the PRD describes. The conveyor scene. The robotic arm. The robot building live. The Goose-game aesthetic landing.
 
@@ -304,7 +310,9 @@ Second user testing round:
 
 ---
 
-## 4. Phase 3 — Polish, sound, mobile, sync
+## 4. Phase 3 — Polish, mobile, sync
+
+> **Partly superseded.** The polish items that apply to the **live** flows survive: final copy (§4.1), motion polish + reduced-motion (§4.3), mobile responsiveness (§4.4), light a11y (§4.5), Figma sync (§4.6), and the demo affordances (§4.7). **Cut with the conveyor:** sound design (§4.2, the build was always fine silent), and any task scoped to the conveyor scene, the live robot, or the Build beat. Read the surviving items against the narrative/exam flows and the high-fidelity results screen, not the conveyor.
 
 **Goal:** all the things that make this look like a finished prototype rather than a demo build. The thing you'd actually show the ARM client.
 
@@ -392,13 +400,13 @@ In priority order, from least important to most important. Drop from the top of 
 
 Do not cut, in any scenario:
 
-- The scoring engine producing weighted recommendations across all three roles.
-- The results screen showing three roles, not one.
-- The compare interaction (it can degrade visually but must work).
-- The four-part read per role (it can be plain text if styling falls apart).
+- The scoring engine producing weighted recommendations across all four categories (never a single prescriptive verdict).
+- The results screen showing all the matches, not one.
+- The compare interaction (the node-map swap / the dashboard's ranked roles): it can degrade visually but must work.
+- The result explaining itself: the match read, the "why you scored that way" interpretation, and the education/pay fit line.
 - Real, plain-language copy that an actual high schooler would understand.
 
-These are the things that make the build solve the research problem. Lose them and the prototype demonstrates nothing useful.
+These are the things that make the build solve the research problem. Lose them and the prototype demonstrates nothing useful. _(The numbered cut-list above is the historical conveyor list; items 6–8 are already cut with the scene.)_
 
 ## 6. Definition of done (per task within any phase)
 

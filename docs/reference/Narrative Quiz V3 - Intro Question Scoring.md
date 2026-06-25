@@ -63,6 +63,8 @@ Edit only the `categories` arrays on the intro `mc` steps. Everything else on th
 
 `n-q2-whatever` follows its fit-line level (1) for consistency. If the team would rather a noncommittal answer not nudge the score, set it to `[]` instead; flag it and we'll decide.
 
+> **As-built (reconciled 2026-06-25, D-023):** the team chose **`[]` (unscored)** for `n-q2-whatever`. A noncommittal answer does not nudge the score (it still feeds the fit line). The shipped value in `narrativeFlow.ts` is `categories: []`. This table row is the superseded provisional.
+
 **Q3 (`n-q3`, "What is the lowest salary you would feel satisfied with?").**
 
 | Choice | Level | New |

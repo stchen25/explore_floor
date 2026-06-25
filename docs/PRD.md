@@ -9,7 +9,9 @@
 
 ## 1. Overview
 
-This is an interactive, gamified career-discovery experience for RoboticsCareer.org. A user sorts a series of concrete interests and activities on a stylized assembly line. As they sort, a custom robot is assembled from their choices. At the end they reach a results screen that shows how they match the three robotics manufacturing role families, featuring their best match while keeping the other two live and comparable, plus the robot they built as a takeaway avatar.
+This is an interactive, narrative career-discovery experience for RoboticsCareer.org. A user walks through a day in their life (a morning routine, arriving at school, a class handout, a club lunch, home, homework, a video game) plus a few intro questions, sorting the choices each scene offers into three buckets: That's me / Kinda me / Not me. At the end they reach a results screen that shows how they match four RC.org career categories (Operate, Repair, Program, Plan, which map to Operator, Technician, Specialist, Integrator), featuring their top match while keeping the others live and comparable, with an honest read on the education and pay each path asks for.
+
+The live build ships this as the **Narrative** flow, alongside an **Exam** flow (background questions plus a 30-statement sort) that scores the same four categories for the question-structure study (section 8, `DATA_MODEL.md` §17). The original concept, where a user sorted interest cards on a moving conveyor belt and watched a custom robot get built from their picks, is a **documented cut**: it survives as the dormant **Classic** flow and is preserved for the record in `DATA_MODEL.md` §1–§14 (the classic pipeline), but it is no longer the plan. The realignment that re-centered this spec on the narrative quiz is `docs/knowledge/REALIGNMENT.md`; treat that memo and `DATA_MODEL.md` §17 as the current product, and the conveyor-and-robot material below as the parked original vision.
 
 It replaces three existing tools that currently sit on the site as separate, weak experiences:
 
@@ -34,11 +36,11 @@ The compressed version (full version in `CONTEXT_BRIEF.md`):
 
 ### Goals
 
-- Let a high schooler discover robotics manufacturing roles through concrete, relatable interests rather than abstract competencies.
-- Produce a recommendation across all three role families, not a single prescriptive verdict.
-- Make the experience genuinely fun and worth completing, so the robot payoff and results feel earned.
-- Make every piece of content (interests, role copy, scoring weights, results text) trivially editable by the team without touching logic.
-- Ship a flow testable with users as the Phase 1 milestone.
+- Let a high schooler discover robotics manufacturing roles through concrete, relatable choices rather than abstract competencies.
+- Produce a recommendation across all four RC.org categories (operate, repair, program, plan), not a single prescriptive verdict.
+- Make the experience genuinely engaging and worth completing, so the narrative and its results feel earned. _(The original "robot payoff" goal is the documented cut.)_
+- Make every piece of content (scene choices, statements, role copy, scoring weights, results text) trivially editable by the team without touching logic.
+- Ship a flow testable with users (the Phase 1 milestone, met).
 
 ### Non-goals (for this build)
 
@@ -52,7 +54,7 @@ The compressed version (full version in `CONTEXT_BRIEF.md`):
 
 RC.org's redesign direction includes segmenting users by life stage. The long-term vision is two discovery experiences:
 
-- **Gamified track** (this build) — high schoolers and younger training-seekers. Playful, assembly-line, robot-building, interest-driven.
+- **Gamified track** (this build) — high schoolers and younger training-seekers. Engaging, narrative, interest-driven. _(The "playful assembly-line, robot-building" framing is the documented cut; the live engagement comes from the day-in-the-life narrative.)_
 - **Professional track** (stub) — adult job seekers and career switchers. Streamlined, buttoned-up, competency-driven, the existing My Goal flow refined and modernized.
 
 For this prototype we build the gamified track end to end. The architecture leaves a clean seam for the professional track to be added later, reusing the same role/competency data and scoring engine behind a different UI. There is **no segmentation gate inside this experience**; the user arrives here already routed to the gamified track. See section 11 and `ARCHITECTURE.md`.
@@ -61,14 +63,21 @@ For this prototype we build the gamified track end to end. The architecture leav
 
 The whole flow targets **around 3 to 4 minutes**. Desktop-first, mobile responsive.
 
+> **What's live vs. what's parked (realignment, 2026-06).** The experience the build ships is the **Narrative** flow (and its sibling **Exam** flow for the study), described in §5.0 below and specified step by step in `DATA_MODEL.md` §17. The conveyor-and-robot screens in §5.2–§5.4 and the robot avatar in §6 are the **documented cut**: the original vision, kept for the record as the dormant Classic flow, never built as a scene. Read §5.0 and `DATA_MODEL.md` §17 for the current product; read §5.2–§5.4 as the parked design.
+
+### 5.0 The narrative flow (live)
+
+The live experience is a guided "day in the life." After a short researcher-facing landing (§5.1), the user answers a few intro questions (experience, education appetite, salary appetite) and then moves through seven day-in-the-life **scenes** (morning, arriving at school, a class handout, a club lunch, home, homework, a video game). Each scene presents four choices, one tied to each RC.org category, and the user sorts each choice into one of three buckets: **That's me / Kinda me / Not me**. There is no conveyor and no robot build; the sort is a calm, one-card-at-a-time judgement, the same `BucketSort` mechanic the Exam flow uses for its 30 statements.
+
+The four categories (Operate, Repair, Program, Plan) map to four RC.org roles (Operator, Technician, Specialist, Integrator). Scoring is the pure four-category engine in `lib/categoryScoring.ts`, branch-aware (it only walks the path the user took) and normalized per category against its own max. Results lead with the user's top match and let them compare the others, plus an always-on education/pay fit read. The two flows present results differently on purpose (the study compares presentations too): the **Narrative** results are a node map; the **Exam** results are a dashboard with a score breakdown. Full step structure, scoring, and results model are in `DATA_MODEL.md` §17.
+
 ### 5.1 Landing
 
-- A single screen that sets the tone and frame: "Not sure where you'd fit in robotics? Sort what you're into and we'll build your match." (final copy TBD)
-- Stylized assembly-line scene visible behind/around the CTA, hinting at what's coming.
-- One primary CTA to start. No sign-up, no form.
-- Establishes the Untitled-Goose-Game-adjacent visual world immediately so the user knows this is not the old site.
+- A single screen that sets the tone and frame and carries a small researcher-facing segmented control that picks the study condition (Narrative / Exam / Select). The landing keeps the "Explore the Floor" name and a "Start the story" CTA. No sign-up, no form.
+- A stylized scene hints at what's coming behind the CTA. The hero visual is being redesigned alongside the high-fidelity results screen (the prior placeholder line-art conveyor sketch is parked with the rest of the documented cut); see `docs/knowledge/REALIGNMENT.md`.
+- One primary CTA to start.
 
-### 5.2 Sort (the assembly line)
+### 5.2 Sort (the assembly line) — documented cut (Classic flow)
 
 The core mechanic. Concrete interests and activities arrive on a conveyor; the user sorts each into one of two bins:
 
@@ -83,16 +92,16 @@ Details:
 - A subtle progress indicator (e.g. "Round 2 of 4" or a filling bar) keeps the 2-4 minute promise honest.
 - Phase 1 implements this as a simple drag-the-card / tap-a-bin sort into two bins, no conveyor animation. Phase 2 layers in the turning conveyor with interest-labeled parts: the user drags parts off the belt into the two bins, and a robot arm assembles the kept parts onto the robot standing behind the line (see section 6 and `ROADMAP.md` §3.2, refined per `DECISIONS.md` D-014).
 
-### 5.3 Build (the payoff moment)
+### 5.3 Build (the payoff moment) — documented cut (Classic flow)
 
 - The robot **assembles visibly as the user sorts.** Each "That's me" decision adds a part in real time, so the user watches their robot come together across the four rounds. This is the moment-to-moment reward that keeps them going.
 - The robot is **only finalized and keepable on completion.** Bail out halfway and there is no robot to take. Progress is visible, but the payoff (the finished avatar on the pedestal, the results) is earned only by finishing. The Build beat is the short, satisfying moment where the second arm snaps the last part into place and the robot is "yours."
 - The robot's appearance is derived from the user's kept choices (which parts, colors, accessories map to which interests). Mapping defined in `DATA_MODEL.md`.
 - Transitions directly into Results.
 
-### 5.4 Results
+### 5.4 Results — documented cut (Classic flow)
 
-The most important screen. It must read as a recommendation, not a verdict.
+The most important screen. It must read as a recommendation, not a verdict. _(The live narrative and exam results are the node map and the dashboard described in §5.0 and specified in `DATA_MODEL.md` §17. The robot-on-a-pedestal results below are the classic documented cut. The "recommendation, not a verdict" principle and the specificity payload carry forward verbatim into the live results; only the rendering changed.)_
 
 - The user's built robot sits on a **pedestal, center stage, in front of the role card it most closely matches.** That primary card is fully rendered: role name, plain-language description, a match read, what already fits the user, and a clear next action.
 - The other two role families are present as **ghosted / outlined cards** flanking the primary.
@@ -107,7 +116,9 @@ The most important screen. It must read as a recommendation, not a verdict.
 - One clear primary action per role: **"Explore training programs for this path"** (stubbed/mocked in the prototype). This is the conversion target ARM cares about most, so it is the loudest action on the screen. A secondary "retake" is available but understated.
 - The robot avatar is framed as something the user keeps ("This is your build"), reinforcing the takeaway and seeding the later account/profile concept without requiring sign-up now.
 
-## 6. The robot avatar
+## 6. The robot avatar — documented cut
+
+> The live narrative and exam flows **skip the robot build** (the study keeps presentation minimal so participants focus on the questions; `DATA_MODEL.md` §17, `DECISIONS.md` D-017). The exam dashboard shows a static robot placeholder as a visual anchor only. Re-enabling a live build later is a per-flow step, documented but not built. The section below is the parked original design.
 
 - Assembles live during sorting; finalized only on completion (no half-robot if the user bails).
 - Composed of modular SVG parts (base, body, arms, head, tools, accessories, surface treatments). Mapping is **literal and expressive**: each kept interest contributes a specific, semantically obvious part or treatment. Keeping "coding or modding games" might bolt on a chip-pin or spray a binary pattern across the chest; keeping "shop class or robotics club" might attach a mini robotic arm or a hard hat; keeping "planning hangouts" might add a clipboard. The robot is meant to *read* as the user's choices, not merely imply them.
@@ -117,9 +128,11 @@ The most important screen. It must read as a recommendation, not a verdict.
 
 ## 7. Scoring model (recommendation, not prescription)
 
-This supersedes the single-winner logic in the Make.md brainstorm.
+The principle is fixed across every flow: **a weighted match across all the roles, never a single prescriptive verdict.** What changed in the realignment is the model the live flows score against.
 
-- The three role families map to three internal archetypes:
+> **Live (narrative + exam): four RC.org categories.** The shipping flows score `operate / repair / program / plan` (mapping to Operator / Technician / Specialist / Integrator) with the pure, branch-aware engine in `lib/categoryScoring.ts`, normalized per category against its own max. Each scored intro answer, each scene choice, and each statement contributes; the middle "Kinda me" bucket scores `MAYBE_WEIGHT` (0 today, tunable). Full algorithm and the per-flow `expectedCategoryMax` are in `DATA_MODEL.md` §17. The three-archetype model below is the **documented cut** (the dormant Classic flow's `lib/scoring.ts`), preserved for the record.
+
+- _(Documented cut — Classic flow.)_ The three role families map to three internal archetypes:
   - **Builder -> Robotics Technician** (hands-on, building, fixing, maintaining)
   - **Innovator -> Robotics Specialist** (coding, problem-solving, programming, systems)
   - **Architect -> Robotics Integrator** (planning, coordinating, seeing how it all connects)
@@ -171,6 +184,8 @@ Each item maps to archetype weights in `DATA_MODEL.md`. Builder-leaning items em
 
 ## 9. Content: roles, competencies, jobs
 
+> **Documented cut (classic foundation).** The three archetype-tagged role families below are the classic content set. The live flows score four RC.org category roles whose content lives in `roleDetails.ts` (Operator / Technician / Specialist / Integrator; `DATA_MODEL.md` §17). The competency framework here still seeds the shared `competencies.ts` / `programs.ts`, so this section stays useful as reference, but read the roles as the parked taxonomy.
+
 The role definitions use ARM's **real competency framework**, captured from the existing My Goal screens. This is the mock-data foundation. (We can later replace or extend with scraped/official data; structure stays the same.)
 
 ### Robotics Technician (Builder)
@@ -203,42 +218,46 @@ The results screen surfaces programs that help a user build toward each role (se
 
 Full detail in `DESIGN_SYSTEM.md`. The essentials:
 
-- **Aesthetic anchor: Untitled Goose Game.** Calm, warm, lightly hand-crafted, confident use of negative space, gentle motion, charm without clutter. A refined cousin of the current Explore the Floor scene, not the busy, dated version that exists today.
-- **Bridge to ARM identity.** Evolution, not rebrand. The ARM gold, the dark/navy tones, and the teal accent stay present so this reads as part of RC.org. The playful layer sits on top of that foundation.
-- **Supersede the neon palette.** The Make.md brainstorm colors (neon teal/blue/magenta) are dropped. Each archetype gets a distinct but harmonious accent defined in the design system, living in the warm/muted world, not the rave one.
-- **Motion is part of the product, in two layers.** Motion (the React library formerly called Framer Motion) carries the state-driven UI: screen transitions, the drag-to-bin gesture, card motion, the results compare interaction. GSAP carries the scene choreography and the cinematic build beat: the conveyor, the arm, parts arcing into the robot, the final snap. Smooth and physical, never frantic. Full rationale in `ARCHITECTURE.md` section 1.
-- **Sound is a light seasoning.** Subtle clicks, whirs, a soft completion cue. Muted by default with a visible toggle.
+- **On the RC UI Kit, no rebrand.** The design system is kit-aligned (`DECISIONS.md` D-024), matching `career_dashboard`: ARM Gold `#FFB81C` as the brand signature and primary CTA fill, Secondary Teal `#117289` as the interactive voice, a charcoal ink ramp, Montserrat + Roboto. This reads as part of RC.org because it shares the kit. Calm, warm, plainspoken, confident with negative space.
+- **Supersede the neon palette.** The Make.md brainstorm colors (neon teal/blue/magenta) are dropped, permanently.
+- **The four category accents** are a restrained, teal-led set being finalized with the high-fidelity results screen (`categoryAccent.ts` today; the kit reconciliation and the `arm-blue` retone are the step-8 results work in `REALIGNMENT.md`). No invented per-screen colors.
+- **Motion is modest and state-driven.** Motion (the React library formerly called Framer Motion) carries the UI: screen and flow-step transitions, the bucket-sort drag, the node-map compare swap. GSAP carries the one ambient flourish that ships, the Landing reveal (`DrawSVG`). Smooth and calm, never frantic. Full rationale in `ARCHITECTURE.md` section 1. _(The conveyor, robotic arm, parts arcing into a robot, and the cinematic build beat are the documented cut, never built.)_
+- **Sound is a light seasoning.** Subtle clicks and a soft completion cue, if added. Muted by default with a visible toggle. _(Documented as a Phase 3 polish item; not load-bearing.)_
+
+> **Aesthetic anchor (documented cut): Untitled Goose Game.** The original direction was a Goose-game-adjacent illustrated scene (warm linework, a hand-crafted conveyor and robot). That scene was never built and is parked with the rest of the conveyor vision. The surviving intent, calm and warm rather than corporate or neon, lives on through the kit-aligned system, not through an illustrated scene layer.
 
 ## 11. The professional-track stub
 
 Not built in this prototype. Documented so the architecture accommodates it:
 
-- Same three role families, same competency data, same scoring engine.
+- Same role and category data, same scoring engine. The live shared foundation is the four-category model (`roleDetails.ts` + `lib/categoryScoring.ts`); the "three role families" wording elsewhere in this doc is the dormant classic seam.
 - Different input: explicit competency and skill self-report (the existing My Goal grids, modernized), since the adult audience can answer those.
 - Different UI: streamlined, professional, no robot, no conveyor.
-- Different output: still a ranked recommendation across the three roles, but presented soberly.
+- Different output: still a ranked recommendation across the categories, but presented soberly.
 - In code, this means the scoring engine and role/competency data are UI-agnostic and importable by a future professional-track surface. Do not couple them to gamified-track components.
 
 ## 12. Success criteria for the prototype
 
 The prototype is successful when:
 
-- A user can complete the full flow (land -> sort 24 items -> build -> results) in around 3-4 minutes with no dead ends.
-- The results screen shows a believable weighted match across all three roles, with the compare interaction working.
-- A built robot appears on completion, derived from the user's choices.
-- The team can change any interest item, weight, or piece of results copy by editing `/src/data` alone.
-- The Playwright happy-path suite passes and the experience runs with no console errors.
+- A user can complete a study flow (land -> answer the intro questions -> sort the scenes or the statements -> results) in around 3-4 minutes with no dead ends.
+- The results screen shows a believable weighted match across the four categories, with the compare interaction (node-map swap, or the dashboard's ranked roles) working.
+- The result explains itself: the match read, the education/pay fit line, and a path the user can take next.
+- The team can change any scene, statement, intro question, weight, role detail, or piece of results copy by editing `/src/data` alone.
+- The Playwright suite (narrative + exam + role-select) passes and the experience runs with no console errors.
 - It is demoable to the ARM client and testable with the MHCI cohort.
+
+_(Documented cut: the classic measure was "land -> sort 24 items -> build a robot -> three-role results." Preserved in §5.2–§5.4.)_
 
 ## 13. Open questions
 
 After the team conversation, the resolved decisions are: the 24-item set is locked, the robot-part mapping is literal and expressive, passed items contribute zero (with the schema allowing negative for later experimentation), and archetype weights will be designer defaults that ARM's dev team owns tuning for production.
 
-What remains, none of which blocks Phase 0 or 1:
+What remains (the live open questions are tracked in `docs/knowledge/REALIGNMENT.md` §11: define what the match percentage means in one line, frame an Operator result as a starting rung rather than a verdict, and settle whether "Kinda me" keeps scoring zero):
 
-- **Specific robot-part choices per interest** (24 authoring decisions: what does "Spotting problems before they happen" actually attach or apply? The model is settled; each item still needs its specific visual). Can be drafted alongside item weights and iterated visually.
-- **Results copy:** the per-role fit descriptions, the "skills you'd build" and "competencies you'd build" language for a teen, the way mocked programs are described.
+- **Results copy:** the per-role fit descriptions, the "why you scored that way" interpretation for a teen, the way mocked programs are described.
 - **Landing copy:** the single sentence that frames the whole experience.
+- **Specific robot-part choices per interest** — _documented cut;_ parked with the robot build (§6).
 
 ## 14. Explicitly out of scope
 
@@ -246,4 +265,4 @@ Auth, accounts, persistence, backend, real ARM data, the professional track, 3D/
 
 **Note on demo affordances.** Two non-core conveniences are intentionally allowed even though they are not part of the user-facing flow in section 5: a `?demo=true` mode that pre-fills a representative result and jumps straight to Results, and a hidden skip-to-results link for demo and user-test setup. Both are Phase 3 tooling (see `ROADMAP.md` 4.5 and 4.7), exist only to make demos and testing faster, and are the documented exception to "no step not described above."
 
-**Note on the flow switcher (2026-06-07).** The Landing screen carries a small researcher-facing segmented control that switches the active flow — Narrative / Exam / Classic — for the question-structure study (`DATA_MODEL.md` §17, `DECISIONS.md` D-017). Like the demo affordances above, it is a documented research instrument, not user-facing product scope; ARM's production build would drop it and ship a single chosen flow. (This supersedes the 2026-06-04 A/B language switcher.)
+**Note on the flow switcher (2026-06-07, updated 2026-06).** The Landing screen carries a small researcher-facing segmented control that picks the study condition: Narrative / Exam / Select (`DATA_MODEL.md` §17, `DECISIONS.md` D-017, D-021). Classic is dormant with no UI entry; its switcher slot went to the `/select` role-pick comparator. Like the demo affordances above, the switcher is a documented research instrument, not user-facing product scope; ARM's production build would drop it and ship a single chosen flow. (This supersedes the 2026-06-04 A/B language switcher.)

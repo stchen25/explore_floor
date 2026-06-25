@@ -10,7 +10,7 @@ This doc exists so Claude Code (or any new collaborator) can internalize the *wh
 
 RoboticsCareer.org has a real engagement problem: roughly 105,000 annual visitors, 3,800 registered accounts, fewer than 1,700 of those with completed competency profiles, an average session under a minute, and a return rate so low that most users never come back. The team's research found that the barrier is not lack of interest — it's lack of specificity. A large "maybe" group has not converted curiosity into intent because they cannot picture what robotics manufacturing work actually looks like or see themselves doing it. The site's current quizzes worsen this by being prescriptive, abstract, and giving users nothing memorable to leave with.
 
-This build is the design response: a single replacement for the three weak existing tools (Explore the Floor, My Goal, Interest Quiz) that lets a high schooler discover roles through concrete interests, builds them a personal robot that visualizes their fit, and shows specific paths and programs to grow into any of the three robotics manufacturing role families. It's a discovery experience and a conversion engine in one.
+This build is the design response: a single replacement for the three weak existing tools (Explore the Floor, My Goal, Interest Quiz) that lets a high schooler discover roles through concrete, relatable choices in a day-in-the-life narrative, shows how they match real RC.org career paths, and points to specific programs to grow into them. It's a discovery experience and a conversion engine in one. _(The live product is the narrative quiz; the original robot-building, three-role-family framing is the documented cut, see `PRD.md` and `docs/knowledge/REALIGNMENT.md`. The research findings below are unchanged.)_
 
 ## 2. The platform problem
 
@@ -64,7 +64,7 @@ This is the single most actionable finding and the explicit foundation of this b
 
 > *"The problem isn't a lack of interest, it's a lack of specificity. There's a large 'maybe' group that hasn't converted interest into career intent because they can't picture what the work actually looks like."*
 
-The build's results screen exists to be the answer to that question, in the specific way: here are the three role families, here's how you match each, here are the concrete skills and competencies you'd build for them, here are the programs that get you there.
+The build's results screen exists to be the answer to that question, in the specific way: here are the RC.org career categories, here's how you match each, here are the concrete skills and competencies you'd build for them, here are the programs that get you there.
 
 ## 4. How this build maps to the insights
 
@@ -72,9 +72,9 @@ The build's results screen exists to be the answer to that question, in the spec
 |---|---|
 | Identity forms early | Audience is locked to late-HS training-seekers, not adult job-seekers. Tone and content tuned to that window. |
 | The barrier is invisibility | The interest items are concrete activities ("Building or fixing things," "Coding or modding games") that make the work visible rather than asking about abstract competencies. |
-| Pipeline runs through hands-on experience | The sorting mechanic is hands-on as a digital experience can be — drag, sort, build a robot. The robot avatar is the artifact you "made," echoing the artifact-driven satisfaction of a robotics club project. |
+| Pipeline runs through hands-on experience | The narrative mechanic is hands-on as a digital experience can be: you move through a day in your life and sort each choice, mimicking how you'd actually weigh real interests. _(The original robot-avatar artifact is the documented cut.)_ |
 | Parents/educators have stale info | The result screen reads in plain language for any adult looking over the user's shoulder: real roles, real programs, real next steps. No jargon. |
-| Maybe group converts through specificity | The compare interaction on results — your robot on a pedestal, ghosted alternatives, drag to see "how you'd match this, what you'd build, programs that get you there" — is the entire specificity payload as a single interactive moment. |
+| Maybe group converts through specificity | The compare interaction on results (your top match centered, the other categories alongside it, tap to see "how you'd match this, why you scored that way, the education and pay it asks for, programs that get you there") is the entire specificity payload as a single interactive moment. |
 
 ## 5. Where this fits in the bigger picture
 
@@ -97,7 +97,7 @@ The SME interview with Jessica Hammer (CMU Center for Transformational Play) pro
 - Games allow for "half-real" decisions, ones with stakes inside the experience but no real-world consequence. This makes them safe places to explore.
 - Crucially, the act of role-play in an epistemic game changes how the player thinks about that profession afterward, even if they don't pursue it. The frame shifts.
 
-This experience is, deliberately, a small epistemic game. The user is invited to *try on* the role of someone who works in robotics manufacturing, through sorting that mimics how they'd think about real interests, through a tangible artifact (the robot) that represents their fit, and through a result that says "here's who you could be in this world, here's how to get there." It is half-real on purpose. The stakes are inside the experience. The shift in framing afterward is the actual product.
+This experience is, deliberately, a small epistemic game. The user is invited to *try on* the role of someone who works in robotics manufacturing, by moving through a day in their life and sorting how each moment fits, and through a result that says "here's who you could be in this world, here's how to get there." It is half-real on purpose. The stakes are inside the experience. The shift in framing afterward is the actual product.
 
 ## 7. Source material
 

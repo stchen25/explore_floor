@@ -16,12 +16,15 @@ These two items go beyond simple rewording, so confirm the intent before applyin
 
 **2. Scene 7 game examples.** The board shortened the scene 7 choices from "Puzzle-solving game like Portal or Outer Wilds" to just "Puzzle-solving game", and the same for the other three. Dropping the named examples removes the relatability hooks that worked well for the Gen Z audience, and it may just be sticky-note shorthand rather than a deliberate cut. This guide's default keeps the **current examples** for scene 7 and flags it. If the team really did mean to drop them, apply the shortened version shown in change **S-7**.
 
+> **As-built (reconciled 2026-06-25):** the team confirmed the board's **shortened** version. `narrativeFlow.ts` `n-s7` ships the short labels ("Puzzle-solving game", "Strategy game", "Building game", "Simulation games"), i.e. change **S-7** was applied, not the default.
+
 ---
 
 ## Ground rules (do not change these)
 
 - **Preserve these choice IDs.** `tests/e2e/narrative.spec.ts` references them by ID: `n-q1-no`, `n-q3-60`, `n-q4-typing`, `n-q5-solving`. Keep those IDs even where their labels stay the same. Other IDs can keep their current values; only add new IDs for genuinely new choices.
 - **Keep `expectedCategoryMax: { operate: 9, repair: 9, program: 9, plan: 9 }`.** The new mappings still yield a full-path max of 9 per category, so the declared value is unchanged. `src/lib/__tests__/data-integrity.test.ts` asserts declared equals computed, so leave the number alone and let the test confirm it.
+  > **As-built (reconciled 2026-06-25, D-023):** superseded. The **intro-question scoring pass** (the separate `Narrative Quiz V3 - Intro Question Scoring.md`) tagged Q1/Q2/Q3, which raised the full-path max to **11 per category**. The shipped value is `{ operate: 11, repair: 11, program: 11, plan: 11 }`. This "keep 9" rule held only for the language pass in isolation.
 - **Don't touch** `landingCopy`, `resultsCopy`, the scene/MC step `type`s, the three-bucket sort labels (`src/data/flows/buckets.ts`), or `src/data/flows/screeners.ts`. The new experience question is an unscored background question and does **not** get a `SCREENER_LEVELS` entry.
 - **Each `scene` step keeps exactly four choices, one per category.** Only `mc` steps may have a different count (Q4 grows from three choices to four).
 

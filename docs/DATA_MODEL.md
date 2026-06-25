@@ -2,11 +2,15 @@
 
 This is the schema spec for everything in `/src/data` and the pure helpers in `/src/lib` that consume it. It's the load-bearing doc. Get this right and the rest of the build is structured edits; get it wrong and the experience leaks logic into UI code, which is the failure mode this convention exists to prevent.
 
-The single guiding principle: **data is data, not code.** All content (interest items, weights, role copy, competency wording, programs, robot part mappings) lives here. UI reads it. Logic transforms it. Nothing about the content lives in a component.
+The single guiding principle: **data is data, not code.** All content (scene choices, statements, intro questions, weights, role copy, competency wording, programs) lives here. UI reads it. Logic transforms it. Nothing about the content lives in a component.
+
+> **Read this first (realignment, 2026-06).** The **live model is §17, the four-category flow system** (`operate / repair / program / plan`), which the shipping Narrative and Exam flows score with `lib/categoryScoring.ts`. Treat §17 and `lib/screenerFit.ts` as the **primary** schema. Sections **§1–§14 describe the classic three-archetype / 24-item / robot pipeline**, now a **documented cut**: it survives only as the dormant Classic flow, validated by `data-integrity.test.ts` until the classic archival removes it (the realignment's destructive phase, see `docs/knowledge/REALIGNMENT.md`). The robot-parts schema (§7), robot assembly (§10), and the A/B question-set apparatus (§16) are parked the same way the future 3D path is parked in `ARCHITECTURE.md`: kept for the record, no longer the plan. Where a classic section and §17 appear to disagree, §17 is current.
 
 ---
 
 ## 1. Overview
+
+> **Primary model is §17.** This overview lists the **classic** entities (the documented cut). The live flows score the four-category model whose entities (`Flow`, `FlowStep`, `CategoryId`, `RoleDetail`, `CategoryResult`) live in §17.
 
 The model has six core entities:
 
@@ -304,6 +308,8 @@ Each is `{ id, name }` only. No plain-name translation needed; the names are alr
 
 ## 7. Robot parts library
 
+> **Documented cut.** The robot was never built as a scene and the live flows skip the robot build (§17). `robotParts.ts` is dormant classic data, validated by `data-integrity.test.ts` only until the classic archival. Parked, not the plan.
+
 Lives in `/src/data/robotParts.ts`. Each `RobotPart` references an SVG React component that lives in `/src/scene/robot/parts/`. The library is the **interface between data and visuals**: items reference part IDs, the build logic resolves them to SVG components.
 
 For Phase 0 and 1, parts are placeholder shapes. Phase 2 is when the actual stylized SVG art gets made.
@@ -346,7 +352,7 @@ Each archetype has a color scheme defined in `/src/data/colorSchemes.ts`. Final 
 
 ## 8. Mock training programs
 
-Lives in `/src/data/programs.ts`. Seed about 6-10 representative programs covering all three role families. Accuracy is not required; structure is. The team can swap these out wholesale without breaking anything.
+Lives in `/src/data/programs.ts` (shared, live). Seed about 6-10 representative programs covering the three role families. Accuracy is not required; structure is. The team can swap these out wholesale without breaking anything. _(`programs.ts` is keyed by the classic `RoleId`s — technician/specialist/integrator. The live four-category results reach it through the category-to-role mapping, Operate→Operator, Repair→Technician, Program→Specialist, Plan→Integrator.)_
 
 Seed examples:
 
@@ -444,6 +450,8 @@ The pass-equals-zero rule means a picky user can produce all-low scores honestly
 
 ## 10. Robot assembly
 
+> **Documented cut.** Parked with the robot build (§6/§7). The live flows never touch `robot` state. `robotAssembly.ts` is dormant classic code until the classic archival.
+
 Lives in `/src/lib/robotAssembly.ts`. Pure function.
 
 ### Signature
@@ -521,24 +529,35 @@ Conventions:
 
 ```
 /src/data
-  types.ts              All TypeScript interfaces
-  items.ts              The 24 InterestItem objects
-  roles.ts              The 3 Role objects
+  types.ts              All TypeScript interfaces (classic + the §17 flow/category types)
+  flows/                LIVE (§17) — the question-structure study
+    narrativeFlow.ts    Narrative flow: intro MC (Q0-Q5) + 7 scenes
+    examFlow.ts         Exam flow: background MC + the 30-statement sort
+    classicFlow.ts      Classic flow: wraps question set A by reference (dormant)
+    screeners.ts        Screener appetite levels + fit copy (D-020)
+    buckets.ts          The shared SORT_BUCKETS (That's me / Kinda me / Not me)
+    index.ts            Registry: flows map, flowList, defaultFlowId
+  roleDetails.ts        LIVE (§17) — the four RC.org category roles (keyed by CategoryId)
   competencies.ts       All Competency objects (grouped by role internally)
   skills.ts             The 14 EssentialSkill objects
   programs.ts           Mock TrainingProgram objects (~6-10)
-  robotParts.ts         The RobotPart library
   colorSchemes.ts       Archetype -> color scheme mapping
-  questionSets/         A/B language-test variants (see section 16)
-    setA.ts             Set A — re-exports items/rounds/resultsCopy + owns its landing/sort copy
-    setB.ts             Set B — placeholder clone until the compiled content lands
+  items.ts              [documented cut] The 24 InterestItem objects
+  roles.ts              [documented cut] The 3 Role objects
+  robotParts.ts         [documented cut] The RobotPart library
+  questionSets/         [documented cut] A/B language-test variants (see section 16)
+    setA.ts             Set A — wrapped by the classic flow; owns its landing/sort/results copy
     index.ts            Registry: questionSets map, defaultSetId, questionSetList
   index.ts              Barrel export
 
 /src/lib
-  scoring.ts            calculateScores
-  robotAssembly.ts      assembleRobot
-  programSelection.ts   selectProgramsForRole
+  categoryScoring.ts    LIVE (§17) — calculateCategoryScores + computeCategoryMax
+  screenerFit.ts        LIVE (§17) — deriveScreenerProfile + screenerFitLines (D-020)
+  categoryBreakdown.ts  LIVE (§17) — the "why you scored that way" provenance
+  nodeLayout.ts         LIVE (§17) — node-graph + fit-radar geometry
+  scoring.ts            [documented cut] calculateScores (three-archetype)
+  robotAssembly.ts      [documented cut] assembleRobot
+  programSelection.ts   selectProgramsForRole (shared — results programs)
   index.ts              Barrel export
 
 /src/state
@@ -555,15 +574,14 @@ What's expected to change without code edits:
 
 - **Any text:** item labels, role descriptions, plain-name competency translations, job descriptions, program blurbs.
 - **All archetype weights** in `items.ts`. This is the primary scoring tuning surface.
-- **A whole question set** (section 16): set B's items, weights, robot mappings, and owned copy are authored in `questionSets/setB.ts` via the data-author skill — no component edits.
+- **A whole flow's content** (§17): a flow's scene choices, statements, intro-question tags, weights, and owned copy are authored in `src/data/flows/` via the data-author skill, no component edits. _(Documented cut: §16's set B authoring path is retired; only set A survives, wrapped by the dormant classic flow.)_
 - **Robot part assignments** per item (which partId each item references).
 - **Mock training programs** added, removed, or edited freely.
 
 What requires a code edit:
 
-- Adding a fourth archetype or role (don't do this).
+- Adding a fourth archetype to the **classic** three-archetype pipeline (don't do this). _(The live four-category flows in §17 are a parallel model that already has a fourth role, Operator; that's by design, not a violation of this rule.)_
 - Changing scoring algorithm shape.
-- Adding new robot slots.
 - Changing session state shape.
 
 If a content change feels like it needs a code edit, stop and ask. It probably doesn't, and the convention is what keeps the team's iteration cheap.
@@ -582,6 +600,8 @@ When `/src/data` is scaffolded from this doc, verify:
 - A unit test confirms `calculateScores` returns the expected primary archetype for a representative builder-heavy input.
 
 ## 16. Question sets (A/B language test)
+
+> **Documented cut.** The A/B language test was superseded by the question-structure study (§17, D-017) before set B was authored. The `QuestionSet` shape survives because the dormant **Classic** flow still wraps set A by reference; everything else here (set B, the `b-` cross-set machinery, the worksheet path) is parked. When the classic flow is archived, this whole section goes with it.
 
 Added 2026-06-04 for the first user test (see `DECISIONS.md` D-016; flagged in `PRD.md` §8/§14). The test compares two language treatments — formal/exam-like vs playful/narrativized — so the content the user reads ships as two swappable **question sets**.
 
@@ -622,7 +642,9 @@ interface QuestionSet {
 
 The formal-vs-playful A/B was **superseded by the question-structure study** (§17, `DECISIONS.md` D-017) before set B's content was authored. Set B and the `b-` cross-set machinery are removed; `QuestionSetId` is now just `'a'` and `questionSetList` holds only set A. The QuestionSet shape itself survives intact: the **classic** flow wraps set A by reference (§17), so the Phase 1 interest-sort pipeline is unchanged. `QUESTION_SET_WORKSHEET.md` is retained as a historical artifact but is no longer the live authoring path.
 
-## 17. Flows (question-structure study)
+## 17. Flows (question-structure study) — the primary model
+
+> **This is the live schema.** The shipping product is the Narrative and Exam flows defined here; the four-category model (`operate / repair / program / plan`) and its entities (`Flow`, `FlowStep`, `CategoryId`, `RoleDetail`, `CategoryResult`) are the current data model. §1–§14 are the documented-cut classic pipeline. `data-integrity.test.ts` enforces the invariants in this section per flow (the gate docs, `verifier` and `data-author`, headline these).
 
 Added 2026-06-07 for the first user test (see `DECISIONS.md` D-017; flagged in `PRD.md`). The test compares which **question structure** is most engaging and produces the most trusted results. Three selectable flows ship on one build; a researcher-facing segmented control on Landing switches between them per participant.
 
@@ -633,8 +655,8 @@ The original A/B (§16) assumed both conditions shared one flow shape (24-item s
 | Flow | `kind` | Shape | Results |
 |---|---|---|---|
 | **Classic** | `classic` | The Phase 1 experience, wrapping set A by reference. | 3 role cards (archetype pipeline, unchanged) |
-| **Narrative** | `narrative` | 5 intro MC questions (Q1 branches), then 7 day-in-the-life **scenes**; each scene's 4 choices are sorted into the 3 buckets, one card at a time (D-018). | category node map |
-| **Exam** | `exam` | 2 background MC + 1 mapped MC, then a **30-statement sort** into 3 buckets. | category node map |
+| **Narrative** | `narrative` | 6 intro MC questions (Q0–Q5; Q1 branches), then 7 day-in-the-life **scenes**; each scene's 4 choices are sorted into the 3 buckets, one card at a time (D-018). | category node map |
+| **Exam** | `exam` | 2 background MC + 1 mapped MC, then a **30-statement sort** into 3 buckets. | category dashboard |
 
 ### The four categories
 
@@ -681,7 +703,7 @@ Both new flows **skip the robot build + build beat** — the study keeps present
 
 ### Runtime model
 
-- Registry: `flows/index.ts` (`flows`, `flowList` ordered Narrative/Exam/Classic, `defaultFlowId` = `'classic'`). The store holds `flowId` **next to** session state (same survives-`reset()` mechanism as §16's `questionSetId`). The landing switcher calls `selectFlow`; the CTA routes by kind (`classic` → `/sort`, else → `/flow`).
+- Registry: `flows/index.ts` (`flows`, `flowList` ordered Narrative/Exam/Classic, `defaultFlowId` = `'narrative'` — classic is dormant, D-021). The store holds `flowId` **next to** session state (same survives-`reset()` mechanism as §16's `questionSetId`). The landing switcher calls `selectFlow`; the CTA routes by condition (`select` → `/select` with no session, `classic` → `/sort`, else → `/flow`).
 - `FlowRunner` (`/flow`) renders the current step by type and advances via `recordAnswer`/`recordStatement`/`advanceStep`/`completeFlow`; navigation is declarative off `currentScreen` so completion can't race the redirect. `/results` dispatches to `ClassicResults` or `CategoryResults` by kind.
 
 ### Invariants (enforced per flow by `data-integrity.test.ts`)

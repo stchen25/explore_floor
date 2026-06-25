@@ -22,18 +22,17 @@ This is the "how the code is organized" doc. It explains stack choices, how data
 The build is a design showcase, so motion gets two complementary engines with a hard ownership boundary between them. They do not conflict because **a given element and property is owned by exactly one library at a time.** Motion runs through React's render cycle and the Web Animations API. GSAP writes straight to the DOM and SVG and bypasses React's reconciler, which is why it stays at 60fps on large choreographed sequences. The only failure mode is two libraries grabbing the same transform on the same node at once, and the ownership rule below prevents that.
 
 - **Motion (the library formerly named Framer Motion)** owns everything driven by React state or component lifecycle: screen and route transitions (`AnimatePresence`), card enter/exit, the drag-to-bin gesture (`drag` + `dragConstraints`), hover/tap micro-interactions, results layout reflow (`layout` prop), the compare interaction (active card lights up, content swaps), and the central `prefers-reduced-motion` gate. Standard pattern: declarative `motion.div` / `motion.svg` with variants.
-- **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly: the conveyor item travel + arm reach + part-to-robot + snap as one timeline, the cinematic build beat, `DrawSVG` for the Goose-game linework drawing itself in, `MorphSVG` for shape morphs, `MotionPath` for parts arcing into their robot slots. GSAP is fully free as of 2025, including these formerly-paid plugins.
+- **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly. The one live use is `DrawSVG` for the Landing linework reveal. _(The conveyor item travel + arm reach + part-to-robot + snap timeline, the cinematic build beat, `MorphSVG`, and `MotionPath` parts-into-robot-slots are the documented cut, see the live ownership note below.)_ GSAP is fully free as of 2025, including these formerly-paid plugins.
 - **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Register plugins once at app start: `gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`.
 - **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (easings mirrored into the `@theme` block in `src/styles/globals.css`; durations stay in code). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
-- **Ownership per screen:** Landing — Motion for the CTA card; optional GSAP `DrawSVG` reveal of the scene hint. Sort — Motion owns the drag gesture and card UI; GSAP owns the belt and (Phase 2) the item-to-robot choreography. Build beat — pure GSAP timeline; this is the showcase moment. Results — Motion owns card layout and compare; GSAP (`Flip` or `MotionPath`) slides the robot between pedestals so it reads as continuous.
+- **Ownership per screen (live):** Landing — Motion for the CTA card; GSAP `DrawSVG` reveal of the scene hint (`.scene-draw`, the one GSAP flourish that ships). Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion owns the node-map layout and the compare swap (`layout`), and the dashboard reflow. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; the live GSAP surface is the single Landing reveal.)_
 - **Use the official GSAP AI skills.** GreenSock ships `greensock/gsap-skills` (Agent Skills format: core, timeline, plugins, react, performance). Install it into the repo's Claude Code skills in Phase 0 so the agent authors GSAP with GreenSock's canonical patterns rather than guessing. See `ROADMAP.md` Phase 0.
 - **Not used:** anime.js (overlaps GSAP, adds a third paradigm) and Lottie (passive playback, can't drive the interactive robot). Rive is a documented future exploration for the robot only; see section 9.
 
 ### Scene rendering
 
-- **Plain SVG as React components.** The assembly-line scene, the conveyor, the robotic arms, the bins, and the robot itself are all composed SVG. Each part is its own component in `/src/scene/`.
-- No canvas. No WebGL in v1. No Pixi.js. This is a deliberate choice for Claude Code's success rate (debuggable, inspectable, no shader-level issues) and for the Goose-game aesthetic (vector linework + soft fills works perfectly here).
-- The 3D migration path is real and documented in section 9. SVG today does not preclude 3D later.
+- **Plain SVG as React components.** The live SVG is the results geometry (the node map and the four-axis fit radar, driven by `lib/nodeLayout.ts`) plus the two `/src/scene/` placeholders. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
+- _(Documented cut: the full assembly-line scene, conveyor, robotic arms, bins, and the composed-SVG robot in `/src/scene/` were the original plan, never built. §5 and the §9 3D path are parked with them.)_
 
 ### State
 
@@ -48,7 +47,7 @@ The build is a design showcase, so motion gets two complementary engines with a 
 ### Testing
 
 - **Playwright** for end-to-end and visual regression. Set up in Phase 0 with one happy-path test. Expanded each phase.
-- **Vitest** for unit tests of pure functions (`scoring.ts`, `robotAssembly.ts`, `programSelection.ts`). The scoring engine in particular is exhaustively tested because it's the brain.
+- **Vitest** for unit tests of pure functions. The live brain is `categoryScoring.ts` (exhaustively tested), with `screenerFit.ts`, `categoryBreakdown.ts`, and `nodeLayout.ts` alongside it; `data-integrity.test.ts` guards the §17 invariants. The classic `scoring.ts` / `robotAssembly.ts` specs are dormant (documented cut).
 
 ### Tooling
 
@@ -66,6 +65,8 @@ The build is a design showcase, so motion gets two complementary engines with a 
 - No routing library bigger than what we need. Use **React Router** for the few routes we have (landing, sort, build, results) and don't reach further.
 
 ## 2. Data flow at a glance
+
+> The diagram below shows the **classic** (documented-cut) path. The **live** flows follow the same shape with different actors: `sessionStore` actions `recordAnswer` / `recordStatement` / `advanceStep` / `completeFlow` feed `lib/categoryScoring` (the four-category engine), `lib/screenerFit` (the fit line), and `lib/categoryBreakdown` (the score provenance); the `Flow` and `roleDetails` data come from `/src/data/flows` and `roleDetails.ts`. The principle is identical: data down, actions up, logic in pure `/src/lib` functions.
 
 ```
                   ┌──────────────────────┐
@@ -102,9 +103,9 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │                                  (MCP servers configured globally, not via a shipped .mcp.json — see DECISIONS D-012)
 ├── .claude/                       The agent + design harness
 │   ├── settings.json              Permission allowlist + enabledMcpjsonServers whitelist
-│   ├── skills/                    data-author, scene-motion
-│   ├── agents/                    verifier, design-reviewer
-│   └── commands/                  phase-check, design-review, compound, capture-figma, pull-figma
+│   ├── skills/                    data-author, scene-motion (+ installed GSAP/Motion packs)
+│   ├── agents/                    verifier, design-reviewer, doc-steward
+│   └── commands/                  phase-check, design-review, compound, capture-figma, pull-figma, revise-doc
 ├── docs/                          All planning docs
 │   ├── PRD.md
 │   ├── CONTEXT_BRIEF.md
@@ -121,103 +122,71 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   └── favicon.svg
 │
 ├── src/
-│   ├── app/
-│   │   ├── App.tsx                Top-level component
-│   │   ├── router.tsx             React Router config
-│   │   ├── providers.tsx          Any global providers (rarely needed)
-│   │   └── main.tsx               Vite entry point
+│   ├── app/                       App.tsx, router.tsx, providers.tsx, main.tsx (plugin registration)
 │   │
 │   ├── screens/
-│   │   ├── Landing/
-│   │   │   ├── Landing.tsx
-│   │   │   ├── LandingScene.tsx
+│   │   ├── Landing/               Landing.tsx (the researcher flow switcher) + index
+│   │   ├── Flow/                  LIVE — the narrative + exam runner
+│   │   │   ├── FlowRunner.tsx     Renders the current step by type; advances the flow
+│   │   │   ├── MCQuestion.tsx     Intro / background multiple-choice steps
+│   │   │   ├── SceneSortView.tsx  A narrative scene: its 4 choices, bucket-sorted
+│   │   │   ├── StatementSortView.tsx  The exam's 30-statement sort
+│   │   │   ├── BucketSort.tsx     Shared one-card-at-a-time bucket sort
 │   │   │   └── index.ts
-│   │   ├── Sort/
-│   │   │   ├── Sort.tsx
-│   │   │   ├── SortCard.tsx
-│   │   │   ├── SortBins.tsx
-│   │   │   ├── RoundIndicator.tsx
-│   │   │   └── index.ts
-│   │   ├── Build/
-│   │   │   ├── Build.tsx
-│   │   │   └── index.ts
-│   │   └── Results/
-│   │       ├── Results.tsx
-│   │       ├── RoleCard.tsx
-│   │       ├── Pedestal.tsx
-│   │       ├── ProgramList.tsx
-│   │       └── index.ts
+│   │   ├── Results/
+│   │   │   ├── Results.tsx        Dispatches by flow.kind (classic | narrative | exam)
+│   │   │   ├── category/          LIVE — narrative node map
+│   │   │   │   ├── CategoryResults.tsx, NodeMap.tsx
+│   │   │   │   ├── RoleDetailSheet.tsx, FitRadar.tsx, FitNote.tsx
+│   │   │   ├── exam/              LIVE — exam dashboard
+│   │   │   │   ├── ExamResults.tsx, CategoryBars.tsx, ScoreBreakdown.tsx, YourRoles.tsx
+│   │   │   └── [documented cut] ClassicResults.tsx, RoleCard.tsx, Pedestal.tsx,
+│   │   │       ProgramList.tsx, FourPartRead.tsx
+│   │   ├── Select/                RoleSelect.tsx — the /select role-pick comparator
+│   │   ├── Sort/                  [documented cut, dormant] Sort.tsx, RoundBeat.tsx
+│   │   └── Build/                 [documented cut, dormant] Build.tsx
 │   │
-│   ├── scene/
-│   │   ├── ConveyorBelt.tsx
-│   │   ├── ConveyorItem.tsx
-│   │   ├── RoboticArm.tsx
-│   │   ├── Bin.tsx
-│   │   ├── Factory.tsx            Background factory scene
-│   │   └── robot/
-│   │       ├── Robot.tsx          Composes all the parts
-│   │       ├── parts/
-│   │       │   ├── WrenchArm.tsx
-│   │       │   ├── BinaryDecal.tsx
-│   │       │   ├── ChipPin.tsx
-│   │       │   ├── Clipboard.tsx
-│   │       │   ├── MiniRobotArm.tsx
-│   │       │   ├── HardHat.tsx
-│   │       │   ├── MagnifierHead.tsx
-│   │       │   ├── ...
-│   │       │   └── DefaultBase.tsx
-│   │       └── index.ts
+│   ├── scene/                     [documented cut] LandingSceneHint.tsx, RobotPlaceholder.tsx
+│   │                              (placeholders only; the conveyor/robot scene was never built)
 │   │
-│   ├── components/
-│   │   ├── Button.tsx
-│   │   ├── Card.tsx
-│   │   ├── ProgressBar.tsx
-│   │   ├── SoundToggle.tsx
-│   │   └── motion/                Reusable motion primitives
-│   │       ├── FadeIn.tsx
-│   │       └── SnapInto.tsx
+│   ├── components/                Button, SegmentedControl, DragSortCard, DropZone, ProgressBar,
+│   │                              RoundIndicator, MatchIndicator, categoryAccent.ts (live),
+│   │                              accent.ts (classic)
 │   │
-│   ├── state/
-│   │   └── sessionStore.ts
+│   ├── state/                     sessionStore.ts, useFlow.ts, useQuestionSet.ts
 │   │
-│   ├── data/                      See DATA_MODEL.md for full contents
-│   │   ├── types.ts
-│   │   ├── items.ts
-│   │   ├── roles.ts
-│   │   ├── competencies.ts
-│   │   ├── skills.ts
-│   │   ├── programs.ts
-│   │   ├── robotParts.ts
-│   │   ├── colorSchemes.ts
+│   ├── data/                      See DATA_MODEL.md §17 (live) + §1–§14 (documented cut)
+│   │   ├── flows/                 LIVE — narrativeFlow, examFlow, classicFlow, screeners,
+│   │   │                          buckets, index (registry)
+│   │   ├── roleDetails.ts         LIVE — the four category roles
+│   │   ├── roleSelect.ts          /select copy
+│   │   ├── competencies.ts, skills.ts, programs.ts, colorSchemes.ts  (shared)
+│   │   ├── [documented cut] items.ts, roles.ts, robotParts.ts, resultsCopy.ts,
+│   │   │                    rounds.ts, questionSets/
+│   │   ├── types.ts               classic + §17 flow/category types
 │   │   └── index.ts
 │   │
 │   ├── lib/
-│   │   ├── scoring.ts
-│   │   ├── robotAssembly.ts
-│   │   ├── programSelection.ts
-│   │   ├── audio.ts               Howler wrapper, respects sound toggle
-│   │   ├── __tests__/
-│   │   │   ├── scoring.test.ts
-│   │   │   ├── robotAssembly.test.ts
-│   │   │   └── programSelection.test.ts
+│   │   ├── categoryScoring.ts     LIVE — calculateCategoryScores + computeCategoryMax
+│   │   ├── screenerFit.ts         LIVE — the education/pay fit line
+│   │   ├── categoryBreakdown.ts   LIVE — the "why you scored that way" provenance
+│   │   ├── nodeLayout.ts          LIVE — node-graph + fit-radar geometry
+│   │   ├── gsap.ts                LIVE — GSAP plugin registration + the Landing reveal
+│   │   ├── motion.ts              Motion tokens (durations/easings); both engines read these
+│   │   ├── programSelection.ts    Shared — results programs
+│   │   ├── [documented cut] scoring.ts, robotAssembly.ts, fit.ts, audio.ts
+│   │   ├── __tests__/             categoryScoring, screenerFit, categoryBreakdown, nodeLayout,
+│   │   │                          data-integrity (+ classic specs, dormant)
 │   │   └── index.ts
 │   │
 │   └── styles/
 │       └── globals.css            Tailwind v4 entry (@import) + @theme design tokens (canonical source)
 │
 ├── tests/
-│   ├── e2e/
-│   │   ├── happy-path.spec.ts
-│   │   ├── results-compare.spec.ts
-│   │   └── ...
-│   ├── visual/                    Visual regression specs (Phase 2+)
-│   └── fixtures/
+│   └── e2e/                       narrative.spec, exam.spec, role-select.spec (live);
+│                                  happy-path, compare, reduced-motion (classic, dormant)
 │
-├── tsconfig.json
-├── vite.config.ts
-├── playwright.config.ts
-├── package.json
-├── pnpm-lock.yaml
+├── tsconfig.json, vite.config.ts, playwright.config.ts, package.json, pnpm-lock.yaml
 └── README.md                      Teammate onboarding + MCP/toolchain setup; defers to docs/
 ```
 
@@ -253,7 +222,9 @@ Either compute inside a store action (and store the result), or use a selector p
 
 None in v1. State lives in memory and resets on refresh. This is intentional for the prototype.
 
-## 5. Scene composition
+## 5. Scene composition — documented cut
+
+> **Parked.** The assembly-line scene was never built; `/src/scene/` holds only two placeholders (`LandingSceneHint`, `RobotPlaceholder`). None of the `ConveyorBelt` / `RoboticArm` / `Bin` / `Factory` / `robot/parts` hierarchy below exists. The two-engine ownership rule (§1) still governs the **live** modest motion: Motion owns the bucket-sort drag, step transitions, and the node-map compare; GSAP owns the single Landing `DrawSVG` reveal. The composition spec below is the original direction, kept for the record.
 
 The assembly-line scene is built as a hierarchy of SVG React components. The scene choreography (belt, item travel, arm, part-to-robot) is driven by GSAP timelines; the drag-to-bin gesture and any React-state-driven transitions are Motion. See the ownership rule in section 1.
 
@@ -281,16 +252,15 @@ SVG performs fine at our scale. Cap the number of animated nodes to a few dozen 
 
 ## 6. Routing
 
-Four routes:
+Routes (`/src/app/router.tsx`):
 
-- `/` — Landing
-- `/sort` — the conveyor-belt experience
-- `/build` — the Build beat (often a transient pass-through)
-- `/results` — Results
+- `/` — Landing (the researcher flow switcher)
+- `/flow` — the `FlowRunner` (narrative + exam): renders the current step by type
+- `/results` — Results (dispatches by `flow.kind`: node map, dashboard, or classic)
+- `/select` — the role-pick comparator (`RoleSelect`, the industry-professional arm)
+- `/sort`, `/build` — **documented cut, dormant.** The classic interest-sort and Build beat. Kept registered so the classic data stays exercised, but they have no UI entry (the landing switcher reads Narrative / Exam / Select; `defaultFlowId = 'narrative'`, D-021).
 
-The router lives in `/src/app/router.tsx`. Navigation between screens happens via store actions that update `state.currentScreen` *and* call `navigate()`. Keep the URL in sync so refresh-on-results lands sanely (or, in v1, just redirects to landing — acceptable for a prototype).
-
-Phase 0 stubs all four screens; Phase 1 fills them with real content.
+Navigation happens via store actions that update `state.currentScreen` *and* call `navigate()`; completion is declarative off `currentScreen` so it can't race the redirect. Refresh-on-results redirecting to landing is acceptable for a prototype.
 
 ## 7. Figma integration via MCP
 
@@ -319,8 +289,8 @@ The capture works on *rendered* UI, so the value is uneven by surface, and that'
 
 Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between the Figma file and the `@theme` block in `src/styles/globals.css`. Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
 
-- Figma `color/brand/arm-yellow` ↔ Tailwind `arm-yellow`
-- Figma `color/archetype/builder` ↔ Tailwind `archetype-builder`
+- Figma `color/brand/gold` ↔ Tailwind `arm-gold` (kit-aligned; renamed from `arm-yellow`, D-024)
+- Figma `color/category/operate` ↔ Tailwind `arm-gold` (category accents map to kit brand tokens, `categoryAccent.ts`)
 - Figma `space/4` ↔ Tailwind `space-4`
 
 Sync a related set as one operation (all colors at once, the full type scale at once) so there's no half-synced in-between state. Naming alignment is a soft convention that makes the round-trip cleaner; it is not enforced by tooling.
@@ -348,9 +318,10 @@ Playwright is set up in Phase 0 and runs as part of `pnpm test`. It serves two p
 
 ### Test types
 
-- **Happy-path E2E.** One test that walks the user from landing through sorting (with a known set of decisions) to results, asserting that the results screen shows the expected primary role.
-- **Interaction tests.** Drag-and-drop, the compare-by-moving-robot interaction on results, the sound toggle.
-- **Visual regression.** Snapshot key screens (landing, mid-sort, build moment, results). Phase 2+.
+- **Flow E2E (live).** `narrative.spec` and `exam.spec` walk a known set of answers through `/flow` to `/results`, asserting the displayed percentages match the engine and the right top match shows; `role-select.spec` covers the `/select` comparator.
+- **Interaction tests.** The bucket-sort drag, the node-map compare swap, the landing flow switcher.
+- **Classic specs (dormant).** `happy-path`, `compare`, `reduced-motion` drive the documented-cut classic flow via a dev-only store handle (D-021); they re-baseline when the classic flow is archived.
+- **Visual regression.** Snapshot key screens. A later add.
 
 ### Self-verification by Claude Code
 
@@ -365,6 +336,8 @@ Tests use fixed seed data, not the live mock data. Tests live in `/tests/`, fixt
 `playwright.config.ts` runs against the dev server. Browsers: Chromium for fast iteration, with Firefox/WebKit as an optional matrix in CI. Headless by default.
 
 ## 9. The future 3D path (documented, not built)
+
+> **Doubly parked.** This path migrates the assembly-line scene to 3D, but that scene is itself the documented cut (§5) and the live flows skip the robot entirely. So the 3D path is contingent on first building the 2D scene the realignment cut. Kept for the record only; it is not on any current track.
 
 The PRD scopes the prototype to 2D. This section exists so the team has a credible path to 3D later without redoing the foundation.
 
