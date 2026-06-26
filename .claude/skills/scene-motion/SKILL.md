@@ -30,7 +30,7 @@ Durations and easings live in `/src/lib/motion.ts` and are read by **both** engi
 Nothing animates in 0ms. Scene uses spring physics; UI cards use tweens. Respect `prefers-reduced-motion` (fast crossfade instead of physical motion).
 
 ## SVG rendering
-The live SVG is the **results geometry**: the narrative node map and the four-axis fit radar, driven by `lib/nodeLayout.ts` (no canvas, no WebGL). Named motion variants live alongside the component that uses them. _(Documented cut: the `/src/scene/` assembly-line hierarchy — `Factory`, `ConveyorBelt`, `RoboticArm`, `Bin`, `Robot` — was never built; `/src/scene/` holds only two placeholders.)_
+The live SVG is the **results geometry**: the narrative node map and the three-axis (triangle) fit radar, driven by `lib/nodeLayout.ts` (no canvas, no WebGL). Named motion variants live alongside the component that uses them. _(Documented cut: the `/src/scene/` assembly-line hierarchy — `Factory`, `ConveyorBelt`, `RoboticArm`, `Bin`, `Robot` — was never built; `/src/scene/` holds only two placeholders.)_
 
 ## Before done
 - Confirm no node has both engines on the same property.

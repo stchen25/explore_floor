@@ -11,8 +11,8 @@
 @theme {
   /* ---- Brand (kit-aligned — DESIGN_SYSTEM §3.1) ----
      Values snapped to the RC UI Kit (matches career_dashboard D-026). The old
-     archetype→color mapping is retired; accents are used by function now. The four
-     category accents (categoryAccent.ts) and the legacy blue link voice still ride
+     archetype→color mapping is retired; accents are used by function now. The three
+     role accents (categoryAccent.ts) and the legacy blue link voice still ride
      arm-blue — reconciled with the kit's restrained teal-led palette in the
      results-screen redesign (step 8). */
   --color-arm-gold: #ffb81c; /* kit: ARM Gold — primary brand + CTA fill */
@@ -38,7 +38,7 @@
   --color-white: #ffffff;
 
   /* ---- Playful scene layer — only LandingSceneHint.tsx (the conveyor placeholder) consumes these.
-     Slated for removal with the classic-conveyor archival; left as-is for now. ---- */
+     Kept through the Phase-4 strip (D-027) for the step-8 Landing-hero redesign, which retires them. ---- */
   --color-scene-paper: #f5efe3;
   --color-scene-paper-warm: #efe4ce;
   --color-scene-line: #2d3a4a;

@@ -101,7 +101,7 @@ sections:
         check: React-state/gesture motion uses Motion; the one GSAP use is the Landing reveal
 ---
 
-Checks whether UI honors the kit-aligned, RC.org-derived design system: brand-exact color, the four-category accents, the preserved type system, the spacing/radius/shadow foundation, and motion discipline. This rubric governs *system conformance* and now also covers motion (folded in from the retired `motion-quality.md`). The visual quality of the high-fidelity results screen is judged by `results-screen.md`. _(The `goose-game-aesthetic.md` scene rubric was retired with the conveyor vision, D-026.)_
+Checks whether UI honors the kit-aligned, RC.org-derived design system: brand-exact color, the three-role accents, the preserved type system, the spacing/radius/shadow foundation, and motion discipline. This rubric governs *system conformance* and now also covers motion (folded in from the retired `motion-quality.md`). The visual quality of the high-fidelity results screen is judged by `results-screen.md`. _(The `goose-game-aesthetic.md` scene rubric was retired with the conveyor vision, D-026.)_
 
 ## Scope & Grounding
 
@@ -125,7 +125,7 @@ Checks whether UI honors the kit-aligned, RC.org-derived design system: brand-ex
 Every reused or semantically named value lives in the `@theme` block in `src/styles/globals.css` (color/type/space/radius) or `/src/lib/motion.ts` (durations/easings). Inline hex and magic pixels are the single most common drift and break the Figma↔code token alignment. **Pass:** `className="text-arm-orange p-space-4 rounded-md"`. **Fail:** `style={{ color: '#F56A00', padding: '23px' }}`.
 
 ## 2. Color usage
-The kit brand colors are exact and non-negotiable. The four categories are color-coded in one place, `categoryAccent.ts`: **operate→`arm-gold`, repair→`arm-orange`, program→`arm-blue`, plan→`arm-teal`**. A screen reads the token, never a hardcoded hex. `arm-gold` is the global brand signature and the primary CTA fill (operate's `text-arm-gold` accent is the interim step-8 exception). The Make.md neons are dead. Product is light-mode only. **Fail:** inventing a per-screen category color, or hardcoding `#38A5EE` instead of the `categoryAccent.ts` token. _(The classic Builder/Innovator/Architect archetype accents are the documented cut.)_
+The kit brand colors are exact and non-negotiable. The three roles are color-coded in one place, `categoryAccent.ts`: **technician→`arm-gold`, specialist→`arm-blue`, integrator→`arm-teal`**. A screen reads the token, never a hardcoded hex. `arm-gold` is the global brand signature and the primary CTA fill (the Technician `text-arm-gold` accent shares it; reconciled with the kit's teal-led palette in the step-8 results redesign). The Make.md neons are dead. Product is light-mode only. **Fail:** inventing a per-screen role color, or hardcoding `#38A5EE` instead of the `categoryAccent.ts` token. _(The four study categories `operate/repair/program/plan` and the classic Builder/Innovator/Architect archetype accents are the documented cut; D-028 collapsed accents to the three roles.)_
 
 ## 3. Typography
 Montserrat for headings, Roboto for body, always. Sizes come from the scale (H1 56/64 … body 16/22, small 14/22). Match percentage renders as H2 in the category accent. **Fail:** a display font swapped in ad hoc, or a hand-set `font-size: 19px`.

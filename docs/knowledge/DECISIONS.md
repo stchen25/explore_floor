@@ -111,7 +111,7 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 - **Alternatives:** Keep the arrow/Enter mechanic (rejected per user); remove keyboard entirely incl. button activation (rejected — needlessly drops the free native a11y).
 - **Affected:** `src/screens/Sort/Sort.tsx`, `src/screens/Sort/SortBin.tsx`; `ROADMAP.md` §2.2 (keyboard bullet) + the round-beat copy example. Full keyboard-nav polish remains a Phase 3 a11y item.
 
-### D-014 — Phase 2 sort model: user drags parts off the belt; the arm assembles from the keep bin
+### D-014 — Phase 2 sort model: user drags parts off the belt; the arm assembles from the keep bin — *superseded-in-practice (Phase-2 conveyor cut; D-025 documented-cut, D-027 strip)*
 - **Decision:** Refine the Phase 2 conveyor interaction. **The user drags interest parts directly off the moving belt into one of two bins set in front of the line (downscreen in 2D): "That's me" / "Not my thing." A robot arm then lifts each kept part from the "That's me" bin and assembles it onto the robot standing behind/above the belt.** A second arm — or a trash chute — clears the "Not my thing" bin (exact treatment is a Phase 2 authoring choice, TBD). This supersedes the earlier "user controls the arm to push items to bins" framing.
 - **Why:** User's articulated vision at the Slice 1 checkpoint. Dragging parts directly is more legible and direct than puppeteering an arm; reserving the arm for *assembly* gives the robot-build payoff a clear, visible cause (kept part → arm → robot). Engine ownership stays clean: Motion owns the user's drag-off-belt gesture; GSAP owns the belt, the assembling arm(s), and the part-to-robot snap.
 - **Alternatives:** User-controlled sorting arm (the prior doc model; rejected — indirect, more interaction-design risk); auto-sorting with the user only watching (rejected — removes agency, the core "half-real decision" the PRD is built on).
@@ -131,7 +131,7 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 - **Alternatives:** Keep `.mcp.json` and rename project servers to avoid collisions (rejected — churns the docs + still double-registers tools); `git update-index --skip-worktree` to keep it tracked but locally deleted (rejected — fragile, hides the file's absence from teammates).
 - **Affected:** `.mcp.json` (deleted), `README.md`, `docs/ARCHITECTURE.md`, `docs/knowledge/HARNESS.md`. Historical refs in `STATUS.md` + the 2026-05-29 session note are left as-dated.
 
-### D-011 — Defer the live RC.org capture until aesthetic-rubric authoring
+### D-011 — Defer the live RC.org capture until aesthetic-rubric authoring — *superseded-in-practice (its target `goose-game-aesthetic.md` was retired in D-026)*
 - **Decision:** Don't scrape/screenshot RoboticsCareer.org yet. Capture it (Firecrawl + Playwright) when we author the aesthetic/design-system rubrics, ~Phase 1.
 - **Why:** RC.org's brand tokens are already in `DESIGN_SYSTEM.md` verbatim; a live capture mainly grounds the *aesthetic* rubric and the before/after narrative, which we don't need until visual work starts.
 - **Alternatives:** Capture now (rejected — premature); skip entirely (rejected — loses before/after + rubric grounding).
@@ -162,7 +162,7 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 - **Alternatives:** Install the plugin wholesale (rejected — prescriptive, generic).
 - **Affected:** `.claude/`, `docs/knowledge/`, `docs/rubrics/`.
 
-### D-006 — Allow demo affordances despite "no undocumented steps"
+### D-006 — Allow demo affordances despite "no undocumented steps" — *superseded-in-practice (Phase-3 demo tooling, retired with the narrative pivot)*
 - **Decision:** Permit a `?demo=true` pre-filled-results mode and a hidden skip-to-results link (Phase 3 tooling).
 - **Why:** Demos and user-test setup are much faster with them; they're not user-facing flow steps.
 - **Alternatives:** Strict adherence to the PRD screen list (rejected — friction for demos).

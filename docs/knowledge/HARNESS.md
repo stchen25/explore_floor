@@ -59,6 +59,7 @@ Type these in the prompt. They orchestrate skills + subagents.
 | **`/compound`** | `decision\|lesson\|session …` | Captures knowledge into `docs/knowledge/` — an ADR entry, a workflow/craft lesson, or a dated session handoff note. |
 | **`/capture-figma`** | `[screen/URL]` | Code→canvas: captures the running screen into editable Figma frames (figma MCP). Static UI only — the animated scene/robot don't round-trip. |
 | **`/pull-figma`** | `<frame URL>` | Canvas→code: reads an edited Figma frame and applies the diff as idiomatic React against our token/composition conventions (not a blind regen). |
+| **`/revise-doc`** | `<doc> "<change>"` | Edits the owning canonical spec doc, then dispatches **doc-steward** to reconcile cross-doc ripples in the others, appends a decision, and ticks `STATUS.md`. The safe way to change a documented fact. Ported from the dashboard in the realignment (D-024). |
 
 ## 4. Subagents — isolated workers / independent reviewers (`.claude/agents/`)
 
@@ -66,6 +67,7 @@ Each runs in its **own context window** (keeps the main thread clean) and is dis
 
 - **`verifier`** — runs the gates (`pnpm lint`/`typecheck`/`test`) and checks the `DATA_MODEL` §15 data invariants, then reports pass/fail with real output. Read-only except for running tests. Driven by `/phase-check`.
 - **`design-reviewer`** — the independent design evaluator. Drives Playwright (navigate, screenshot, toggle reduced-motion), reads implementing code, and grades against the rubrics with specific `file:line` findings. **Read-only** — it never edits; you apply fixes after. Driven by `/design-review`.
+- **`doc-steward`** — the cross-doc consistency keeper. Given a change to one spec doc, it sweeps the others (PRD, CONTEXT_BRIEF, DESIGN_SYSTEM, ARCHITECTURE, DATA_MODEL, ROADMAP, CLAUDE.md) for stale cross-references, numbers that no longer agree, and now-contradictory prose, then reconciles them and returns a change report. **Edits docs only** — never source. Driven by `/revise-doc`.
 
 > Why separate agents? An evaluator that interacts with the live app and grades against explicit criteria beats the main agent reviewing its own work (which tends to over-praise).
 
