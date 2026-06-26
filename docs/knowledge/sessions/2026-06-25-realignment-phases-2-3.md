@@ -17,6 +17,8 @@ Ran the reversible half of the realignment sweep (`REALIGNMENT.md` §9) on branc
 
 # PHASE 4 — execution plan (DESTRUCTIVE; needs user go-ahead). Blast radius verified this session.
 
+> ⚠️ **EXTENDED + RE-ORDERED by `sessions/2026-06-25-strip-to-narrative-and-three-roles.md` (read that first).** Phase 4 now also **archives the Exam flow** (not just Classic), and the order below is **insufficient as written** for that fold (the `data-integrity` `§17 exam-shape` block must be deleted with the registry drop, all exam consumers — including the un-listed `screenerFit.ts` `flowId==='exam'` branch — must go before `FlowId` is narrowed, and `RoleId` + classic `SessionState` fields must be deleted to keep the later three-role rename collision-free). The classic KEEP/DELETE lists below are still correct and remain the source for the classic half. A **Phase 5** (the four→three role pivot) follows.
+
 **Goal:** archive then delete the dormant classic three-archetype / conveyor / robot code so the build matches the re-centered specs. Tag first; gates green between steps.
 
 ## Start here (next session)
