@@ -5,8 +5,8 @@ import type { BucketId } from '../../src/data/types';
 
 // Guards the prefers-reduced-motion path: with reduced motion the narrative flow (the default,
 // and the only flow after the strip) must still work end to end — MC transitions and the scene
-// bucket-sort crossfade instead of animating, Results' layout reflow is instant, and Landing
-// skips the DrawSVG draw. We assert it completes with no console errors and the node-map
+// bucket-sort crossfade instead of animating, Results' layout reflow is instant, and Landing's
+// content entrance is skipped. We assert it completes with no console errors and the node-map
 // compare still swaps.
 
 const mcAnswers: Record<string, string> = {
@@ -62,8 +62,10 @@ test('narrative flow works under prefers-reduced-motion', async ({ page }) => {
   await page.getByRole('button', { name: mcLabel('n-q4'), exact: true }).click();
   await page.getByRole('button', { name: mcLabel('n-q5'), exact: true }).click();
 
-  // Seven scenes: tap the target bucket zone for each card (no drag under reduced motion).
+  // Seven scenes (two-beat): Continue past each scene-context card, then tap the target bucket
+  // row for each choice card (it crossfades instead of sliding under reduced motion).
   for (const id of sceneIds) {
+    await page.getByTestId('scene-continue').click();
     for (const choice of sceneStep(id).choices) {
       await expect(page.getByTestId('scene-card').filter({ hasText: choice.label })).toBeVisible();
       await page.getByTestId(`bucket-${sceneBuckets[choice.id]}`).click();

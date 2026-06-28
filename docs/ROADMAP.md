@@ -41,10 +41,10 @@ Work proceeds when acceptance criteria are met, not on a fixed schedule. The rea
 #### 1.2 Tailwind tokens
 
 - Author the `@theme` token block in `src/styles/globals.css` mirroring `DESIGN_SYSTEM.md` section 2 exactly (Tailwind v4 is CSS-first — no `tailwind.config.ts`).
-- All brand colors verbatim from the Figma file: `arm-gold`, `arm-gold-soft`, `arm-orange`, `arm-blue`, `arm-teal` (kit-aligned; `arm-gold`/`arm-gold-soft` renamed from `arm-yellow`/`arm-yellow-soft`, D-024).
+- All brand colors verbatim from the Figma file: `arm-gold`, `arm-gold-soft`, `arm-orange`, `arm-blue`, `arm-teal` (kit-aligned; `arm-gold`/`arm-gold-soft` renamed from `arm-yellow`/`arm-yellow-soft`, D-024). _(`arm-blue` was retired at step 8 Phase A, D-029; the live brand set is gold / teal / orange, plus the dark system in `DESIGN_SYSTEM.md` §3.5.)_
 - All semantic colors, type scale, spacing scale, container widths, radii, shadows.
 - New motion tokens from `DESIGN_SYSTEM.md` section 8 (`duration-instant` through `duration-reveal`, plus easing curves).
-- `scene/` namespace tokens for the playful layer.
+- `scene/` namespace tokens for the playful layer. _(Removed at step 8 Phase A, D-029, with `LandingSceneHint` and the `src/scene/` dir.)_
 
 #### 1.3 File structure
 
@@ -160,7 +160,7 @@ Phase is complete when ALL of these are true:
 
 - Final-ish copy (the landing one-liner is an open question per `PRD.md` section 13; use the best draft we have and iterate).
 - Primary CTA styled per `DESIGN_SYSTEM.md`.
-- A soft hint of the assembly-line scene behind the CTA (placeholder illustration is fine; the full scene comes in Phase 2). Add a gentle entrance reveal (GSAP `DrawSVG`) as an early, low-risk test of the scene-animation approach.
+- A soft hint of the assembly-line scene behind the CTA (placeholder illustration is fine; the full scene comes in Phase 2). Add a gentle entrance reveal (GSAP `DrawSVG`) as an early, low-risk test of the scene-animation approach. _(Superseded at step 8 Phase A, D-029: the scene hint and its `DrawSVG` reveal were removed when the Landing went type-led dark. Kept here as the Phase 1 record.)_
 
 #### 2.2 Sort screen — real interaction
 

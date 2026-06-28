@@ -561,8 +561,8 @@ Conventions:
 /src/state
   sessionStore.ts       Zustand store
 
-/src/scene
-  LandingSceneHint.tsx  The Landing hero placeholder (the sole live scene file)
+(no /src/scene — the dir + its last file LandingSceneHint.tsx were deleted at
+ step 8 Phase A, D-029, when the Landing went type-led dark)
 ```
 
 > **Deleted in Phase 4 (D-027), recoverable at git tag `archive/pre-narrative-only`.** The Exam flow (`flows/examFlow.ts`), the classic flow (`flows/classicFlow.ts`), the A/B question sets (`flows/questionSets/`), the classic data (`items.ts`, `roles.ts`, `robotParts.ts`, `competencies.ts`, `skills.ts`, `programs.ts`, `colorSchemes.ts`), the classic libs (`scoring.ts`, `robotAssembly.ts`, `fit.ts`, `programSelection.ts`, `audio.ts`), and `src/scene/RobotPlaceholder.tsx` were all removed from the live tree. The schema sections that describe them (§1–§14, §16) are kept here for the record, no longer the plan.
@@ -701,7 +701,7 @@ interface CategoryResult { raw; matchPercentages; ranking; primaryCategory; } //
 The narrative results presentation is the **node map**; it reads `categoryResult` data and the role-detail **sheet**. The exam dashboard below is preserved as the record of the cut comparison flow.
 
 - **Narrative → node map** (`Results/category/`): an Obsidian-style node graph (the earlier concentric rings read as "funky" — redesigned). The top-matched role sits front-and-center; the other two sit behind it (arced above, faded). Tapping a behind-node swaps it into the center (Motion `layout`); the heading names the centered role ("Your top match" vs "You're exploring"). The active role's `commonJobTitles` branch off the front on hairline connectors (`fanPoints` arcs them down); tap a title for the role sheet.
-- **Exam → dashboard** (`Results/exam/`) — _documented cut, deleted Phase 4 (D-027)._ The cut exam flow rendered a robot anchor (static `RobotPlaceholder`, tinted by the top category via `CATEGORY_ACCENT_TEXT`) + four category **bars**; then **"Why you scored that way"** (score provenance from `categoryContributions` — the items you said yes to, n of m, walking the same path the scorer did) and **"Your roles"** (top-2 ranked → the role sheet). The provenance engine `lib/categoryBreakdown.ts` it used was **kept** (pure and tested), unwired until the step-8 narrative results graft match-explanation onto the node map.
+- **Exam → dashboard** (`Results/exam/`) — _documented cut, deleted Phase 4 (D-027)._ The cut exam flow rendered a robot anchor (static `RobotPlaceholder`, tinted by the top category via the accent map then named `CATEGORY_ACCENT_TEXT`, since renamed to `ROLE_ACCENT` at step 8 Phase A, D-029) + four category **bars**; then **"Why you scored that way"** (score provenance from `categoryContributions` — the items you said yes to, n of m, walking the same path the scorer did) and **"Your roles"** (top-2 ranked → the role sheet). The provenance engine `lib/categoryBreakdown.ts` it used was **kept** (pure and tested), unwired until the step-8 narrative results graft match-explanation onto the node map.
 - **Shared role sheet** (`category/RoleDetailSheet`): the RC.org role-card content (description, activities, education, titles, salary) + a stub "Add this Role to your profile" link + a three-axis **fit radar** (a triangle: technician at top, specialist lower-right, integrator lower-left, per `lib/nodeLayout.ts` `CATEGORY_ANGLES`) of the user's role percentages. Opened with a specific job title (node map) or on the role itself (it was also reused by the cut exam "your roles" — `jobTitle` omitted; today the live openers are the node map and `/select`).
 - `Results.tsx` now dispatches a single way: narrative → node map. (It previously dispatched three ways by `flow.kind`: classic → `ClassicResults`, narrative → node map, exam → dashboard; the classic and exam branches went with the Phase-4 delete.)
 

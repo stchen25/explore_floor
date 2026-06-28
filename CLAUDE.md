@@ -44,7 +44,7 @@ Research found the barrier to robotics manufacturing careers is not lack of inte
 | UI | React 18 | Function components and hooks only. |
 | Styling | Tailwind CSS (v4, CSS-first) | All design tokens live in the `@theme` block in `src/styles/globals.css` (loaded via `@tailwindcss/vite`). No magic hex values in components. |
 | Animation (UI) | Motion (ex-Framer Motion) | React-state-driven motion: screen + flow-step transitions, the bucket-sort drag, the node-map compare swap, `prefers-reduced-motion`. |
-| Animation (scene) | GSAP + plugins | The one live use is the Landing `DrawSVG` reveal; `@gsap/react` for `useGSAP`. _(The cinematic build beat and conveyor choreography GSAP was chosen for are the documented cut.)_ The two libraries share a motion-token file and never animate the same property on the same node. |
+| Animation (scene) | GSAP + plugins | **No live use as of step 8 Phase A** — the Landing `DrawSVG` reveal (its last consumer) was removed when the Landing went type-led dark. `lib/gsap.ts` still registers `DrawSVGPlugin` + `@gsap/react`'s `useGSAP` at app start as a future seam. _(The cinematic build beat and conveyor choreography GSAP was chosen for are the documented cut.)_ The two libraries share a motion-token file and never animate the same property on the same node. |
 | Scene rendering | SVG (React components) | The live SVG is the results geometry (node map, fit radar). _(The composed-SVG assembly line is the documented cut.)_ |
 | State | Zustand | One store per domain. No Redux. |
 | Audio | Howler.js | _(Documented cut: sound was a Phase 3 seasoning, never integrated.)_ |
@@ -60,10 +60,10 @@ If you want to add a dependency, check `ARCHITECTURE.md` first. Prefer the stack
 /docs                 All planning docs (read these, do not duplicate their content in code comments)
 /public               Static assets, fonts
 /src
-  /app                App shell, routing, top-level providers
-  /screens            Landing, Flow (the narrative runner), Results (the node-map results), Select
-  /scene              [documented cut] LandingSceneHint only; the conveyor/robot scene was never built
-  /components         Shared UI (buttons, sort cards, segmented control, accents)
+  /app                App shell (AppLayout: dark canvas + AppHeader mount), routing, top-level providers
+  /screens            Landing (type-led dark hero), Flow (the narrative runner), Results (the node-map results), Select
+                      (/scene removed in step 8 Phase A — it held only LandingSceneHint; the conveyor/robot scene was never built)
+  /components         Shared UI (buttons, sort cards, segmented control, AppHeader, Icon, role accents)
   /state              Zustand stores (sessionStore, useFlow)
   /data               Mock data: the flow (§17, live), roleDetails (three roles), screeners, roleSelect
   /lib                Pure helpers: categoryScoring (the brain), screenerFit, categoryBreakdown, nodeLayout
@@ -75,7 +75,7 @@ See `ARCHITECTURE.md` §3 for the full tree and `DATA_MODEL.md` §17 for the liv
 
 ## Core conventions
 
-- **Small files, split by responsibility.** A screen orchestrates: layout, state reads, event handlers. It does not hold a reusable sub-element's JSX, inline business logic, or more than one distinct UI concern. When any of those appear, extract them (logic into `/lib`, data into `/data`, sub-UI into `/components` or `/scene`). A file crossing ~250 lines is a signal to re-check it against this rule, not an automatic split. Do not pad or fragment to hit a number; split because the responsibilities are distinct.
+- **Small files, split by responsibility.** A screen orchestrates: layout, state reads, event handlers. It does not hold a reusable sub-element's JSX, inline business logic, or more than one distinct UI concern. When any of those appear, extract them (logic into `/lib`, data into `/data`, sub-UI into `/components`). A file crossing ~250 lines is a signal to re-check it against this rule, not an automatic split. Do not pad or fragment to hit a number; split because the responsibilities are distinct.
 - **Data is data, not code.** Scene choices, statements, intro questions, category weights, role details, and results copy live in typed objects under `/src/data` (the flows in `/src/data/flows`, §17). Changing content must never require editing component logic. This is the single most important convention in the repo: the team will be tuning content constantly.
 - **The scoring engine is pure and isolated.** The live brain is `/src/lib/categoryScoring.ts`: it takes the user's answers and bucketed sorts and returns a normalized match score for all three roles, normalized per role against its own maximum (so the maxes need not be equal). Branch-aware (it only walks the path the user took). No React, no side effects, fully unit-tested. _(The classic `scoring.ts` three-archetype engine was the documented cut, deleted in Phase 4.)_
 - **Tokens, not literals.** Colors, spacing, radii, type, and motion durations come from Tailwind config. No inline hex, no random pixel values.

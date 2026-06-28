@@ -74,7 +74,7 @@ export function RoleDetailSheet({
           <button
             type="button"
             data-testid="add-to-profile"
-            className="self-start text-body text-arm-blue underline"
+            className="self-start text-body text-arm-teal underline"
           >
             {copy.addToProfile}
           </button>

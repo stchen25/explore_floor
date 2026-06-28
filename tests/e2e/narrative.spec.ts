@@ -45,6 +45,11 @@ const mcLabel = (stepId: string): string => {
 test('narrative: branch over Q2, sort every scene into buckets, results match the engine, condition survives retake', async ({
   page,
 }) => {
+  // The full flow is the longest spec: 6 intro questions + 7 two-beat scenes (each a Continue
+  // plus three sliding choice cards, D-029 Phase B) + the results interactions runs ~30s, over
+  // Playwright's 30s default. Give it headroom rather than clip the designed motion.
+  test.setTimeout(60_000);
+
   const consoleErrors: string[] = [];
   page.on('console', (msg) => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
@@ -76,14 +81,17 @@ test('narrative: branch over Q2, sort every scene into buckets, results match th
   await page.getByRole('button', { name: mcLabel('n-q4'), exact: true }).click();
   await page.getByRole('button', { name: mcLabel('n-q5'), exact: true }).click();
 
-  // The middle bucket reads "Kinda me", not "Maybe" (D-018) — shared with the exam.
-  await expect(page.getByTestId('bucket-maybe')).toContainText('Kinda me');
-
-  // Seven scenes: each shows its four choice cards one at a time (data order). Bucket each
-  // by tapping the target zone; the card exits (popLayout) as the next one mounts, so we
-  // target the current card by its label.
+  // Seven scenes, each a two-beat (D-029 Phase B): the scene-context card shows "Scene N of 7"
+  // and a gold Continue; pressing it reveals the three choice cards one at a time, each rated
+  // into one of the three buckets. The current card slides out as the next mounts, so target it
+  // by its label.
   for (const id of sceneIds) {
     await expect(page.getByTestId('scene-progress')).toBeVisible();
+    await page.getByTestId('scene-continue').click();
+    if (id === sceneIds[0]) {
+      // The middle bucket reads "Kinda me", not "Maybe" (D-018).
+      await expect(page.getByTestId('bucket-maybe')).toContainText('Kinda me');
+    }
     for (const choice of sceneStep(id).choices) {
       await expect(
         page.getByTestId('scene-card').filter({ hasText: choice.label }),

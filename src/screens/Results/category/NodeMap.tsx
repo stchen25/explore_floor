@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 
-import { CATEGORY_ACCENT_TEXT } from '@/components/categoryAccent';
+import { ROLE_ACCENT } from '@/components/categoryAccent';
 import { roleDetails } from '@/data';
 import type { CategoryId, CategoryResult } from '@/data/types';
 import { durations, easings, fanPoints, type Point } from '@/lib';
@@ -100,7 +100,7 @@ export function NodeMap({
               // label to collide with the behind-nodes arced just above it.
               <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-near-black bg-bg-section shadow-card">
                 <span
-                  className={`font-heading text-h4 ${CATEGORY_ACCENT_TEXT[category]}`}
+                  className={`font-heading text-h4 ${ROLE_ACCENT[category].text}`}
                   data-testid={`category-pct-${category}`}
                 >
                   {result.matchPercentages[category]}%

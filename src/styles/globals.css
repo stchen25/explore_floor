@@ -12,14 +12,12 @@
   /* ---- Brand (kit-aligned — DESIGN_SYSTEM §3.1) ----
      Values snapped to the RC UI Kit (matches career_dashboard D-026). The old
      archetype→color mapping is retired; accents are used by function now. The three
-     role accents (categoryAccent.ts) and the legacy blue link voice still ride
-     arm-blue — reconciled with the kit's restrained teal-led palette in the
-     results-screen redesign (step 8). */
+     role accents are the kit-only gold/teal/orange set in the dark-system block
+     below (--color-role-*); arm-blue is retired (D-029). */
   --color-arm-gold: #ffb81c; /* kit: ARM Gold — primary brand + CTA fill */
   --color-arm-gold-soft: #fdc547; /* CTA hover tint */
   --color-arm-teal: #117289; /* kit: Secondary Teal — the interactive voice: links, CTAs, match */
   --color-arm-orange: #bf5309; /* kit: Secondary Orange — rare attention, AA-safe (was #f56a00) */
-  --color-arm-blue: #38a5ee; /* TEMP (step 8): program category accent + legacy link voice; retire/retone with the restrained accent system */
 
   /* ---- Semantic (light-mode foundation — §3.2) ---- */
   --color-page-bg: #f4f4f4;
@@ -37,13 +35,55 @@
   --color-black: #000000; /* overrides Tailwind default; verify vs Figma color/neutral/black */
   --color-white: #ffffff;
 
-  /* ---- Playful scene layer — only LandingSceneHint.tsx (the conveyor placeholder) consumes these.
-     Kept through the Phase-4 strip (D-027) for the step-8 Landing-hero redesign, which retires them. ---- */
-  --color-scene-paper: #f5efe3;
-  --color-scene-paper-warm: #efe4ce;
-  --color-scene-line: #2d3a4a;
-  --color-scene-line-soft: #5c6975;
-  --color-scene-shadow: #2d3a4a1a; /* 10% slate */
+  /* ---- Dark system (step 8 — D-029 / docs/knowledge/VISUAL_REARCHITECTURE.md) ----
+     The quiz renders dark-only (no theme toggle); the light tokens above stay
+     present but unused by the quiz. Neutral ramp is additive-but-no-duplicate
+     (ground rule 6): it reuses near-black / subtle / faint / white / black already
+     defined and adds only the two genuinely-new ARM-site greys + an off-white text
+     ramp. accentSoft/glow values are adopted from the Claude Design mockup. */
+
+  /* Dark surfaces (elevation: canvas < surface < panel) */
+  --color-dark-canvas: #1b1b1b; /* NEW — page background */
+  --color-dark-surface: #292929; /* NEW — elevated cards / answer-row base */
+  --color-dark-panel: var(--color-near-black); /* = #262626 — deep panel / app-header (reuse) */
+
+  /* Off-white text ramp on dark (NEW — adopted from the mockup, AA on #1b1b1b) */
+  --color-text-on-dark: #f2f4f5; /* primary */
+  --color-text-on-dark-muted: #c4c8cc; /* secondary */
+  --color-text-on-dark-faint: #9aa0a5; /* tertiary / captions */
+
+  /* Glass + hairlines (keeps the 4-grey palette from going flat) */
+  --color-glass-fill: rgb(255 255 255 / 0.045); /* card / answer-row fill */
+  --color-glass-fill-strong: rgb(255 255 255 / 0.06);
+  --color-glass-border: rgb(255 255 255 / 0.1); /* hairline border */
+  --color-glass-border-soft: rgb(255 255 255 / 0.07);
+  --color-glass-panel: rgb(38 38 38 / 0.85); /* panel-tinted glass (near-black tint) */
+  --blur-bar: 8px; /* sticky control bars → backdrop-blur-bar */
+  --blur-panel: 14px; /* map / results card → backdrop-blur-panel */
+
+  /* Dark elevation shadows (add to the light --shadow-* above) */
+  --shadow-dark-panel: 0 20px 70px rgb(0 0 0 / 0.35);
+  --shadow-dark-card: 0 10px 40px rgb(0 0 0 / 0.28);
+
+  /* ---- Role accents (dark results — kit-only gold/teal/orange; D-029) ----
+     Technician=gold, Specialist=teal, Integrator=orange. `accent` reuses the brand
+     token; -soft (legible large role names on dark), -on (text on the accent fill),
+     and -glow (bubbles / constellation nodes) are genuinely-new derivatives. Mirrored
+     in src/components/categoryAccent.ts (ROLE_ACCENT). Retires arm-blue. */
+  --color-role-technician: var(--color-arm-gold); /* #ffb81c */
+  --color-role-technician-soft: #ffd27a;
+  --color-role-technician-on: var(--color-near-black); /* dark ink on gold */
+  --color-role-technician-glow: rgb(255 184 28 / 0.3);
+
+  --color-role-specialist: var(--color-arm-teal); /* #117289 */
+  --color-role-specialist-soft: #7fe0f2; /* mockup teal-soft rgb(127,224,242) */
+  --color-role-specialist-on: var(--color-white);
+  --color-role-specialist-glow: rgb(127 224 242 / 0.3);
+
+  --color-role-integrator: var(--color-arm-orange); /* #bf5309 */
+  --color-role-integrator-soft: #f2965a;
+  --color-role-integrator-on: var(--color-white);
+  --color-role-integrator-glow: rgb(242 150 90 / 0.3);
 
   /* ---- Spacing (0-indexed; space-0 = 4px deliberate — §5) ---- */
   --spacing-space-0: 4px;
@@ -66,7 +106,8 @@
 
   /* ---- Radius (§6 — overrides defaults) ---- */
   --radius-sm: 6px; /* kit Refined (was 4px) */
-  --radius-md: 8px;
+  --radius-md: 8px; /* inputs / answer + rating rows (mockup 8px) */
+  --radius-lg: 16px; /* dark quiz cards — question + scene-context surfaces (mockup 14–16px); D-029 Phase B */
   --radius-full: 9999px;
 
   /* ---- Shadow / elevation — kit soft tiers (DEF-013 R1; replaces the Material triple-stacks) ---- */
@@ -106,6 +147,45 @@
   --ease-snap: cubic-bezier(0.5, 0, 0.1, 1.5);
 }
 
+/* Self-hosted webfonts (local woff2 — D-029; mirrors career_dashboard for cross-repo
+   consistency). Montserrat 700 covers every heading weight in the §4 scale; Roboto 400/500/700
+   the body voice; Material Icons the ligature glyph set consumed via src/components/Icon.tsx. */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/montserrat-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roboto-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/roboto-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/roboto-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/material-icons.woff2') format('woff2');
+}
+
 @layer base {
   html,
   body,
@@ -115,9 +195,33 @@
 
   body {
     margin: 0;
-    background-color: var(--color-page-bg);
-    color: var(--color-text-default);
+    background-color: var(--color-dark-canvas); /* dark-only quiz (D-029); light tokens stay defined but unused */
+    color: var(--color-text-on-dark);
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Keyboard focus ring (D-029 Phase B). Off-white, not gold: it must stay visible on the dark
+     canvas AND on the gold CTA/selected rows, where a gold ring would vanish. Replaces the
+     browser default ring (Chrome's thin retired-blue) with one on-system token. */
+  *:focus-visible {
+    outline: 2px solid var(--color-text-on-dark);
+    outline-offset: 2px;
+  }
+
+  /* Material Icons ligature rendering. Usage: <span class="material-icons">bolt</span>,
+     or the typed Icon wrapper (src/components/Icon.tsx). */
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
 }

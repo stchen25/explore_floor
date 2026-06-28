@@ -23,7 +23,7 @@ The Figma file (RC-CC) is the source for tokens. The `@theme` block in `src/styl
 | `color/brand/gold` | `arm-gold` | The "ARM gold" (kit-aligned; renamed from `arm-yellow`, D-024) |
 | `color/brand/gold-soft` | `arm-gold-soft` | CTA hover tint |
 | `color/brand/orange` | `arm-orange` | Secondary Orange (kit `#BF5309`, AA-safe) |
-| `color/brand/blue` | `arm-blue` | TEMP holdout (specialist accent + links); retoned at step 8 |
+| ~~`color/brand/blue`~~ | ~~`arm-blue`~~ | Retired (D-029, step 8 Phase A); removed from `globals.css`. Specialist is now teal; see §3.1. |
 | `color/brand/teal` | `arm-teal` | Secondary Teal, the interactive voice |
 | `color/semantic/page-bg` | `page-bg` | |
 | `color/semantic/bg` | `bg` | |
@@ -62,7 +62,7 @@ Snapped to the RC UI Kit, matching `career_dashboard` (D-024 here; its D-026). V
 | `arm-gold-soft` | `#FDC547` | CTA hover tint. |
 | `arm-teal` | `#117289` | Secondary Teal — the single interactive voice: links, CTAs, the match indicator. |
 | `arm-orange` | `#BF5309` | Secondary Orange — rare attention, AA-safe as text at 4.71:1 (was `#F56A00`, which failed AA at 3.02:1). |
-| `arm-blue` | `#38A5EE` | **TEMP.** The specialist role accent + legacy link voice; fails AA as text (2.7:1). Retired/retoned in the step-8 results-accent redesign. |
+| ~~`arm-blue`~~ | ~~`#38A5EE`~~ | **Retired (D-029, step 8 Phase A).** Was the specialist accent + legacy link voice; failed AA as text (2.7:1). The token is removed from `globals.css`; specialist is now teal and the result-screen links read `arm-teal`. |
 
 ### 3.2 Semantic (light mode foundation)
 
@@ -85,17 +85,17 @@ Inherited verbatim from RC-CC. The product is light-mode by default.
 
 ### 3.3 Role accents (live)
 
-The live narrative flow scores ARM's three RC.org roles, and each carries an accent. **Never invent a new color for a role** and never hardcode a hex per screen; the mapping lives in one place, `src/components/categoryAccent.ts` (`CATEGORY_ACCENT_TEXT`), so a screen reads the token, not a literal.
+The live narrative flow scores ARM's three RC.org roles, and each carries an accent. **Never invent a new color for a role** and never hardcode a hex per screen; the mapping lives in one place, `src/components/categoryAccent.ts` (`ROLE_ACCENT`), so a screen reads the token, not a literal. `ROLE_ACCENT` exposes five class/value fields per role: `text` (the saturated accent), `textSoft` (the legible soft tint for large role names on dark), `bg` (accent as a fill), `onAccent` (text drawn on the fill), and `glow` (a raw value for bubbles/nodes). The underlying tokens are the `--color-role-*` set in §3.5.
 
-| Role | Accent token |
-|---|---|
-| Technician (entry) | `arm-gold` |
-| Specialist (mid) | `arm-blue` |
-| Integrator (planning) | `arm-teal` |
+| Role | Accent | Token |
+|---|---|---|
+| Technician (entry) | gold | `arm-gold` |
+| Specialist (mid) | teal | `arm-teal` |
+| Integrator (planning) | orange | `arm-orange` |
 
 The accent shows up in the match indicator and the centered-role chrome (narrative node map). _(It also drove the category bars on the cut exam dashboard.)_
 
-> **Interim, being finalized at step 8.** This mapping reuses kit brand tokens so the study presentation stays minimal. (Phase 5, D-028, collapsed the study's four categories to these three roles — the entry Technician inherits the old Operate's gold; Specialist keeps the old Program's blue; Integrator keeps the old Plan's teal; the old Repair orange drops out.) Two known tensions resolve in the high-fidelity results redesign (`REALIGNMENT.md` step 8): `arm-blue` fails AA as text (2.7:1) and is retoned, and `arm-gold` is a fill rather than a text color on white in the kit (the technician's `text-arm-gold` is the interim exception). The target is a restrained, teal-led role palette.
+> **Finalized (D-029, step 8 Phase A).** The role palette is now kit-only **gold / teal / orange**, mirroring the Claude Design mockup (Operate→gold, Program→teal, Plan→orange). This retires `arm-blue` (it failed AA as text) and drops the mockup's green, satisfying the realignment's "restrained, teal-led role palette" target with no new hues. Because saturated brand colors are illegible as large text on the dark canvas, each role also carries a `-soft` tint (role names), an `-on` color (text on the accent fill), and a `-glow` (results bubbles / constellation nodes); see §3.5. _(Phase 5, D-028, collapsed the study's four categories to these three roles; the entry Technician inherits the old Operate's gold.)_
 
 **Documented cut — classic archetype accents.** The dormant Classic flow tied three archetypes to brand colors (Builder→`arm-orange`, Innovator→`arm-blue`, Architect→`arm-teal`), driving the robot color scheme (`DATA_MODEL.md` §7, `colorSchemes.ts`). Parked with the rest of the classic pipeline.
 
@@ -103,7 +103,7 @@ The accent shows up in the match indicator and the centered-role chrome (narrati
 
 ### 3.4 Playful layer palette additions — documented cut
 
-> The `scene/*` tokens served the never-built assembly-line scene. The only live surface that still reads them is `LandingSceneHint` (the Landing hero, a conveyor-sketch placeholder). They become removable when the Landing hero is redesigned (step 8); until then they stay. The broader playful-scene palette is parked. _(D-024 had deferred their removal to the classic-conveyor archival, but the Landing hero keeps them alive past it.)_
+> **Removed (D-029, step 8 Phase A).** The five `scene-*` tokens and their only consumer, `LandingSceneHint`, are deleted (`src/scene/` is gone). The Landing was redesigned as a type-led dark hero with no scene illustration, so the playful-scene palette is fully retired. The table below is kept for the record only.
 
 For the assembly-line scene specifically, we add a few muted, warm fills that work with the Goose-game aesthetic. These are scene-specific and live under a `scene/` token namespace so they don't bleed into the foundation surfaces.
 
@@ -117,6 +117,47 @@ For the assembly-line scene specifically, we add a few muted, warm fills that wo
 
 These are starter values. Refine in Figma's `scene/` collection once we begin Phase 2. Adjust here in tandem.
 
+### 3.5 Dark system (live — step 8, D-029)
+
+The quiz renders **dark-only** (no theme toggle); the light semantic tokens in §3.2 stay defined but unused by the quiz. The dark layer lives in the `@theme` block of `src/styles/globals.css`. The neutral ramp is **additive but never duplicates an existing token**: it reuses `near-black` / `text-subtle` / `text-faint` / `white` / `black` already defined, and adds only the two genuinely-new ARM-site greys plus an off-white text ramp.
+
+**Dark neutral ramp** (elevation: canvas < surface < panel):
+
+| Token | Value | Use |
+|---|---|---|
+| `dark-canvas` | `#1B1B1B` (new) | Page background. |
+| `dark-surface` | `#292929` (new) | Elevated cards / answer-row base. |
+| `dark-panel` | `= near-black #262626` (reused via `var()`) | Deep panel / the app-header. |
+
+**Off-white text ramp on dark** (new; adopted from the mockup, AA-verified on `#1B1B1B`):
+
+| Token | Value | Use |
+|---|---|---|
+| `text-on-dark` | `#F2F4F5` | Primary text. |
+| `text-on-dark-muted` | `#C4C8CC` | Secondary text. |
+| `text-on-dark-faint` | `#9AA0A5` | Tertiary / captions. |
+
+**Glass + blur** (keeps a four-grey palette from going flat):
+
+| Token | Value | Use |
+|---|---|---|
+| `glass-fill` / `glass-fill-strong` | `rgb(255 255 255 / 0.045)` / `0.06` | Card / answer-row / active-segment fills. |
+| `glass-border` / `glass-border-soft` | `rgb(255 255 255 / 0.10)` / `0.07` | Hairline borders. |
+| `glass-panel` | `rgb(38 38 38 / 0.85)` | Panel-tinted glass (the app-header). |
+| `blur-bar` / `blur-panel` | `8px` / `14px` | `backdrop-blur` for sticky bars / map + results cards. |
+
+**Dark elevation shadows:** `shadow-dark-panel` (`0 20px 70px rgb(0 0 0 / 0.35)`), `shadow-dark-card` (`0 10px 40px rgb(0 0 0 / 0.28)`).
+
+**Role accents on dark.** Each of the three roles (§3.3) carries four derivatives. The base reuses the brand token via `var()`; `soft` / `on` / `glow` are genuinely-new values:
+
+| Role | `--color-role-*` | `-soft` | `-on` | `-glow` |
+|---|---|---|---|---|
+| Technician | `= arm-gold #FFB81C` | `#FFD27A` | `= near-black` | `rgb(255 184 28 / 0.3)` |
+| Specialist | `= arm-teal #117289` | `#7FE0F2` | `white` | `rgb(127 224 242 / 0.3)` |
+| Integrator | `= arm-orange #BF5309` | `#F2965A` | `white` | `rgb(242 150 90 / 0.3)` |
+
+Consumed through `ROLE_ACCENT` (§3.3), never as literals.
+
 ## 4. Typography
 
 ### 4.1 Type pairing (locked)
@@ -124,6 +165,8 @@ These are starter values. Refine in Figma's `scene/` collection once we begin Ph
 - **Headings:** Montserrat. Bold for all H1–H5 by default.
 - **Body:** Roboto. Regular / Medium / Bold available.
 - **Icon font:** Material Icons.
+
+All three are **self-hosted** as local `woff2` in `/public/fonts` (Montserrat 700; Roboto 400/500/700; Material Icons), declared via `@font-face` in `globals.css` and copied from the kit-aligned `career_dashboard` set (D-029, step 8 Phase A). Previously only system fallbacks loaded. No CDN dependency.
 
 ### 4.2 Type scale
 
@@ -172,7 +215,7 @@ fontSize: {
 - Role / category titles on results: H4.
 - Scene choice labels (and the cut exam's statement labels): Body/Medium (the kid reads it easily, doesn't shout).
 - Match percentage on results: H2 in the role accent color (`categoryAccent.ts`).
-- Overlines (`Label/Overline`) for short labels. _(The classic "ROUND 2 OF 4" round indicator is a documented-cut use.)_
+- Overlines (`Label/Overline`) for short labels, rendered **sentence case** (D-029 rule 8 — no uppercase eyebrows or stat labels; the Figma style's `UPPERCASE` transform is dropped in the dark system). _(The classic "ROUND 2 OF 4" round indicator is a documented-cut use.)_
 
 ### 4.5 Playful layer additions
 
@@ -210,11 +253,12 @@ The experience targets desktop primarily. Use `container-lg` (1248) as the typic
 
 | Token | Value (px) | Use |
 |---|---|---|
-| `rounded-sm` | 4 | Inputs, small chips, secondary surfaces |
-| `rounded-md` | 8 | Cards, buttons, primary surfaces |
+| `rounded-sm` | 6 | Inputs, small chips, secondary surfaces (kit Refined; was 4) |
+| `rounded-md` | 8 | Buttons, answer + rating rows, small surfaces |
+| `rounded-lg` | 16 | Dark quiz/result cards — question + scene-context + rating surfaces (D-029 Phase B; mockup 14–16) |
 | `rounded-full` | 9999 | Pills, badges, the node-map nodes |
 
-Minimal by design. Don't add new radius values.
+Minimal by design. `rounded-lg` is the one dark-system addition (the larger card radius the mockup uses); don't add others.
 
 ## 7. Shadow / elevation
 
@@ -255,13 +299,13 @@ Easing curves (also new):
 
 ## 9. Iconography
 
-- Use **Material Icons** as defined in the Figma file (the `font/icon` token).
+- Use **Material Icons** as defined in the Figma file (the `font/icon` token). Self-hosted as local `woff2` (§4.1) and consumed through a typed wrapper, `src/components/Icon.tsx` (a design-semantic name maps to a Material ligature in one place), mirroring `career_dashboard` (D-029, step 8 Phase A).
 - Component set in Figma: `Icon/Material` with size variants 16/18/24/32/40/56/72.
 - For the playful layer, the assembly-line scene uses bespoke SVG illustrations, not Material Icons. The two are kept distinct: Material Icons in UI chrome, custom SVG in the scene.
 
 ## 10. The playful layer — documented cut
 
-> **Parked.** The illustrated Goose-game scene (conveyor, robotic arm, robot) was never built. The live experience differentiates through the narrative content and the kit-aligned results screens, not an illustrated scene layer. The one surviving piece of "playful" motion is the Landing `DrawSVG` reveal. This section is the original direction, kept for the record. Its retired evaluation rubric (`goose-game-aesthetic.md`) is replaced by the results-screen rubric.
+> **Parked.** The illustrated Goose-game scene (conveyor, robotic arm, robot) was never built. The live experience differentiates through the narrative content and the kit-aligned dark results screens, not an illustrated scene layer. The Landing `DrawSVG` reveal (the last surviving piece of "playful" motion) was removed in step 8 Phase A when the Landing went type-led dark, so GSAP now has **no live animation** (it stays registered in `lib/gsap.ts` as a future seam). This section is the original direction, kept for the record. Its retired evaluation rubric (`goose-game-aesthetic.md`) is replaced by the results-screen rubric.
 
 This is what makes the experience feel different from a typical RC.org screen.
 
@@ -351,11 +395,11 @@ The retired two-layer rules (foundation-vs-scene namespacing, scene-on-top-of-fo
 
 ## 14. What is explicitly out of scope
 
-- Dark mode. The product is light-mode only. The Figma file has a single mode per collection; do not add dark variants.
-- New brand colors. The four ARM brand colors and the semantic/neutral set are complete.
+- A light/dark **toggle**. As of step 8 Phase A (D-029) the quiz renders **dark-only** (§3.5); the light semantic tokens (§3.2) stay defined but unused, and there is no theme switch. Don't build a toggle or per-mode variants in the Figma collections.
+- New brand colors. The three live ARM brand colors (gold, teal, orange; `arm-blue` retired, D-029), the semantic/neutral set, and the §3.5 dark system are complete. Don't add new brand hues.
 - New typefaces. Montserrat + Roboto are it for now. The Phase 3 display-font addition is optional and small-scoped.
 - A third animation paradigm. The model is two engines, defined in `ARCHITECTURE.md` section 1: Motion for state-driven UI, GSAP (free, with MorphSVG/DrawSVG/MotionPath) for scene choreography and the cinematic moments. No anime.js (overlaps GSAP) and no Lottie (passive, can't drive the interactive robot). Rive is a documented future exploration for the robot only, not part of this build.
-- Glassmorphism. Earlier brainstorm material mentioned this. We're not doing it. It fights both the Material foundation and the Goose-game playful layer.
+- Heavy glassmorphism. The dark system (§3.5) does use restrained `glass-*` fills/borders and `backdrop-blur` to keep the four-grey dark palette from going flat, but that's a light touch, not the frosted-panel aesthetic earlier brainstorm material proposed. Don't push past the §3.5 tokens.
 
 ## 15. Source-of-truth precedence
 

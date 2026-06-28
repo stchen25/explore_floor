@@ -32,7 +32,7 @@ export function CategoryResults() {
       <main className="mx-auto flex min-h-full max-w-lg flex-col items-center justify-center gap-space-3 p-space-6 text-center">
         <h2 className="font-heading text-h2 text-text-strong">No results yet</h2>
         <p className="text-body text-text-muted">Answer the questions first and we&apos;ll match you.</p>
-        <Link to="/" className="text-body text-arm-blue underline">
+        <Link to="/" className="text-body text-arm-teal underline">
           Start the quiz
         </Link>
       </main>

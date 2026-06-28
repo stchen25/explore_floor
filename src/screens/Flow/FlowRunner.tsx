@@ -20,6 +20,7 @@ export function FlowRunner() {
 
   const currentScreen = useSessionStore((s) => s.state.currentScreen);
   const stepIndex = useSessionStore((s) => s.state.stepIndex);
+  const answers = useSessionStore((s) => s.state.answers);
   const recordAnswer = useSessionStore((s) => s.recordAnswer);
   const advanceStep = useSessionStore((s) => s.advanceStep);
   const completeFlow = useSessionStore((s) => s.completeFlow);
@@ -39,6 +40,7 @@ export function FlowRunner() {
 
   const steps = flow.steps;
   const sceneSteps = steps.filter((s) => s.type === 'scene');
+  const mcSteps = steps.filter((s) => s.type === 'mc');
   const step = steps[stepIndex];
   if (!step) return null;
 
@@ -79,7 +81,19 @@ export function FlowRunner() {
           exit={{ opacity: 0 }}
           transition={{ duration: durations.snap, ease: easings.soft }}
         >
-          {step.type === 'mc' && <MCQuestion step={step} onChoose={handleChoice} />}
+          {step.type === 'mc' && (
+            <MCQuestion
+              step={step}
+              // Running position among the MC steps actually answered on this path (+1 for the
+              // current, still-unanswered one), so a branch that skips a question — Q1 "No" jumps
+              // over Q2 — never leaves a gap in the count (D-029 Phase B; design-review p3).
+              questionNumber={
+                mcSteps.filter((s) => s.id !== step.id && answers[s.id] !== undefined).length + 1
+              }
+              questionTotal={mcSteps.length}
+              onChoose={handleChoice}
+            />
+          )}
           {step.type === 'scene' && (
             <SceneSortView
               step={step}

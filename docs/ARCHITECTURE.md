@@ -22,17 +22,17 @@ This is the "how the code is organized" doc. It explains stack choices, how data
 The build is a design showcase, so motion gets two complementary engines with a hard ownership boundary between them. They do not conflict because **a given element and property is owned by exactly one library at a time.** Motion runs through React's render cycle and the Web Animations API. GSAP writes straight to the DOM and SVG and bypasses React's reconciler, which is why it stays at 60fps on large choreographed sequences. The only failure mode is two libraries grabbing the same transform on the same node at once, and the ownership rule below prevents that.
 
 - **Motion (the library formerly named Framer Motion)** owns everything driven by React state or component lifecycle: screen and route transitions (`AnimatePresence`), card enter/exit, the drag-to-bin gesture (`drag` + `dragConstraints`), hover/tap micro-interactions, results layout reflow (`layout` prop), the compare interaction (active card lights up, content swaps), and the central `prefers-reduced-motion` gate. Standard pattern: declarative `motion.div` / `motion.svg` with variants.
-- **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly. The one live use is `DrawSVG` for the Landing linework reveal. _(The conveyor item travel + arm reach + part-to-robot + snap timeline, the cinematic build beat, `MorphSVG`, and `MotionPath` parts-into-robot-slots are the documented cut, see the live ownership note below.)_ GSAP is fully free as of 2025, including these formerly-paid plugins.
-- **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Register plugins once at app start: `gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`.
+- **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly. It has **no live animation as of step 8 Phase A** (D-029): the Landing `DrawSVG` reveal, its last live use, was removed when the Landing went type-led dark. GSAP stays registered in `lib/gsap.ts` as a future seam for the high-fidelity results work. _(The conveyor item travel + arm reach + part-to-robot + snap timeline, the cinematic build beat, `MorphSVG`, and `MotionPath` parts-into-robot-slots are the documented cut, see the live ownership note below.)_ GSAP is fully free as of 2025, including these formerly-paid plugins.
+- **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Plugins are registered once at app start (`gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`); the registration stands even though no live consumer draws on it yet.
 - **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (easings mirrored into the `@theme` block in `src/styles/globals.css`; durations stay in code). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
-- **Ownership per screen (live):** Landing — Motion for the CTA card; GSAP `DrawSVG` reveal of the scene hint (`.scene-draw`, the one GSAP flourish that ships). Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion owns the node-map layout and the compare swap (`layout`), and the dashboard reflow. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; the live GSAP surface is the single Landing reveal.)_
+- **Ownership per screen (live):** Landing — Motion for the CTA card; the GSAP `DrawSVG` reveal of the scene hint was removed at step 8 Phase A when the Landing went type-led dark (D-029), so the Landing now has no GSAP. Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion owns the node-map layout and the compare swap (`layout`), and the dashboard reflow. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; GSAP now has no live animation surface at all.)_
 - **Use the official GSAP AI skills.** GreenSock ships `greensock/gsap-skills` (Agent Skills format: core, timeline, plugins, react, performance). Install it into the repo's Claude Code skills in Phase 0 so the agent authors GSAP with GreenSock's canonical patterns rather than guessing. See `ROADMAP.md` Phase 0.
 - **Not used:** anime.js (overlaps GSAP, adds a third paradigm) and Lottie (passive playback, can't drive the interactive robot). Rive is a documented future exploration for the robot only; see section 9.
 
 ### Scene rendering
 
-- **Plain SVG as React components.** The live SVG is the results geometry (the node map and the three-axis fit radar — a triangle, driven by `lib/nodeLayout.ts`) plus the two `/src/scene/` placeholders. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
-- _(Documented cut: the full assembly-line scene, conveyor, robotic arms, bins, and the composed-SVG robot in `/src/scene/` were the original plan, never built. §5 and the §9 3D path are parked with them.)_
+- **Plain SVG as React components.** The live SVG is the results geometry (the node map and the three-axis fit radar — a triangle, driven by `lib/nodeLayout.ts`). The `/src/scene/` directory was deleted at step 8 Phase A (D-029) when the Landing went type-led dark and dropped its `LandingSceneHint` placeholder, so there is no scene layer left. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
+- _(Documented cut: the full assembly-line scene, conveyor, robotic arms, bins, and the composed-SVG robot in the old `/src/scene/` were the original plan, never built. §5 and the §9 3D path are parked with them.)_
 
 ### State
 
@@ -118,11 +118,13 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │
 ├── public/
 │   ├── audio/                     SFX files
-│   ├── fonts/                     Self-hosted webfonts (if any)
+│   ├── fonts/                     Self-hosted woff2 — Montserrat, Roboto, Material Icons
+│   │                              (local @font-face, no CDN; D-029, step 8 Phase A)
 │   └── favicon.svg
 │
 ├── src/
 │   ├── app/                       App.tsx, router.tsx, providers.tsx, main.tsx (plugin registration)
+│   │                              + AppLayout (the dark-only canvas shell, step 8 Phase A)
 │   │
 │   ├── screens/
 │   │   ├── Landing/               Landing.tsx (the researcher flow switcher) + index
@@ -139,12 +141,13 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   │   │   ├── RoleDetailSheet.tsx, FitRadar.tsx, FitNote.tsx
 │   │   └── Select/                RoleSelect.tsx — the /select role-pick comparator
 │   │
-│   ├── scene/                     LandingSceneHint.tsx — the Landing hero placeholder
-│   │                              (the sole live scene file; the conveyor/robot scene was
-│   │                              never built)
+│   │                              (no /src/scene — the dir was deleted at step 8 Phase A, D-029,
+│   │                               when the Landing went type-led dark; the conveyor/robot scene
+│   │                               was never built)
 │   │
 │   ├── components/                Button, SegmentedControl, DragSortCard, DropZone, ProgressBar,
-│   │                              categoryAccent.ts (live)
+│   │                              AppHeader, Icon (the Material-ligature wrapper),
+│   │                              categoryAccent.ts (live — exports ROLE_ACCENT)
 │   │
 │   ├── state/                     sessionStore.ts, useFlow.ts, useQuestionSet.ts
 │   │
@@ -162,7 +165,8 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   ├── categoryBreakdown.ts   LIVE — the "why you scored that way" provenance (kept;
 │   │   │                          unwired until step 8)
 │   │   ├── nodeLayout.ts          LIVE — node-graph + fit-radar geometry
-│   │   ├── gsap.ts                LIVE — GSAP plugin registration + the Landing reveal
+│   │   ├── gsap.ts                LIVE — GSAP plugin registration (a future seam; no live
+│   │   │                          animation since the Landing reveal was removed, D-029)
 │   │   ├── motion.ts              Motion tokens (durations/easings); both engines read these
 │   │   ├── __tests__/             categoryScoring, screenerFit, categoryBreakdown, nodeLayout,
 │   │   │                          data-integrity (49 tests across 5 files)
@@ -214,7 +218,7 @@ None in v1. State lives in memory and resets on refresh. This is intentional for
 
 ## 5. Scene composition — documented cut
 
-> **Parked.** The assembly-line scene was never built; `/src/scene/` holds only the `LandingSceneHint` placeholder (`RobotPlaceholder` went with the Phase-4 Exam/Classic archive). None of the `ConveyorBelt` / `RoboticArm` / `Bin` / `Factory` / `robot/parts` hierarchy below exists. The two-engine ownership rule (§1) still governs the **live** modest motion: Motion owns the bucket-sort drag, step transitions, and the node-map compare; GSAP owns the single Landing `DrawSVG` reveal. The composition spec below is the original direction, kept for the record.
+> **Parked.** The assembly-line scene was never built, and `/src/scene/` is now gone entirely: its last file, the `LandingSceneHint` placeholder, was deleted at step 8 Phase A (D-029) when the Landing went type-led dark (`RobotPlaceholder` had already gone with the Phase-4 Exam/Classic archive). None of the `ConveyorBelt` / `RoboticArm` / `Bin` / `Factory` / `robot/parts` hierarchy below exists. The two-engine ownership rule (§1) still governs the **live** modest motion, but it is Motion-only in practice now: Motion owns the bucket-sort drag, step transitions, and the node-map compare; GSAP has no live animation (the Landing `DrawSVG` reveal was removed). The composition spec below is the original direction, kept for the record.
 
 The assembly-line scene is built as a hierarchy of SVG React components. The scene choreography (belt, item travel, arm, part-to-robot) is driven by GSAP timelines; the drag-to-bin gesture and any React-state-driven transitions are Motion. See the ownership rule in section 1.
 
@@ -280,7 +284,7 @@ The capture works on *rendered* UI, so the value is uneven by surface, and that'
 Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between the Figma file and the `@theme` block in `src/styles/globals.css`. Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
 
 - Figma `color/brand/gold` ↔ Tailwind `arm-gold` (kit-aligned; renamed from `arm-yellow`, D-024)
-- Figma `color/role/technician` ↔ Tailwind `arm-gold` (role accents map to kit brand tokens, `categoryAccent.ts`)
+- Figma `color/role/{technician,specialist,integrator}` ↔ Tailwind `arm-gold` / `arm-teal` / `arm-orange` (the finalized role accents map to kit brand tokens via `ROLE_ACCENT` in `categoryAccent.ts`, D-029; the dark `-soft`/`-on`/`-glow` derivatives are the `--color-role-*` set)
 - Figma `space/4` ↔ Tailwind `space-4`
 
 Sync a related set as one operation (all colors at once, the full type scale at once) so there's no half-synced in-between state. Naming alignment is a soft convention that makes the round-trip cleaner; it is not enforced by tooling.
