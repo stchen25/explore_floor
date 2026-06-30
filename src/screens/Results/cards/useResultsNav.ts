@@ -1,17 +1,24 @@
 import { useState } from 'react';
 
-// The results internal view-state machine (DATA_MODEL §17, D-029 Phase C/D). The five results
-// screens (cards / compare / map / constellation / job) are an internal view state within
-// Results, not separate routes. Phase C shipped the `cards` view; Phase D adds `compare`; `map`
-// is still stubbed (Phase E). Stepping to another role resets the tab + collapses the breakdown
-// + scrolls to top (mirrors the mockup's prev/next behavior).
+// The results internal view-state machine (DATA_MODEL §17, D-029 Phase C–F). The results screens
+// (cards / compare / map / constellation / job / job-overview) are an internal view state within
+// Results, not separate routes. Phase C shipped `cards`; D added `compare`; E added `map`; F adds
+// the explore sub-flow: `selected` (the role's job constellation), `job` (a job overlay layered on
+// the same mounted constellation), and `job-overview` (the standalone job page). Stepping to
+// another role resets the tab + collapses the breakdown + scrolls to top (mockup prev/next).
 //
 // Compare (Phase D): a side-by-side of the current role (`roleIndex`, the left column) and a
 // `compareWith` target (the right column, switchable via the dropdown — never the same role).
 // Each column owns its "why you matched" expand state (`compareExpanded`), like the mockup's
 // per-side `cmpExp`. Opening compare picks a sensible default target and scrolls top.
+//
+// Explore (Phase F): a map bubble dives into the role's `selected` constellation (NOT the cards —
+// that was Phase E's interim). The constellation's "Role overview" routes to that role's `cards`
+// (and marks `fromMap` so the cards still offer a way back to the map). A constellation node /
+// "jobs in this path" row opens the `job` overlay (the constellation stays mounted behind it); its
+// "Job overview" opens the standalone `job-overview` page.
 
-export type ResultsView = 'cards' | 'compare' | 'map';
+export type ResultsView = 'cards' | 'compare' | 'map' | 'selected' | 'job' | 'job-overview';
 
 export interface ResultsNav {
   view: ResultsView;
@@ -25,12 +32,26 @@ export interface ResultsNav {
   setActiveTab: (t: number) => void;
   expanded: boolean;
   toggleExpanded: () => void;
-  // --- map (Phase E) ---
-  /** True once the user dove into a role from the bubble map; the cards control bar then offers
-   *  a way back to the map (mirrors the mockup's `fromMap` chrome). */
+  // --- map / explore (Phase E/F) ---
+  /** True once the user reached the cards via the map/explore path; the cards control bar then
+   *  offers a way back to the map (mirrors the mockup's `fromMap` chrome). Set by the
+   *  constellation's "Role overview" (the bubble dive itself now lands on the constellation). */
   fromMap: boolean;
-  /** Jump straight to a ranked role's cards from a map bubble (sets the role + marks fromMap). */
-  diveToRole: (i: number) => void;
+  // --- explore: constellation / job / job-overview (Phase F) ---
+  /** Index into jobs[role] for the open job node; null on the constellation with no job open. */
+  selectedJob: number | null;
+  /** Dive from a map bubble into the role's job constellation (replaces the Phase E dive→cards). */
+  openConstellation: (i: number) => void;
+  /** Open a job node / "jobs in this path" row (index into jobs[role]) → the job overlay. */
+  openJob: (jobIndex: number) => void;
+  /** Job overlay footer → the standalone job-overview page. */
+  openJobOverview: () => void;
+  /** Job overlay header back (role name) → back to the constellation (clears the open job). */
+  backToConstellation: () => void;
+  /** Job-overview "Back" → the job overlay (keeps the open job). */
+  backToJob: () => void;
+  /** Constellation "Role overview" → that role's cards; marks fromMap so cards offer back-to-map. */
+  roleOverview: () => void;
   // --- compare ---
   /** The right-column role index (never equal to roleIndex). */
   compareWith: number;
@@ -51,6 +72,7 @@ export function useResultsNav(roleCount: number): ResultsNav {
   const [activeTab, setActiveTab] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [fromMap, setFromMap] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<number | null>(null);
   const [compareWith, setCompareWithState] = useState(roleCount > 1 ? 1 : 0);
   const [compareExpanded, setCompareExpanded] = useState<[boolean, boolean]>([false, false]);
 
@@ -84,11 +106,35 @@ export function useResultsNav(roleCount: number): ResultsNav {
     expanded,
     toggleExpanded: () => setExpanded((e) => !e),
     fromMap,
-    diveToRole: (i) => {
+    selectedJob,
+    openConstellation: (i) => {
       if (i < 0 || i >= roleCount) return;
-      goToRole(i);
+      goToRole(i); // sets the role + resets tab/expand + scrolls top
+      setSelectedJob(null);
+      setViewState('selected');
+    },
+    openJob: (jobIndex) => {
+      setSelectedJob(jobIndex);
+      setViewState('job');
+      scrollTop();
+    },
+    openJobOverview: () => {
+      setViewState('job-overview');
+      scrollTop();
+    },
+    backToConstellation: () => {
+      setSelectedJob(null);
+      setViewState('selected');
+      scrollTop();
+    },
+    backToJob: () => {
+      setViewState('job');
+      scrollTop();
+    },
+    roleOverview: () => {
       setFromMap(true);
       setViewState('cards');
+      scrollTop();
     },
     compareWith,
     openCompare: () => {

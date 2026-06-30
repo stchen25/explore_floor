@@ -1,14 +1,12 @@
 import { Icon } from '@/components/Icon';
 import type { ResultsCardsCopy, RoleDetail } from '@/data/types';
 
+import { EducationList } from './EducationList';
 import { StatBox } from './StatBox';
 
 // Tab 1 "The role": the role description, an optional upward-path callout (entry Technician),
 // salary + education stat cards, and the authored "What you'll do" duties. Tokens only (D-029).
 export function RoleTabRole({ copy, detail }: { copy: ResultsCardsCopy; detail: RoleDetail }) {
-  // ARM lists education as "X or Y"; show each as its own line.
-  const educationLines = detail.education.split(' or ');
-
   return (
     <div className="mt-space-4 flex flex-col gap-space-5">
       <section>
@@ -31,17 +29,7 @@ export function RoleTabRole({ copy, detail }: { copy: ResultsCardsCopy; detail: 
           <p className="font-heading text-h4 text-text-on-dark">{detail.salaryMedian}</p>
         </StatBox>
         <StatBox label={copy.educationLabel}>
-          <ul className="flex flex-col gap-space-1">
-            {educationLines.map((line) => (
-              <li
-                key={line}
-                className="flex gap-space-2 font-body text-body text-text-on-dark-muted"
-              >
-                <span className="text-text-on-dark-faint">&bull;</span>
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
+          <EducationList education={detail.education} />
         </StatBox>
       </div>
 

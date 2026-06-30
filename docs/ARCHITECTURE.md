@@ -136,11 +136,15 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   │   └── index.ts
 │   │   ├── Results/
 │   │   │   ├── Results.tsx        Renders ResultsExperience (the dark role-cards screen)
-│   │   │   ├── cards/             LIVE — the dark role-cards screen (D-029 Phase C) +
-│   │   │   │                      the ambient bubble map (D-029 Phase E):
+│   │   │   ├── cards/             LIVE — the dark role-cards screen (D-029 Phase C),
+│   │   │   │                      the ambient bubble map (Phase E), and the job
+│   │   │   │                      constellation + job overview (Phase F):
 │   │   │   │                      ResultsExperience, ResultsPanel, RoleHero, SignalBars,
-│   │   │   │                      WhyYouMatched, RoleTabs, ResultsMap, AmbientField, BubbleField
-│   │   │   │                      (view-state via useResultsNav: fromMap + diveToRole)
+│   │   │   │                      WhyYouMatched, RoleTabs, CompareView, ResultsMap, AmbientField,
+│   │   │   │                      BubbleField, ResultsConstellation, ConstellationField,
+│   │   │   │                      ConstellationNode, JobSidePanel, JobOverview, TrajectoryViz
+│   │   │   │                      (view-state via useResultsNav: 6 views; fromMap +
+│   │   │   │                       selectedJob + openConstellation/openJob/openJobOverview)
 │   │   │   ├── category/          RoleDetailSheet.tsx, FitRadar.tsx — both still live in /select
 │   │   │   │                      (the narrative node map — CategoryResults.tsx, NodeMap.tsx,
 │   │   │   │                       FitNote.tsx — was deleted at Phase E, D-029, superseded by

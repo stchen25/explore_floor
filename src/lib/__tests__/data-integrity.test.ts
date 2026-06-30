@@ -1,5 +1,6 @@
 import { bridgePrograms } from '@/data/bridgePrograms';
 import { flowList, flows } from '@/data/flows';
+import { jobs } from '@/data/jobs';
 import { roleDetails } from '@/data/roleDetails';
 import type { CategoryFlow } from '@/data/types';
 import { CATEGORIES } from '@/data/types';
@@ -49,9 +50,9 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
 
   it('has complete, non-empty owned copy (landing + results, incl. the dark cards copy)', () => {
     // The cards copy is mostly flat strings (+ the matchLabels array); the compare
-    // recommendation and the Phase E map block are nested objects — pull them out and check
-    // their values too.
-    const { recommendation, map, ...cardScalars } = flow.resultsCopy.cards;
+    // recommendation, the Phase E map block, and the Phase F explore block are nested objects —
+    // pull them out and check their values too (explore's overviewTabs array is flattened in).
+    const { recommendation, map, explore, ...cardScalars } = flow.resultsCopy.cards;
     const strings = [
       ...Object.values(flow.landingCopy),
       flow.resultsCopy.heading,
@@ -63,6 +64,7 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
       ...Object.values(cardScalars).flat(),
       ...Object.values(recommendation),
       ...Object.values(map),
+      ...Object.values(explore).flat(),
     ];
     for (const value of strings) {
       expect(typeof value).toBe('string');
@@ -72,6 +74,10 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
 
   it('gives the cards copy three match labels (one per ranked role)', () => {
     expect(flow.resultsCopy.cards.matchLabels).toHaveLength(3);
+  });
+
+  it('gives the explore copy three job-overview tab labels', () => {
+    expect(flow.resultsCopy.cards.explore.overviewTabs).toHaveLength(3);
   });
 });
 
@@ -120,6 +126,36 @@ describe('§17 cross-flow invariants', () => {
       for (const competency of detail.competencies) expect(competency.trim()).not.toBe('');
       expect(detail.whyMomentsText.trim(), category).not.toBe('');
     }
+  });
+
+  it('features the ARM common-title counts of jobs per role with non-empty content (Phase F)', () => {
+    // Counts mirror ARM's published common-title counts (jobs.ts): Technician 3, Specialist 5,
+    // Integrator 5. Per-job content is placeholder but must be present + well-formed.
+    const expectedCounts: Record<(typeof CATEGORIES)[number], number> = {
+      technician: 3,
+      specialist: 5,
+      integrator: 5,
+    };
+    const allIds: string[] = [];
+    for (const category of CATEGORIES) {
+      const roleJobs = jobs[category];
+      expect(roleJobs.length, category).toBe(expectedCounts[category]);
+      for (const job of roleJobs) {
+        expect(job.categoryId, job.id).toBe(category);
+        for (const value of [job.id, job.title, job.summary]) {
+          expect(value.trim(), job.id).not.toBe('');
+        }
+        expect(job.responsibilities.length, job.id).toBeGreaterThan(0);
+        for (const r of job.responsibilities) expect(r.trim(), job.id).not.toBe('');
+        expect(job.skills.length, job.id).toBeGreaterThan(0);
+        for (const s of job.skills) expect(s.trim(), job.id).not.toBe('');
+        if (job.roleNoun !== undefined) expect(job.roleNoun.trim(), job.id).not.toBe('');
+        if (job.salaryMedian !== undefined) expect(job.salaryMedian.trim(), job.id).not.toBe('');
+        if (job.education !== undefined) expect(job.education.trim(), job.id).not.toBe('');
+        allIds.push(job.id);
+      }
+    }
+    expect(new Set(allIds).size, 'job ids unique across roles').toBe(allIds.length);
   });
 
   it('provides at least one bridge program per role with non-empty content', () => {

@@ -76,6 +76,33 @@ export interface BridgeProgram {
   icon: BridgeProgramIcon;
 }
 
+/** A featured job within a role path (Phase F, DATA_MODEL §17). The results constellation rings
+ *  these around the role center; the job overlay + job-overview page read the per-job content.
+ *  ⚠️ PLACEHOLDER per-job copy (summary/responsibilities/skills/roleNoun) authored in the project
+ *  voice pending ARM sourcing (docs/reference/Job_Program_Data_Request.md). Salary + education
+ *  default to the role-level roleDetails; the optional overrides are for the day ARM provides
+ *  per-job figures. The featured counts mirror ARM's published common-title counts (3/5/5). */
+export interface Job {
+  /** Stable slug, unique across all roles, e.g. 'technician-robot-operator'. */
+  id: string;
+  categoryId: CategoryId;
+  /** Display title, drawn from / consistent with the role's commonJobTitles. */
+  title: string;
+  /** One plain-voice line on what this person does day to day. ⚠️ PLACEHOLDER. */
+  summary: string;
+  /** ~3 "What you'll do" bullets. ⚠️ PLACEHOLDER. */
+  responsibilities: string[];
+  /** ~4 short skill chips for this specific job. ⚠️ PLACEHOLDER. */
+  skills: string[];
+  /** Consonant-initial noun for the "You as a {noun}" framing on the job-overview "How you fit"
+   *  tab. Defaults to the title when omitted. */
+  roleNoun?: string;
+  /** Optional per-job salary override; defaults to roleDetails[categoryId].salaryMedian. */
+  salaryMedian?: string;
+  /** Optional per-job education override; defaults to roleDetails[categoryId].education. */
+  education?: string;
+}
+
 // ---------- Flow (study instrument — DATA_MODEL §17) ----------
 
 export type FlowId = 'narrative';
@@ -180,6 +207,34 @@ export interface ResultsCardsCopy {
   // --- Map (Phase E) ---
   backToMap: string; // cards control bar (after a map dive): "Back to the map"
   map: ResultsMapCopy;
+  // --- Explore: constellation / job panel / job overview (Phase F) ---
+  explore: ResultsExploreCopy;
+}
+
+/** Copy for the Phase F explore views (DATA_MODEL §17): the role constellation, the job
+ *  side-panel overlay, and the standalone job-overview page. Templates fill {role}, {noun}, and
+ *  {n}; the rest are plain labels. The per-job *content* lives in src/data/jobs.ts — these are
+ *  only the chrome. (data-integrity flattens this block, so every value is a string or a string
+ *  array.) */
+export interface ResultsExploreCopy {
+  // constellation (view: 'selected')
+  jobsInPathHeading: string; // "Jobs in this path"
+  jobsInPathCount: string; // "{n} roles" counter beside the heading
+  roleOverviewCta: string; // side-panel footer → role cards
+  allPathsBack: string; // side-panel header back → map
+  // job overlay (view: 'job')
+  jobEyebrow: string; // "Job in {role}"
+  jobOverviewCta: string; // side-panel footer → job-overview page
+  responsibilitiesHeading: string; // job "What you'll do"
+  // job overview page (view: 'job-overview')
+  overviewBack: string; // control-bar back → job overlay
+  setTargetCta: string; // inert "Set as target role" pill
+  overviewTabs: string[]; // [overview, skills & competencies, how you fit]
+  jobSkillsHeading: string; // per-job skills section
+  closeGapHeading: string; // bridge-programs section
+  closeGapSubtitle: string;
+  youAsHeading: string; // "You as a {noun}"
+  trajectoryHeading: string; // career-trajectory mini-viz heading
 }
 
 /** Copy for the ambient bubble-map results view (D-029 Phase E): the glass intro card + its

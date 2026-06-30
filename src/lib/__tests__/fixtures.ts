@@ -64,6 +64,23 @@ const cardsCopyFixture: ResultsCardsCopy = {
     hint: 'hint',
     back: 'back',
   },
+  explore: {
+    jobsInPathHeading: 'jobs',
+    jobsInPathCount: '{n} roles',
+    roleOverviewCta: 'role overview',
+    allPathsBack: 'all paths',
+    jobEyebrow: 'Job in {role}',
+    jobOverviewCta: 'job overview',
+    responsibilitiesHeading: 'do',
+    overviewBack: 'back',
+    setTargetCta: 'set target',
+    overviewTabs: ['overview', 'skills', 'fit'],
+    jobSkillsHeading: 'job skills',
+    closeGapHeading: 'close gap',
+    closeGapSubtitle: 'sub',
+    youAsHeading: 'You as a {noun}',
+    trajectoryHeading: 'where this leads',
+  },
 };
 
 export const resultsCopyFixture = {

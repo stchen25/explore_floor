@@ -2,13 +2,15 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Icon } from '@/components/Icon';
-import { roleDetails } from '@/data';
+import { jobs, roleDetails } from '@/data';
 import { durations, easings } from '@/lib';
 import { categoryContributions } from '@/lib/categoryBreakdown';
 import { deriveScreenerProfile, screenerFitLines } from '@/lib/screenerFit';
 import { useFlow, useSessionStore } from '@/state';
 
 import { CompareView } from './CompareView';
+import { JobOverview } from './JobOverview';
+import { ResultsConstellation } from './ResultsConstellation';
 import { ResultsMap } from './ResultsMap';
 import { ResultsPanel } from './ResultsPanel';
 import { RoleHero } from './RoleHero';
@@ -100,12 +102,12 @@ export function ResultsExperience() {
     </>
   );
 
-  // The map is full-bleed (its own dark canvas + ambient field), so it breaks out of the rounded,
-  // max-w-lg scroll panel that cards/compare live in.
-  const mainClassName =
-    nav.view === 'map'
-      ? 'relative h-[calc(100dvh-var(--spacing-nav))] w-full overflow-hidden'
-      : 'mx-auto mt-space-5 h-[calc(100dvh-var(--spacing-nav)-var(--spacing-space-5))] w-full max-w-lg overflow-y-auto rounded-t-lg pb-space-5 shadow-dark-panel';
+  // The map + the constellation/job overlay are full-bleed (their own dark canvas + ambient field),
+  // so they break out of the rounded, max-w-lg scroll panel that cards / compare / job-overview live in.
+  const fullBleed = nav.view === 'map' || nav.view === 'selected' || nav.view === 'job';
+  const mainClassName = fullBleed
+    ? 'relative h-[calc(100dvh-var(--spacing-nav))] w-full overflow-hidden'
+    : 'mx-auto mt-space-5 h-[calc(100dvh-var(--spacing-nav)-var(--spacing-space-5))] w-full max-w-lg overflow-y-auto rounded-t-lg pb-space-5 shadow-dark-panel';
 
   return (
     <main className={mainClassName} data-testid="results">
@@ -164,6 +166,37 @@ export function ResultsExperience() {
               reduce={reduce}
             />
           </motion.div>
+        ) : nav.view === 'selected' || nav.view === 'job' ? (
+          // selected + job share one mounted shell, so the constellation never remounts between
+          // them — only the side panel's body swaps (see ResultsConstellation / JobSidePanel).
+          <motion.div key="constellation" className="absolute inset-0" {...fade}>
+            <ResultsConstellation
+              copy={cards}
+              detail={detail}
+              rank={nav.roleIndex}
+              pct={pct}
+              jobs={jobs[role]}
+              view={nav.view}
+              selectedJob={nav.selectedJob}
+              ranking={ranking}
+              matchPercentages={categoryResult.matchPercentages}
+              reduce={reduce}
+              onOpenJob={nav.openJob}
+              onBackToMap={() => nav.setView('map')}
+              onBackToConstellation={nav.backToConstellation}
+              onRoleOverview={nav.roleOverview}
+              onOpenJobOverview={nav.openJobOverview}
+            />
+          </motion.div>
+        ) : nav.view === 'job-overview' ? (
+          <motion.div key="job-overview" {...fade}>
+            <JobOverview
+              copy={cards}
+              detail={detail}
+              job={jobs[role][nav.selectedJob ?? 0]}
+              onBack={nav.backToJob}
+            />
+          </motion.div>
         ) : (
           <motion.div key="map" className="absolute inset-0" {...fade}>
             <ResultsMap
@@ -171,7 +204,7 @@ export function ResultsExperience() {
               ranking={ranking}
               matchPercentages={categoryResult.matchPercentages}
               reduce={reduce}
-              onDive={nav.diveToRole}
+              onDive={nav.openConstellation}
               onBack={() => nav.setView('cards')}
             />
           </motion.div>

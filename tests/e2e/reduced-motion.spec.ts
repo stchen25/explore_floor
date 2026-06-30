@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { narrativeFlow } from '../../src/data/flows/narrativeFlow';
+import { jobs } from '../../src/data/jobs';
 import type { BucketId } from '../../src/data/types';
 
 // Guards the prefers-reduced-motion path: with reduced motion the narrative flow (the default,
@@ -81,14 +82,18 @@ test('narrative flow works under prefers-reduced-motion', async ({ page }) => {
   await page.getByTestId('role-next').click();
   await expect(page.getByTestId('role-name')).toHaveText('Integrator');
 
-  // The bubble map renders without motion and a dive still works (D-029 Phase E): with reduced
-  // motion the bubbles are static, so a normal click lands. Open the map, tap the top-match bubble,
-  // and land back on its card.
+  // The map + constellation render without motion and a dive still works (D-029 Phase E/F): with
+  // reduced motion the bubbles and nodes are static, so normal clicks land. Open the map, tap the
+  // top-match bubble to dive into its constellation, then open a job overlay.
   await page.getByTestId('open-map').click();
   await expect(page.getByTestId('results-map')).toBeVisible();
   await expect(page.getByTestId('map-bubble-specialist')).toBeVisible();
   await page.getByTestId('map-bubble-specialist').click();
-  await expect(page.getByTestId('role-name')).toHaveText('Specialist');
+  await expect(page.getByTestId('results-constellation')).toBeVisible();
+  await expect(page.getByTestId('constellation-center')).toContainText('Specialist');
+  const firstJob = jobs.specialist[0];
+  await page.getByTestId(`constellation-node-${firstJob.id}`).click();
+  await expect(page.getByTestId('job-side-panel')).toContainText('Job in Specialist');
 
   expect(consoleErrors, `console errors:\n${consoleErrors.join('\n')}`).toEqual([]);
 });

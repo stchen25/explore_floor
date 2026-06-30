@@ -163,6 +163,8 @@ Consumed through `ROLE_ACCENT` (§3.3), never as literals.
 
 **Results bubble-map usage (D-029 Phase E).** The ambient bubble map is where the role `glow` finally earns its keep. Each role bubble fills with `ROLE_ACCENT[cat].bg`, names the role + match % in `onAccent` (so the gold bubble carries dark ink, teal/orange carry white — all AA), and casts a soft role-tinted drop glow built from `glow` (the colored glow has no `--shadow-dark-*` equivalent; only its offset/blur are literals). The decorative `AmbientField` orbs use the base `--color-role-*` tokens at low opacity behind a heavy blur. Bubble size encodes match % (pure `lib/bubbleLayout`, rank-based); the float + ambient pulse are reduced-motion-gated and use `easings.soft` (the long idle-loop durations are intentionally off the UI motion scale, which has no multi-second home). Bubble label sizing is fluid (`clamp()`, anchored toward the type scale) since the text scales with the viewport-sized bubble.
 
+**Results constellation usage (D-029 Phase F).** The job constellation reuses the bubble-map accent language. The role **center** fills with `ROLE_ACCENT[cat].bg` + `onAccent` and casts the same colored `glow` (offset/blur are the documented decorative literals; center label sizing is fluid `clamp()` like the bubbles). **Job nodes** are glass (`glass-fill-strong` + `glass-border`); the **inactive star glyph uses `textSoft`** (not the saturated `text`) so it clears the 3:1 graphical-contrast bar on the glass fill — the saturated teal `#117289` was only 2.64:1. An **active** node (the open job) fills with `bg`/`onAccent` + `glow`; the others dim via opacity. Dashed center→node edges stroke `--color-text-on-dark-faint` at low opacity (neutral, like the mockup); node labels sit below each node (`text-on-dark-muted`, the active one in `textSoft`). The `AmbientField` is reused behind the field. Node float + entrance + hover are reduced-motion-gated. The `TrajectoryViz` ladder (job-overview "How you fit" tab) lights the current role's rung with its accent and leaves the others neutral.
+
 ## 4. Typography
 
 ### 4.1 Type pairing (locked)
@@ -252,6 +254,8 @@ Inherited verbatim. The 0-indexed scale where `space/0 = 4px` is deliberate; it 
 | `container-results` | 760 (the results role-cards reading column; D-029 Phase C) |
 | `container-map-card` | 640 (the glass "your results" intro card on the bubble map; D-029 Phase E) |
 | `container-map` | 1040 (the bubble field on the results map; matches `BUBBLE_VIEW.width`; D-029 Phase E) |
+| `container-constellation` | 1040 (the job-constellation field; matches `CONSTELLATION_VIEW.width`; D-029 Phase F) |
+| `container-job-panel` | 404 (the glass job side-panel beside the constellation; D-029 Phase F) |
 | `container-px` | 16 (horizontal padding) |
 | `section-py` | 48 (vertical section padding) |
 | `nav` | 60 (app top-nav height; the results sheet sizes off it — D-029 Phase D) |
