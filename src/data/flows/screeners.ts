@@ -11,6 +11,11 @@
  *  screenerFit.ts, which reads the Q2 levels below. These are the user's school/pay
  *  appetite for the fit line; the category score is a separate signal (e.g. "1-2 years"
  *  carries an appetite here but is unscored as a category — D-028). */
+/** The narrative steps that gauge school/pay appetite (the results breakdown's "openers":
+ *  education = Q1/Q2, pay = Q3). Centralized here so screenerFit and categoryBreakdown agree
+ *  on which scored steps are screeners vs. interest/scene "moments". */
+export const SCREENER_STEP_IDS: readonly string[] = ['n-q1', 'n-q2', 'n-q3'];
+
 export const SCREENER_LEVELS: Record<string, 0 | 1 | 2> = {
   // Narrative — "How long?" (only reached when Q1 = Yes)
   'n-q2-short': 1, // 1-2 years
@@ -37,8 +42,8 @@ export const SCREENER_COPY: ScreenerCopy = {
   heading: 'How it lines up',
   educationFits: '{role} roles fit the schooling you’re open to ({education}).',
   educationShort:
-    'Heads up — {role} roles usually need {education}, more school than you mentioned. Worth weighing as you explore this path.',
+    'Heads up, {role} roles usually need {education}, more school than you mentioned. Worth weighing as you explore this path.',
   payFits: '{role} pay ({salary}) lands in the range you’re after.',
   payShort:
-    'Heads up — {role} pay ({salary}) sits below the range you mentioned. Higher-tier roles reach further.',
+    'Heads up, {role} pay ({salary}) sits below the range you mentioned. Higher-tier roles reach further.',
 };

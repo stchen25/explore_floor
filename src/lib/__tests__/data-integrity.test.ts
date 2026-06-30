@@ -1,3 +1,4 @@
+import { bridgePrograms } from '@/data/bridgePrograms';
 import { flowList, flows } from '@/data/flows';
 import { roleDetails } from '@/data/roleDetails';
 import type { CategoryFlow } from '@/data/types';
@@ -46,7 +47,7 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
     expect(computeCategoryMax(steps)).toEqual(flow.expectedCategoryMax);
   });
 
-  it('has complete, non-empty owned copy (landing + results)', () => {
+  it('has complete, non-empty owned copy (landing + results, incl. the dark cards copy)', () => {
     const strings = [
       ...Object.values(flow.landingCopy),
       flow.resultsCopy.heading,
@@ -54,11 +55,17 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
       flow.resultsCopy.centerLabel,
       flow.resultsCopy.retake,
       ...Object.values(flow.resultsCopy.sheet),
+      // ResultsCardsCopy: strings + the matchLabels array, flattened.
+      ...Object.values(flow.resultsCopy.cards).flat(),
     ];
     for (const value of strings) {
       expect(typeof value).toBe('string');
       expect(value.trim()).not.toBe('');
     }
+  });
+
+  it('gives the cards copy three match labels (one per ranked role)', () => {
+    expect(flow.resultsCopy.cards.matchLabels).toHaveLength(3);
   });
 });
 
@@ -92,6 +99,32 @@ describe('§17 cross-flow invariants', () => {
       }
       expect(detail.jobActivities.length).toBeGreaterThan(0);
       expect(detail.commonJobTitles.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('gives every role authored duties + ARM competencies for the results cards (Phase C)', () => {
+    for (const category of CATEGORIES) {
+      const detail = roleDetails[category];
+      expect(detail.duties.length, category).toBeGreaterThan(0);
+      for (const duty of detail.duties) {
+        expect(duty.heading.trim(), category).not.toBe('');
+        expect(duty.text.trim(), category).not.toBe('');
+      }
+      expect(detail.competencies.length, category).toBeGreaterThan(0);
+      for (const competency of detail.competencies) expect(competency.trim()).not.toBe('');
+      expect(detail.whyMomentsText.trim(), category).not.toBe('');
+    }
+  });
+
+  it('provides at least one bridge program per role with non-empty content', () => {
+    for (const category of CATEGORIES) {
+      const programs = bridgePrograms[category];
+      expect(programs.length, category).toBeGreaterThan(0);
+      for (const program of programs) {
+        expect(program.title.trim(), category).not.toBe('');
+        expect(program.school.trim(), category).not.toBe('');
+        expect(['mechatronics', 'systems', 'certification', 'controls']).toContain(program.icon);
+      }
     }
   });
 

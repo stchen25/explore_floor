@@ -542,20 +542,21 @@ Conventions:
   types.ts              All TypeScript interfaces (the §17 flow/category types; the classic
                         types remain in the deleted-flow record below)
   flows/                LIVE (§17) — the narrative flow
-    narrativeFlow.ts    Narrative flow: intro MC (Q0-Q5) + 7 scenes
-    screeners.ts        Screener appetite levels + fit copy (D-020)
+    narrativeFlow.ts    Narrative flow: intro MC (Q0-Q5) + 7 scenes; resultsCopy incl. `cards`
+    screeners.ts        Screener appetite levels + fit copy + SCREENER_STEP_IDS (D-020)
     buckets.ts          The shared SORT_BUCKETS (That's me / Kinda me / Not me)
     index.ts            Registry: flows map, flowList, defaultFlowId (narrative only)
-  roleDetails.ts        LIVE (§17) — the three RC.org roles (keyed by CategoryId)
+  roleDetails.ts        LIVE (§17) — the three RC.org roles (duties, competencies, salary, …)
+  bridgePrograms.ts     LIVE (§17, D-029 Phase C) — per-role bridge programs (placeholder)
   roleSelect.ts         LIVE — /select role-pick copy
   index.ts              Barrel export
 
 /src/lib
   categoryScoring.ts    LIVE (§17) — calculateCategoryScores + computeCategoryMax
   screenerFit.ts        LIVE (§17) — deriveScreenerProfile + screenerFitLines (D-020)
-  categoryBreakdown.ts  LIVE (§17) — the "why you scored that way" provenance (pure + tested;
-                        unwired until the step-8 narrative results work)
-  nodeLayout.ts         LIVE (§17) — node-graph + fit-radar geometry
+  categoryBreakdown.ts  LIVE (§17) — score provenance (pure + tested); wired in Phase C into
+                        WhyYouMatched (openers/moments split + passedLabels, D-029)
+  nodeLayout.ts         LIVE (§17) — node-graph + fit-radar geometry (node map dormant; /select radar)
   index.ts              Barrel export
 
 /src/state
@@ -678,7 +679,7 @@ interface CategoryFlow {
   kind: 'narrative'; id; name; landingCopy;   // the 'exam' arm went with the Phase-4 delete
   steps: FlowStep[];                 // discriminated by `type`
   expectedCategoryMax: CategoryWeights; // declared full-path ceiling; tests assert == computed
-  resultsCopy: FlowResultsCopy;      // node-map + role-sheet chrome
+  resultsCopy: FlowResultsCopy;      // role-sheet chrome + `cards` (ResultsCardsCopy, D-029 Phase C)
 }
 type FlowStep = MCStep | SceneStep;  // StatementSortStep was removed with the exam flow
 // MCStep: optional prompt, question, choices[] — each choice maps to 0+ roles
@@ -688,6 +689,15 @@ type FlowStep = MCStep | SceneStep;  // StatementSortStep was removed with the e
 // Buckets (shared SORT_BUCKETS): thats-me "That's me" / maybe "Kinda me" /
 //   not-me "Not me". The middle label is "Kinda me" (D-018); its id stays `maybe`.
 interface CategoryResult { raw; matchPercentages; ranking; primaryCategory; } // CategoryWeights
+// RoleDetail (roleDetails.ts, keyed by CategoryId) — the role-card content. Phase C added
+//   duties: {heading,text}[] ("What you'll do"), competencies: string[] (ARM's per-role
+//   "Levels of Competencies"), whyMomentsText (the breakdown's moments line), and an optional
+//   pathUp (entry-Technician upward-path callout). bridgePrograms.ts (BridgeProgram, keyed by
+//   CategoryId) holds the per-role "how to bridge the gap" training programs (placeholder
+//   pending ARM sourcing — docs/reference/Job_Program_Data_Request.md).
+// FlowResultsCopy.cards: ResultsCardsCopy — all dark role-cards copy (match labels, the
+//   collapsed/expanded "why you matched" templates, openers/moments labels, tab + section
+//   headings). Templates use {role}/{pct}/{pointed}/{total}/{passed}/... placeholders.
 // _(Documented cut: the deleted ClassicFlow was `{ kind: 'classic'; questionSet }`; the deleted
 //  exam flow used `kind: 'exam'` and a StatementSortStep of 30 statements + 3 buckets.)_
 ```
@@ -696,14 +706,16 @@ interface CategoryResult { raw; matchPercentages; ranking; primaryCategory; } //
 
 `calculateCategoryScores(flow, answers, statementBuckets)` walks the **path the answers actually took** (branch-aware: a skipped Q2 contributes to neither raw nor max), tallying per role: each scored MC choice and each scene choice adds 1 to its role's `max`. For `raw`, a scored MC choice adds 1 to each role it maps to (a two-role choice feeds both, e.g. "$85,000" → specialist + integrator); **scene choices are bucketed** — `thats-me` → 1, `maybe` (the "Kinda me" middle bucket) → `MAYBE_WEIGHT` (a tunable constant, **0** today — the prior study asked for a middle option but the team wants it scored as a no for now, D-018), `not-me`/unanswered → 0. Because a scene's three choices are each bucketed independently, one scene can credit several roles or none (unlike the old single-pick). Each role normalizes against its own max; `ranking` is sorted desc with the stable `technician > specialist > integrator` tiebreak. _(Documented cut: the exam flow scored a 30-statement sort the same way; `statementBuckets` still carries scene-choice buckets, the parameter name a holdover.)_
 
-### Results (the live narrative node map; the exam dashboard is the documented cut)
+### Results (the live narrative role cards; the node map + exam dashboard are documented cuts)
 
-The narrative results presentation is the **node map**; it reads `categoryResult` data and the role-detail **sheet**. The exam dashboard below is preserved as the record of the cut comparison flow.
+> **Live headline (D-029 Phase C).** The narrative results presentation is the **dark role-cards screen** (`Results/cards/`), the first of the mockup's 5-screen system (cards → compare → map → constellation → job; the latter four land in Phases D–F). The node map below is **retired as the headline** (its files stay on disk, dormant, for the Phase E map work); `RoleDetailSheet` + `FitRadar` stay live in the `/select` comparator.
 
-- **Narrative → node map** (`Results/category/`): an Obsidian-style node graph (the earlier concentric rings read as "funky" — redesigned). The top-matched role sits front-and-center; the other two sit behind it (arced above, faded). Tapping a behind-node swaps it into the center (Motion `layout`); the heading names the centered role ("Your top match" vs "You're exploring"). The active role's `commonJobTitles` branch off the front on hairline connectors (`fanPoints` arcs them down); tap a title for the role sheet.
-- **Exam → dashboard** (`Results/exam/`) — _documented cut, deleted Phase 4 (D-027)._ The cut exam flow rendered a robot anchor (static `RobotPlaceholder`, tinted by the top category via the accent map then named `CATEGORY_ACCENT_TEXT`, since renamed to `ROLE_ACCENT` at step 8 Phase A, D-029) + four category **bars**; then **"Why you scored that way"** (score provenance from `categoryContributions` — the items you said yes to, n of m, walking the same path the scorer did) and **"Your roles"** (top-2 ranked → the role sheet). The provenance engine `lib/categoryBreakdown.ts` it used was **kept** (pure and tested), unwired until the step-8 narrative results graft match-explanation onto the node map.
-- **Shared role sheet** (`category/RoleDetailSheet`): the RC.org role-card content (description, activities, education, titles, salary) + a stub "Add this Role to your profile" link + a three-axis **fit radar** (a triangle: technician at top, specialist lower-right, integrator lower-left, per `lib/nodeLayout.ts` `CATEGORY_ANGLES`) of the user's role percentages. Opened with a specific job title (node map) or on the role itself (it was also reused by the cut exam "your roles" — `jobTitle` omitted; today the live openers are the node map and `/select`).
-- `Results.tsx` now dispatches a single way: narrative → node map. (It previously dispatched three ways by `flow.kind`: classic → `ClassicResults`, narrative → node map, exam → dashboard; the classic and exam branches went with the Phase-4 delete.)
+- **Narrative → role cards** (`Results/cards/`): a results experience with an internal view-state (`useResultsNav`: `view`, `roleIndex`, `activeTab`, `expanded`; Phase C ships the `cards` view, compare/map are stubbed). A `ResultsPanel` (rounded-top panel + sticky glass control bar — Compare / Skip-to-map or Explore) holds a `RoleHero` (match label + "N of 3"; role name + **match %** both neutral on-dark; ranked **`SignalBars`** from `matchPercentages` with the active role's bar in its accent), an inline **`WhyYouMatched`** breakdown (collapsed line "where your X% comes from" → expanded **01 what you chose / 02 how they connected / 03 what it means / what you passed on**, wired to `categoryBreakdown` + `screenerFit`), and `RoleTabs` (The role: description, an entry-Technician **path-up** callout, salary/education stat cards, `{heading,text}` duties — Skills, path & next steps: ARM **competencies** chips + **bridge-program** rows). Prev/next steps through the ranked roles (resets tab + collapse + scroll-top).
+- **Narrative → node map** (`Results/category/`) — _retired as the headline (D-029 Phase C); dormant on disk._ An Obsidian-style node graph: the top-matched role front-and-center, the other two behind (arced, faded); tapping a behind-node swaps it in (Motion `layout`); the active role's `commonJobTitles` branch off the front, tap a title for the role sheet. Kept for the Phase E bubble-map work.
+- **Exam → dashboard** (`Results/exam/`) — _documented cut, deleted Phase 4 (D-027)._ The cut exam flow rendered a robot anchor + four category **bars**; then **"Why you scored that way"** (score provenance from `categoryContributions`) and **"Your roles"** (top-2 ranked → the role sheet).
+- **Score provenance** `lib/categoryBreakdown.ts`: pure, walks the same branch-aware path as the scorer. Unwired since Phase 4, it is **wired in Phase C** into `WhyYouMatched` — extended to split a role's earned signals into **openers** (the school/pay screener steps, `SCREENER_STEP_IDS`) vs **moments** (interest MCs + scenes), and to surface **`passedLabels`** (a role's untaken options); `openerCount + momentCount === earnedCount`, `earnedCount + passedCount === totalCount`.
+- **Shared role sheet** (`category/RoleDetailSheet`): the RC.org role-card content (description, activities, education, titles, salary) + a stub "Add this Role to your profile" link + a three-axis **fit radar** (per `lib/nodeLayout.ts` `CATEGORY_ANGLES`). Still live in the `/select` comparator (the cards screen renders inline tabs instead of the sheet).
+- `Results.tsx` renders `ResultsExperience` (the cards screen). _(It previously dispatched by `flow.kind`: classic → `ClassicResults`, narrative → node map, exam → dashboard; the classic + exam branches went with the Phase-4 delete, and Phase C swapped the narrative node map for the role cards.)_
 
 ### Robot build: skipped (this iteration)
 
@@ -712,16 +724,16 @@ The narrative flow **skips the robot build + build beat** — the study kept pre
 ### Runtime model
 
 - Registry: `flows/index.ts` (`flows`, `flowList`, `defaultFlowId` = `'narrative'`). After Phase 4 the registry holds the narrative flow only; `FlowId = 'narrative'` is a single-member type. _(Documented cut: `flowList` was ordered Narrative/Exam/Classic; the exam and classic entries were deleted with their flows, D-027.)_ The store holds `flowId` **next to** session state (same survives-`reset()` mechanism as §16's `questionSetId`). The landing switcher calls `selectFlow` and filters `flowList` by kind, so the Exam/Classic segments fall away on their own; the CTA routes by condition (`select` → `/select` with no session, narrative → `/flow`). _(The `classic` → `/sort` route went with the classic delete.)_
-- `FlowRunner` (`/flow`) renders the current step by type and advances via `recordAnswer`/`advanceStep`/`completeFlow`; navigation is declarative off `currentScreen` so completion can't race the redirect. _(The `recordStatement` action and the `statementSort` render branch served the cut exam flow.)_ `/results` dispatches to `CategoryResults` (narrative node map). _(The `ClassicResults`/exam-dashboard branches went with the delete.)_
+- `FlowRunner` (`/flow`) renders the current step by type. The runner cursor lives in the store as one source of truth: `stepIndex` (which step), plus the within-step scene position — `scenePhase` (`'intro' | 'rating'`) and `choiceIndex` — and a `history` back-stack of visited step indices. Forward motion: MC picks `recordAnswer` + `advanceStep` (pushes history, resets the scene cursor); a scene's Continue calls `startScene` (intro → rating); rating a choice calls `rateChoice` (records the bucket, then walks to the next choice or — on the last — advances/finishes). `completeFlow` runs the scoring. **Back** is a single store action `goBack`: a branch-aware reverse traversal (previous choice → scene intro → previous step, re-entering a prior scene at its last choice) offered whenever there's somewhere to reverse to; prior MC answers and scene buckets persist, so a revisit shows the pick pre-lit and re-pickable (2026-06-29 fidelity pass, the research-flagged "no way back" gap). Navigation is declarative off `currentScreen` so completion can't race the redirect. _(The `recordStatement` action and the `statementSort` render branch served the cut exam flow; `rateChoice` now owns scene-bucket recording.)_ `/results` renders `ResultsExperience` (the dark role cards; D-029 Phase C). _(It previously rendered `CategoryResults` (the node map); the `ClassicResults`/exam-dashboard branches went with the Phase-4 delete.)_
 
 ### Invariants (enforced by `data-integrity.test.ts`)
 
-- Narrative (live): exactly 7 scenes, each with 3 choices covering all three roles; every `branchTo` resolves forward; computed full-path role max equals declared `expectedCategoryMax` (`{ technician: 11, specialist: 11, integrator: 11 }` — equal ceilings; "1-2 years" and "Whatever" are deliberately unscored, which keeps the three equal); unique step + choice ids; all owned copy non-empty; three `roleDetails` resolve to three distinct role names.
+- Narrative (live): exactly 7 scenes, each with 3 choices covering all three roles; every `branchTo` resolves forward; computed full-path role max equals declared `expectedCategoryMax` (`{ technician: 11, specialist: 11, integrator: 11 }` — equal ceilings; "1-2 years" and "Whatever" are deliberately unscored, which keeps the three equal); unique step + choice ids; all owned copy non-empty (incl. the `cards` copy, flattened, and the 3 `matchLabels`); three `roleDetails` resolve to three distinct role names. **Phase C (D-029):** every role has non-empty `duties` (`{heading,text}`) + ARM `competencies` + `whyMomentsText`, and `bridgePrograms` carries ≥1 program per role with a valid icon.
 - _(Documented cut — Exam, deleted Phase 4.)_ The exam invariant was: exactly 30 statements counted 8/7/7/8 (operate/repair/program/plan), interleaved (no two adjacent share a category), the 3 shared `SORT_BUCKETS` in order (`thats-me`/`maybe`/`not-me`) with the middle label asserted as "Kinda me" (D-018). The gate's `§17 exam flow shape` block was removed with the flow; the parametrized cross-flow blocks self-collapse to the single live flow.
 
 ### Screener fit (D-020)
 
-The initial screener questions also produce an **always-on fit line** on results (`Results/category/FitNote`), separate from the match score. Each role carries an `educationLevel` and `payLevel` (0/1/2) in `roleDetails`. `lib/screenerFit.ts` (pure) `deriveScreenerProfile(flowId, answers)` reads the user's school/pay appetite (0/1/2) off the screener answers — narrative Q1+Q2 for education, Q3 for pay — and `screenerFitLines(category, profile)` compares it to the role in focus, returning a line per axis: **green check** when appetite ≥ the role's level, **amber heads-up** when the role needs more school / pays a tier below the user's target. Levels + copy are data (`src/data/flows/screeners.ts`). Shown next to the centered role on the narrative node map. _(Documented cut: the exam path read education directly off exam Q1; that `if (flowId === 'exam')` branch was removed with the exam flow, D-027.)_
+The initial screener questions also produce an **always-on fit read** on results, separate from the match score. Each role carries an `educationLevel` and `payLevel` (0/1/2) in `roleDetails`. `lib/screenerFit.ts` (pure) `deriveScreenerProfile(flowId, answers)` reads the user's school/pay appetite (0/1/2) off the screener answers — narrative Q1+Q2 for education, Q3 for pay — and `screenerFitLines(category, profile)` compares it to the role in focus, returning a line per axis: **fits** when appetite ≥ the role's level, **heads-up** when the role needs more school / pays a tier below the user's target. Levels + copy are data (`src/data/flows/screeners.ts`). As of Phase C (D-029) this is folded into the role card's `WhyYouMatched` **"openers"** row (the school/pay angle), per the active role; `SCREENER_STEP_IDS` (in `flows/screeners.ts`) marks the opener steps so `categoryBreakdown` can split openers from moments. _(The standalone `Results/category/FitNote` banner is retired with the node-map headline. Documented cut: the exam path read education directly off exam Q1; that `if (flowId === 'exam')` branch was removed with the exam flow, D-027.)_
 
 ### Intro-question scoring (D-023, three-role re-cut)
 

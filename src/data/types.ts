@@ -22,12 +22,33 @@ export interface LandingCopy {
   cta: string;
 }
 
-/** Layer-2 role-sheet content (from the RC.org role cards). Keyed by role. */
+/** A "What you'll do" duty blurb on the results role card: a short verb heading plus a
+ *  one-line plain expansion. Authored from each role's ARM job activities. */
+export interface RoleDuty {
+  heading: string;
+  text: string;
+}
+
+/** Layer-2 role content (from the RC.org role cards). Keyed by role. Read by the narrative
+ *  results role cards (DATA_MODEL §17) and the /select comparator's role sheet. */
 export interface RoleDetail {
   categoryId: CategoryId;
   roleName: string; // "Technician"
   description: string;
   jobActivities: string[];
+  /** Richer "What you'll do" blurbs for the results card's role tab (heading + text),
+   *  authored from jobActivities. */
+  duties: RoleDuty[];
+  /** The role-specific competencies ARM publishes for this path (its "Levels of
+   *  Competencies"). Rendered as the results card's "Competencies you'll build" chips. */
+  competencies: string[];
+  /** One plain sentence for the "why you matched" breakdown's moments row: what the user's
+   *  scene/interest picks said about this role. In the project voice (no em dashes). */
+  whyMomentsText: string;
+  /** Optional upward-path framing for an entry-level result (Technician), so it reads as a
+   *  starting rung with a visible climb to Specialist/Integrator, not a verdict (results-screen
+   *  rubric: technician-is-a-rung). Omitted on the higher roles. */
+  pathUp?: string;
   education: string;
   /** Education ladder for the screener fit line (D-020): 0 = HS/GED, 2 = bachelor's+
    *  (level 1, an associate/cert, has no role in the three-role model but stays a valid
@@ -38,6 +59,17 @@ export interface RoleDetail {
   /** Pay ladder for the screener fit line (D-020): 0 = ~$46k (Technician), 2 = $85k+
    *  (Specialist/Integrator). Compared against the user's stated pay expectation. */
   payLevel: 0 | 1 | 2;
+}
+
+/** Icon key for a bridge-training program row (mapped to a Material ligature in the UI). */
+export type BridgeProgramIcon = 'mechatronics' | 'systems' | 'certification' | 'controls';
+
+/** A bridge-training program on the results card's "How to bridge the gap" list.
+ *  PLACEHOLDER content pending ARM sourcing (docs/reference/Job_Program_Data_Request.md). */
+export interface BridgeProgram {
+  title: string;
+  school: string;
+  icon: BridgeProgramIcon;
 }
 
 // ---------- Flow (study instrument — DATA_MODEL §17) ----------
@@ -96,12 +128,56 @@ export interface SceneStep {
 
 export type FlowStep = MCStep | SceneStep;
 
-/** Copy the category results screen reads (node map + role sheet chrome). */
+/** Copy for the dark results role-cards screen (DATA_MODEL §17). Templates use {role},
+ *  {pct}, {pointed}, {total}, {passed}, {n}, {education}, {salary} placeholders the screen
+ *  fills. All copy is data — no component holds these strings. */
+export interface ResultsCardsCopy {
+  /** Hero match labels by rank (index 0 = top match). */
+  matchLabels: string[];
+  /** "{index} of {total}" position label in the hero. */
+  stepLabel: string;
+  /** Sticky control-bar actions. */
+  compareCta: string;
+  mapCta: string; // mid-rank: "Skip to map"
+  exploreCta: string; // last rank: "Explore careers"
+  // --- Why you matched ---
+  whyHeading: string; // "Why {role}?"
+  collapsedLine: string; // "Across the {total} moments...{moreThanAny}. That's where your {pct}% comes from."
+  moreThanAny: string; // ", more than any other role" (top match only)
+  seeBreakdown: string;
+  hideBreakdown: string;
+  chosenLabel: string; // "What you chose"
+  moreAnswers: string; // "+{n} more answers"
+  connectLabel: string; // "How they connected"
+  openerNoun: string; // "opener" (the school/pay row count when it points here; 1 → "opener")
+  openersLabel: string; // label for the school/pay row when no opener pointed here ("School & pay")
+  momentNoun: string; // "moment"
+  meaningLabel: string; // "What this all means"
+  meaningText: string; // the long tally-not-a-verdict paragraph
+  passedLabel: string; // "What you passed on"
+  passedCountLabel: string; // "{passed} of {total}"
+  passedText: string; // "{passedExamples}...landed at {pct}% and not higher."
+  passedExample: string; // ", like {a} and {b}" (joined into passedText)
+  // --- Tabs ---
+  roleTab: string;
+  skillsTab: string;
+  descriptionHeading: string;
+  dutiesHeading: string;
+  competenciesHeading: string;
+  bridgeHeading: string;
+  bridgeSubtitle: string;
+  salaryLabel: string;
+  educationLabel: string;
+}
+
+/** Copy the results screen reads: the dark role cards (`cards`) plus the legacy node-map /
+ *  role-sheet chrome (still used by the /select comparator's shared sheet). */
 export interface FlowResultsCopy {
   heading: string;
   mapHint: string; // how to read/use the map
   centerLabel: string; // "Recommended titles"
   retake: string;
+  cards: ResultsCardsCopy;
   sheet: {
     activities: string;
     education: string;
@@ -145,6 +221,15 @@ export interface CategoryResult {
 export interface SessionState {
   currentScreen: 'landing' | 'flow' | 'results';
   stepIndex: number; // cursor into the active flow's steps
+  /** Back-stack of visited step indices (newest last), so Back can reverse a branch the
+   *  forward path took (Q1 "No" skips Q2). Within-step position is `scenePhase`/`choiceIndex`. */
+  history: number[];
+  /** A scene's two-beat position: the context card ('intro') vs rating its choices ('rating').
+   *  Meaningful only while `stepIndex` points at a scene step; reset to 'intro' on every advance. */
+  scenePhase: 'intro' | 'rating';
+  /** Which of the active scene's choices is being rated (0-based cursor). Drives the one-at-a-time
+   *  rater and lets Back step to the previous choice with its prior pick pre-lit. */
+  choiceIndex: number;
   answers: Record<string, string>; // stepId → chosen MCChoice/SceneChoice id
   statementBuckets: Record<string, BucketId>; // SceneChoice.id → bucket
   categoryResult: CategoryResult | null;

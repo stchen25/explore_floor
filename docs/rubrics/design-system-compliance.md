@@ -53,7 +53,7 @@ sections:
         check: Text sizes come from the type scale (h1-h5, body, small)
       - id: role-usage
         severity: p3
-        check: Type roles match usage (H1 hero, H2 screen title, match % as H2 in accent)
+        check: Type roles match usage (H1 hero, H2 screen/role-name title, large match %); on the dark results cards the role name and match % are neutral on-dark and the role accent lives in the active signal bar (D-029, faithful to the mockup), not an accent-colored number
   space:
     order: 4
     title: Spacing & layout
@@ -130,7 +130,7 @@ Every reused or semantically named value lives in the `@theme` block in `src/sty
 The kit brand colors are exact and non-negotiable. The three roles are color-coded in one place, `categoryAccent.ts` (`ROLE_ACCENT`): **technician→`arm-gold`, specialist→`arm-teal`, integrator→`arm-orange`** (D-029; `arm-blue` is retired). Each role exposes `accent` / `accentSoft` (legible large role names on dark) / `onAccent` / `glow`. A screen reads the token, never a hardcoded hex. `arm-gold` is the global brand signature, the primary CTA fill, and the universal hover/selected state in the quiz; on results it doubles as Technician's accent — watch that the quiz's "gold = my pick" doesn't get read as "gold = Technician." The Make.md neons are dead. **The quiz and results render dark-only** on the D-029 tokens (the light tokens stay defined but unused; no theme toggle). **Fail:** inventing a per-screen role color, hardcoding a role hex instead of the `ROLE_ACCENT` token, or leaking a light-mode surface into the dark flow. _(The four study categories `operate/repair/program/plan` and the classic Builder/Innovator/Architect archetype accents are the documented cut; D-028 collapsed accents to the three roles.)_
 
 ## 3. Typography
-Montserrat for headings, Roboto for body, always. Sizes come from the scale (H1 56/64 … body 16/22, small 14/22). Match percentage renders as H2 in the category accent. **Fail:** a display font swapped in ad hoc, or a hand-set `font-size: 19px`.
+Montserrat for headings, Roboto for body, always. Sizes come from the scale (H1 56/64 … body 16/22, small 14/22). On the dark results cards the role name (H2) and the match % are **neutral on-dark** and the role accent lives in the active signal bar (D-029, faithful to the mockup), not an accent-colored number. **Fail:** a display font swapped in ad hoc, or a hand-set `font-size: 19px`.
 
 ## 4. Spacing & layout
 Use the `space-0..7` scale (4 → 64px) and container tokens (`container-lg` 1248 default; `container-xl` 1500 for the sort scene). **Fail:** `gap: 18px`.

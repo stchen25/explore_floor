@@ -1,45 +1,15 @@
-import type { BucketId, CategoryFlow, FlowStep, LandingCopy } from '@/data/types';
+import type { BucketId, FlowStep } from '@/data/types';
 import {
   calculateCategoryScores,
   computeCategoryMax,
   MAYBE_WEIGHT,
 } from '@/lib/categoryScoring';
 
+import { makeFlow } from './fixtures';
+
 // Small fixture flows — the unit contract is independent of the authored content
 // (data-integrity covers the real flow). Shapes mirror the narrative spec: a branching
 // intro and per-choice scene sorts, scored across the three roles.
-
-const landingCopy: LandingCopy = {
-  overline: 'o',
-  heading: 'h',
-  description: 'd',
-  cta: 'c',
-};
-
-const resultsCopy = {
-  heading: 'h',
-  mapHint: 'm',
-  centerLabel: 'c',
-  retake: 'r',
-  sheet: {
-    activities: 'a',
-    education: 'e',
-    titles: 't',
-    salary: 's',
-    fit: 'f',
-    addToProfile: 'p',
-  },
-};
-
-const makeFlow = (steps: FlowStep[]): CategoryFlow => ({
-  id: 'narrative',
-  kind: 'narrative',
-  name: 'Fixture',
-  landingCopy,
-  resultsCopy,
-  steps,
-  expectedCategoryMax: computeCategoryMax(steps),
-});
 
 /** Q1 branches: yes → q2, no → skips q2 to q3 (mirrors the narrative college question). */
 const branchingSteps: FlowStep[] = [

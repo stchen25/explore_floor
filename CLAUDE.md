@@ -43,9 +43,9 @@ Research found the barrier to robotics manufacturing careers is not lack of inte
 | Language | TypeScript | Strict mode on. |
 | UI | React 18 | Function components and hooks only. |
 | Styling | Tailwind CSS (v4, CSS-first) | All design tokens live in the `@theme` block in `src/styles/globals.css` (loaded via `@tailwindcss/vite`). No magic hex values in components. |
-| Animation (UI) | Motion (ex-Framer Motion) | React-state-driven motion: screen + flow-step transitions, the bucket-sort drag, the node-map compare swap, `prefers-reduced-motion`. |
+| Animation (UI) | Motion (ex-Framer Motion) | React-state-driven motion: screen + flow-step transitions, the bucket-sort drag, the dark results role-cards screen, `prefers-reduced-motion`. |
 | Animation (scene) | GSAP + plugins | **No live use as of step 8 Phase A** — the Landing `DrawSVG` reveal (its last consumer) was removed when the Landing went type-led dark. `lib/gsap.ts` still registers `DrawSVGPlugin` + `@gsap/react`'s `useGSAP` at app start as a future seam. _(The cinematic build beat and conveyor choreography GSAP was chosen for are the documented cut.)_ The two libraries share a motion-token file and never animate the same property on the same node. |
-| Scene rendering | SVG (React components) | The live SVG is the results geometry (node map, fit radar). _(The composed-SVG assembly line is the documented cut.)_ |
+| Scene rendering | SVG (React components) | The live SVG geometry is the `/select` fit radar; the node map is dormant since the dark role-cards screen became the results headline (D-029 Phase C). _(The composed-SVG assembly line is the documented cut.)_ |
 | State | Zustand | One store per domain. No Redux. |
 | Audio | Howler.js | _(Documented cut: sound was a Phase 3 seasoning, never integrated.)_ |
 | Testing | Vitest + Playwright | Vitest for pure-function units (the category scoring engine especially, `data-integrity`); Playwright for the flow E2E specs (narrative / role-select / reduced-motion). |
@@ -61,7 +61,7 @@ If you want to add a dependency, check `ARCHITECTURE.md` first. Prefer the stack
 /public               Static assets, fonts
 /src
   /app                App shell (AppLayout: dark canvas + AppHeader mount), routing, top-level providers
-  /screens            Landing (type-led dark hero), Flow (the narrative runner), Results (the node-map results), Select
+  /screens            Landing (type-led dark hero), Flow (the narrative runner), Results (the dark role-cards results), Select
                       (/scene removed in step 8 Phase A — it held only LandingSceneHint; the conveyor/robot scene was never built)
   /components         Shared UI (buttons, sort cards, segmented control, AppHeader, Icon, role accents)
   /state              Zustand stores (sessionStore, useFlow)
@@ -81,6 +81,7 @@ See `ARCHITECTURE.md` §3 for the full tree and `DATA_MODEL.md` §17 for the liv
 - **Tokens, not literals.** Colors, spacing, radii, type, and motion durations come from Tailwind config. No inline hex, no random pixel values.
 - **Types first.** Define the shape in `/src/data/types.ts` (or local types) before wiring UI. Avoid `any`.
 - **Comment the why, not the what.** The docs explain intent; code comments should only clarify non-obvious decisions.
+- **Writing voice (all copy).** Any user-facing copy reads as naturally human: no em dashes (use commas, periods, parentheses, or restructure), no "it's not X, it's Y" constructions, no AI-tell vocabulary. Plainspoken and encouraging at a ~9th-grade level, never childish or corporate. Mirrors the parent `Capstone/CLAUDE.md` "Writing voice" rules.
 
 ## How to verify your work
 

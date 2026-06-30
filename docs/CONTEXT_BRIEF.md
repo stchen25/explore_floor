@@ -74,7 +74,7 @@ The build's results screen exists to be the answer to that question, in the spec
 | The barrier is invisibility | The interest items are concrete activities ("Building or fixing things," "Coding or modding games") that make the work visible rather than asking about abstract competencies. |
 | Pipeline runs through hands-on experience | The narrative mechanic is hands-on as a digital experience can be: you move through a day in your life and sort each choice, mimicking how you'd actually weigh real interests. _(The original robot-avatar artifact is the documented cut.)_ |
 | Parents/educators have stale info | The result screen reads in plain language for any adult looking over the user's shoulder: real roles, real programs, real next steps. No jargon. |
-| Maybe group converts through specificity | The compare interaction on results (your top match centered, the other categories alongside it, tap to see "how you'd match this, why you scored that way, the education and pay it asks for, programs that get you there") is the entire specificity payload as a single interactive moment. |
+| Maybe group converts through specificity | The results role cards are the entire specificity payload: your top match up front, the other roles a step away, each answering "how you'd match this, why you scored that way, the education and pay it asks for, the programs that get you there." (Phase C makes this the dark role-cards screen — hero, ranked signal bars, an inline "why you matched", and per-role tabs; the earlier node-map mechanic is retired.) |
 
 ## 5. Where this fits in the bigger picture
 

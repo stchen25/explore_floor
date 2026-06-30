@@ -103,6 +103,7 @@
   --container-md: 912px;
   --container-lg: 1248px;
   --container-xl: 1500px;
+  --container-results: 760px; /* the results reading column inside the role-cards panel (D-029 Phase C) */
 
   /* ---- Radius (§6 — overrides defaults) ---- */
   --radius-sm: 6px; /* kit Refined (was 4px) */

@@ -21,6 +21,46 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Load parts.',
       'Work with the team to identify and solve issues.',
     ],
+    duties: [
+      {
+        heading: 'Run the robots',
+        text: 'Set up, start, and watch over the robots as they work, stepping in when something needs a hand.',
+      },
+      {
+        heading: 'Keep quality high',
+        text: 'Check the parts coming off the line so what gets built meets the mark.',
+      },
+      {
+        heading: 'Teach robots new tasks',
+        text: 'Program and train robots to take on new jobs as the work changes.',
+      },
+      {
+        heading: 'Feed the data',
+        text: 'Collect the data that helps the machine learning behind the robots get smarter.',
+      },
+      {
+        heading: 'Load and prep parts',
+        text: 'Keep the line moving by loading the parts and materials the robots need.',
+      },
+      {
+        heading: 'Solve problems as a team',
+        text: 'Work with your crew to catch issues early and fix them together.',
+      },
+    ],
+    competencies: [
+      'Electrical Systems',
+      'Electronics & Controls',
+      'Fluid Power',
+      'Maintenance & Troubleshooting',
+      'Mechanical Systems',
+      'PLC (Programmable Logic Controllers)',
+      'Robot Programming',
+      'Safety (Systems and Procedures)',
+    ],
+    whyMomentsText:
+      'You kept reaching for hands-on work, building things and keeping them running. That’s the heart of being a Technician.',
+    pathUp:
+      'Technician is the entry point, not the ceiling. As you build skills and earn credentials, you can grow into Specialist or Integrator. The programs under Skills, path & next steps are where that climb starts.',
     education: 'High school diploma or GED certificate required',
     educationLevel: 0,
     commonJobTitles: [
@@ -45,6 +85,41 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Design software to control robotic systems for applications.',
       'Evaluate robotic systems or prototypes.',
     ],
+    duties: [
+      {
+        heading: 'Build and test robotic systems',
+        text: 'Get hands-on with robots from the first setup all the way through testing and rollout.',
+      },
+      {
+        heading: 'Design systems and tooling',
+        text: 'Create the mechanical systems and end-of-arm tools that decide how a robot does its job.',
+      },
+      {
+        heading: 'Lead the technical team',
+        text: 'Guide technologists, technicians, and fellow engineers as you build projects together.',
+      },
+      {
+        heading: 'Write the control software',
+        text: 'Write the code that tells a robotic system exactly what to do for each application.',
+      },
+      {
+        heading: 'Evaluate prototypes',
+        text: 'Test robots and early prototypes to make sure they perform before they go live.',
+      },
+    ],
+    competencies: [
+      'Advanced Robot Programming',
+      'Application Emphasis',
+      'Inspection/QA',
+      'Installation Concepts',
+      'Project Management',
+      'Robot and System Troubleshooting',
+      'Safety-Risk Assessment',
+      'Sensors',
+      'Vision',
+    ],
+    whyMomentsText:
+      'You kept choosing to write code and dig into hard problems. That’s the heart of being a Specialist.',
     education: "Bachelor's Degree (required) or Master's Degree (sometimes preferred)",
     educationLevel: 2,
     commonJobTitles: [
@@ -67,6 +142,33 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Test and plan using system simulation and modeling to ensure all automation systems (conveyors, sorters, industrial robots, collaborative robots, AMR, etc.) work cohesively as one unit.',
       'Determine an automation plan and oversee the implementation and testing processes to ensure improvement goals are met.',
     ],
+    duties: [
+      {
+        heading: 'Study what is possible',
+        text: 'Run feasibility studies and dig into the data to see where automation can actually help.',
+      },
+      {
+        heading: 'Simulate the whole system',
+        text: 'Use simulation and modeling to make sure every piece, from conveyors to robots, works as one.',
+      },
+      {
+        heading: 'Plan and oversee the build',
+        text: 'Set the automation plan, then guide the build and testing until it hits the goals.',
+      },
+    ],
+    competencies: [
+      'Augmented Reality/Virtual Reality',
+      'Big Data',
+      'Computer Programming',
+      'Interoperability',
+      'Offline Programming',
+      'Simulation',
+      'System and Process Design',
+      'Systems Simulation/Modeling',
+      'Visualization',
+    ],
+    whyMomentsText:
+      'You kept choosing to plan ahead and lead the group. That’s the heart of being an Integrator.',
     education: "Bachelor's Degree (required) or Master's Degree (sometimes preferred)",
     educationLevel: 2,
     commonJobTitles: [

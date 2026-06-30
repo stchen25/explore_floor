@@ -1,29 +1,10 @@
-import type { BucketId, CategoryFlow, FlowStep, LandingCopy } from '@/data/types';
+import type { BucketId, FlowStep } from '@/data/types';
 import { categoryContributions } from '@/lib/categoryBreakdown';
-import { computeCategoryMax } from '@/lib/categoryScoring';
+
+import { makeFlow } from './fixtures';
 
 // Fixtures mirror the narrative flow shape (a mapped MC + a scene sort). Real content is
-// covered by data-integrity. The breakdown is currently unwired — it's the match-explanation
-// engine the high-fidelity results screen (step 8) will graft onto the narrative.
-
-const landingCopy: LandingCopy = { overline: 'o', heading: 'h', description: 'd', cta: 'c' };
-const resultsCopy = {
-  heading: 'h',
-  mapHint: 'm',
-  centerLabel: 'c',
-  retake: 'r',
-  sheet: { activities: 'a', education: 'e', titles: 't', salary: 's', fit: 'f', addToProfile: 'p' },
-};
-
-const makeFlow = (steps: FlowStep[]): CategoryFlow => ({
-  id: 'narrative',
-  kind: 'narrative',
-  name: 'Fixture',
-  landingCopy,
-  resultsCopy,
-  steps,
-  expectedCategoryMax: computeCategoryMax(steps),
-});
+// covered by data-integrity. The breakdown feeds the results "why you matched" read.
 
 const steps: FlowStep[] = [
   {
@@ -133,5 +114,82 @@ describe('categoryContributions', () => {
     expect(categoryContributions(flow, {}, buckets)).toEqual(
       categoryContributions(flow, {}, buckets),
     );
+  });
+});
+
+describe('categoryContributions — openers / moments / passed (Phase C breakdown)', () => {
+  // A screener MC (n-q1, in SCREENER_STEP_IDS) + an interest MC (n-q4) + a scene.
+  const splitFlow = makeFlow([
+    {
+      type: 'mc',
+      id: 'n-q1',
+      question: 'College?',
+      choices: [
+        { id: 'n-q1-no', label: 'No', categories: ['technician'] },
+        { id: 'n-q1-yes', label: 'Yes', categories: [] },
+      ],
+    },
+    {
+      type: 'mc',
+      id: 'n-q4',
+      question: 'Day?',
+      choices: [
+        { id: 'n-q4-hands', label: 'Hands-on work', categories: ['technician'] },
+        { id: 'n-q4-typing', label: 'Typing on a computer', categories: ['specialist'] },
+      ],
+    },
+    {
+      type: 'scene',
+      id: 'n-s1',
+      prompt: 'p',
+      question: 'q',
+      choices: [
+        { id: 'n-s1-tech', label: 'Fix your bike', category: 'technician' },
+        { id: 'n-s1-spec', label: 'To-do list', category: 'specialist' },
+      ],
+    },
+  ]);
+
+  it('counts a screener pick as an opener, not a moment', () => {
+    const r = categoryContributions(
+      splitFlow,
+      { 'n-q1': 'n-q1-no', 'n-q4': 'n-q4-hands' },
+      { 'n-s1-tech': 'thats-me', 'n-s1-spec': 'not-me' },
+    );
+    // Technician: opener (No) + two moments (Hands-on work, Fix your bike).
+    expect(r.technician.openerCount).toBe(1);
+    expect(r.technician.momentLabels).toEqual(['Hands-on work', 'Fix your bike']);
+    expect(r.technician.momentCount).toBe(2);
+    expect(r.technician.earnedCount).toBe(3);
+    expect(r.technician.openerCount + r.technician.momentCount).toBe(r.technician.earnedCount);
+    expect(r.technician.passedCount).toBe(0);
+    expect(r.technician.passedLabels).toEqual([]);
+  });
+
+  it('lists a role’s untaken options as passed-on, and passedCount = total − earned', () => {
+    const r = categoryContributions(
+      splitFlow,
+      { 'n-q1': 'n-q1-no', 'n-q4': 'n-q4-hands' },
+      { 'n-s1-tech': 'thats-me', 'n-s1-spec': 'not-me' },
+    );
+    // Specialist earned nothing: passed on its interest option and its scene option.
+    expect(r.specialist.earnedCount).toBe(0);
+    expect(r.specialist.openerCount).toBe(0);
+    expect(r.specialist.momentLabels).toEqual([]);
+    expect(r.specialist.totalCount).toBe(2);
+    expect(r.specialist.passedCount).toBe(2);
+    expect(r.specialist.passedLabels).toEqual(['Typing on a computer', 'To-do list']);
+  });
+
+  it('treats a "maybe" scene as not-pointed (counts as passed) but not as a passed-on label', () => {
+    const r = categoryContributions(
+      splitFlow,
+      { 'n-q1': 'n-q1-no', 'n-q4': 'n-q4-hands' },
+      { 'n-s1-tech': 'thats-me', 'n-s1-spec': 'maybe' },
+    );
+    expect(r.specialist.maybe).toEqual(['To-do list']);
+    expect(r.specialist.passedCount).toBe(2); // total 2 − earned 0
+    // 'maybe' is on-the-fence, so only the untaken interest option is a passed-on label.
+    expect(r.specialist.passedLabels).toEqual(['Typing on a computer']);
   });
 });

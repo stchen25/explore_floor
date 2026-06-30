@@ -25,13 +25,13 @@ The build is a design showcase, so motion gets two complementary engines with a 
 - **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly. It has **no live animation as of step 8 Phase A** (D-029): the Landing `DrawSVG` reveal, its last live use, was removed when the Landing went type-led dark. GSAP stays registered in `lib/gsap.ts` as a future seam for the high-fidelity results work. _(The conveyor item travel + arm reach + part-to-robot + snap timeline, the cinematic build beat, `MorphSVG`, and `MotionPath` parts-into-robot-slots are the documented cut, see the live ownership note below.)_ GSAP is fully free as of 2025, including these formerly-paid plugins.
 - **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Plugins are registered once at app start (`gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`); the registration stands even though no live consumer draws on it yet.
 - **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (easings mirrored into the `@theme` block in `src/styles/globals.css`; durations stay in code). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
-- **Ownership per screen (live):** Landing — Motion for the CTA card; the GSAP `DrawSVG` reveal of the scene hint was removed at step 8 Phase A when the Landing went type-led dark (D-029), so the Landing now has no GSAP. Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion owns the node-map layout and the compare swap (`layout`), and the dashboard reflow. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; GSAP now has no live animation surface at all.)_
+- **Ownership per screen (live):** Landing — Motion for the CTA card; the GSAP `DrawSVG` reveal of the scene hint was removed at step 8 Phase A when the Landing went type-led dark (D-029), so the Landing now has no GSAP. Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion drives the live dark role-cards screen (D-029 Phase C); the node-map layout and compare swap (`layout`) Motion was built for here are dormant with the node map, and the exam-dashboard reflow went with the Phase-4 cut. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; GSAP now has no live animation surface at all.)_
 - **Use the official GSAP AI skills.** GreenSock ships `greensock/gsap-skills` (Agent Skills format: core, timeline, plugins, react, performance). Install it into the repo's Claude Code skills in Phase 0 so the agent authors GSAP with GreenSock's canonical patterns rather than guessing. See `ROADMAP.md` Phase 0.
 - **Not used:** anime.js (overlaps GSAP, adds a third paradigm) and Lottie (passive playback, can't drive the interactive robot). Rive is a documented future exploration for the robot only; see section 9.
 
 ### Scene rendering
 
-- **Plain SVG as React components.** The live SVG is the results geometry (the node map and the three-axis fit radar — a triangle, driven by `lib/nodeLayout.ts`). The `/src/scene/` directory was deleted at step 8 Phase A (D-029) when the Landing went type-led dark and dropped its `LandingSceneHint` placeholder, so there is no scene layer left. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
+- **Plain SVG as React components.** The live SVG geometry is the three-axis fit radar (a triangle, `lib/nodeLayout.ts`), live in the `/select` comparator; the node map (same lib) is **dormant on disk** since the dark role-cards screen replaced it as the results headline (D-029 Phase C, whose `SignalBars` replaced the triangle radar on the headline). The `/src/scene/` directory was deleted at step 8 Phase A (D-029) when the Landing went type-led dark and dropped its `LandingSceneHint` placeholder, so there is no scene layer left. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
 - _(Documented cut: the full assembly-line scene, conveyor, robotic arms, bins, and the composed-SVG robot in the old `/src/scene/` were the original plan, never built. §5 and the §9 3D path are parked with them.)_
 
 ### State
@@ -66,7 +66,7 @@ The build is a design showcase, so motion gets two complementary engines with a 
 
 ## 2. Data flow at a glance
 
-> The diagram below shows the **classic** (documented-cut) path. The **live** narrative flow follows the same shape with different actors: `sessionStore` actions `recordAnswer` / `advanceStep` / `completeFlow` feed `lib/categoryScoring` (the three-role engine), `lib/screenerFit` (the fit line), and `lib/categoryBreakdown` (the score provenance, kept but unwired until step 8); the `Flow` and `roleDetails` data come from `/src/data/flows` and `roleDetails.ts`. The principle is identical: data down, actions up, logic in pure `/src/lib` functions. _(The `recordStatement` action served the cut exam flow.)_
+> The diagram below shows the **classic** (documented-cut) path. The **live** narrative flow follows the same shape with different actors: `sessionStore` actions `recordAnswer` / `advanceStep` / `completeFlow` feed `lib/categoryScoring` (the three-role engine), `lib/screenerFit` (the fit line), and `lib/categoryBreakdown` (the score provenance, wired in step 8 Phase C into the role-cards `WhyYouMatched`, D-029); the `Flow` and `roleDetails` data come from `/src/data/flows` and `roleDetails.ts`. The principle is identical: data down, actions up, logic in pure `/src/lib` functions. _(The `recordStatement` action served the cut exam flow.)_
 
 ```
                   ┌──────────────────────┐
@@ -135,10 +135,14 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   │   ├── BucketSort.tsx     Shared one-card-at-a-time bucket sort
 │   │   │   └── index.ts
 │   │   ├── Results/
-│   │   │   ├── Results.tsx        Dispatches to the narrative node map
-│   │   │   ├── category/          LIVE — narrative node map
-│   │   │   │   ├── CategoryResults.tsx, NodeMap.tsx
-│   │   │   │   ├── RoleDetailSheet.tsx, FitRadar.tsx, FitNote.tsx
+│   │   │   ├── Results.tsx        Renders ResultsExperience (the dark role-cards screen)
+│   │   │   ├── cards/             LIVE — the dark role-cards screen (D-029 Phase C):
+│   │   │   │                      ResultsExperience, ResultsPanel, RoleHero, SignalBars,
+│   │   │   │                      WhyYouMatched, RoleTabs (view-state via useResultsNav)
+│   │   │   ├── category/          DORMANT — narrative node map, retired as the headline
+│   │   │   │                      (D-029 Phase C); kept on disk for the Phase E map work
+│   │   │   │   ├── CategoryResults.tsx, NodeMap.tsx, FitNote.tsx
+│   │   │   │   ├── RoleDetailSheet.tsx, FitRadar.tsx (both still live in /select)
 │   │   └── Select/                RoleSelect.tsx — the /select role-pick comparator
 │   │
 │   │                              (no /src/scene — the dir was deleted at step 8 Phase A, D-029,
@@ -153,7 +157,8 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │
 │   ├── data/                      See DATA_MODEL.md §17 (live) + §1–§14 (documented cut)
 │   │   ├── flows/                 LIVE — narrativeFlow, screeners, buckets, index (registry)
-│   │   ├── roleDetails.ts         LIVE — the three RC.org roles
+│   │   ├── roleDetails.ts         LIVE — the three RC.org roles (duties, competencies, pathUp)
+│   │   ├── bridgePrograms.ts      LIVE (D-029 Phase C) — per-role bridge programs (placeholder)
 │   │   ├── roleSelect.ts          /select copy
 │   │   ├── types.ts               §17 flow/category types (the classic types live in the
 │   │   │                          deleted-flow record)
@@ -162,9 +167,9 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   ├── lib/
 │   │   ├── categoryScoring.ts     LIVE — calculateCategoryScores + computeCategoryMax
 │   │   ├── screenerFit.ts         LIVE — the education/pay fit line
-│   │   ├── categoryBreakdown.ts   LIVE — the "why you scored that way" provenance (kept;
-│   │   │                          unwired until step 8)
-│   │   ├── nodeLayout.ts          LIVE — node-graph + fit-radar geometry
+│   │   ├── categoryBreakdown.ts   LIVE — score provenance; wired in step 8 Phase C into the
+│   │   │                          role-cards WhyYouMatched (openers/moments + passedLabels, D-029)
+│   │   ├── nodeLayout.ts          LIVE — node-graph + fit-radar geometry (node map dormant; /select radar)
 │   │   ├── gsap.ts                LIVE — GSAP plugin registration (a future seam; no live
 │   │   │                          animation since the Landing reveal was removed, D-029)
 │   │   ├── motion.ts              Motion tokens (durations/easings); both engines read these
@@ -182,7 +187,7 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 └── README.md                      Teammate onboarding + MCP/toolchain setup; defers to docs/
 ```
 
-> **Deleted in Phase 4 (D-027), recoverable at git tag `archive/pre-narrative-only`.** The tree above is the live tree. Phase 4 removed: the Exam flow (`data/flows/examFlow.ts`, `screens/Results/exam/*`, `screens/Flow/StatementSortView.tsx`, `tests/e2e/exam.spec.ts`); the Classic flow (`screens/Sort/*`, `screens/Build/*`, `screens/Results/{ClassicResults,RoleCard,Pedestal,ProgramList,FourPartRead}.tsx`, the classic libs `scoring.ts`/`robotAssembly.ts`/`fit.ts`/`audio.ts`/`programSelection.ts`, the classic data `items.ts`/`roles.ts`/`robotParts.ts`/`competencies.ts`/`skills.ts`/`programs.ts`/`colorSchemes.ts`/`rounds.ts`/`resultsCopy.ts`/`classicFlow.ts`/`questionSets/`, the classic components `MatchIndicator.tsx`/`accent.ts`/`RoundIndicator.tsx`); `scene/RobotPlaceholder.tsx`; and the classic E2E (`happy-path.spec`, `compare.spec`). `categoryBreakdown.ts` and `programs`/`competencies`/`skills` are discussed below — the breakdown engine was **kept**, the data files were **deleted** (the live results surface zero programs today; a category-keyed set returns at step 8).
+> **Deleted in Phase 4 (D-027), recoverable at git tag `archive/pre-narrative-only`.** The tree above is the live tree. Phase 4 removed: the Exam flow (`data/flows/examFlow.ts`, `screens/Results/exam/*`, `screens/Flow/StatementSortView.tsx`, `tests/e2e/exam.spec.ts`); the Classic flow (`screens/Sort/*`, `screens/Build/*`, `screens/Results/{ClassicResults,RoleCard,Pedestal,ProgramList,FourPartRead}.tsx`, the classic libs `scoring.ts`/`robotAssembly.ts`/`fit.ts`/`audio.ts`/`programSelection.ts`, the classic data `items.ts`/`roles.ts`/`robotParts.ts`/`competencies.ts`/`skills.ts`/`programs.ts`/`colorSchemes.ts`/`rounds.ts`/`resultsCopy.ts`/`classicFlow.ts`/`questionSets/`, the classic components `MatchIndicator.tsx`/`accent.ts`/`RoundIndicator.tsx`); `scene/RobotPlaceholder.tsx`; and the classic E2E (`happy-path.spec`, `compare.spec`). `categoryBreakdown.ts` and `programs`/`competencies`/`skills` are discussed below — the breakdown engine was **kept**, the data files were **deleted** (the live results surfaced zero programs until step 8; the category-keyed `bridgePrograms.ts` brings a placeholder set back at step 8 Phase C, D-029).
 
 ### Sizing rules
 
@@ -250,7 +255,7 @@ Routes (`/src/app/router.tsx`):
 
 - `/` — Landing (the researcher flow switcher; live segments are Narrative / Select)
 - `/flow` — the `FlowRunner` (narrative): renders the current step by type
-- `/results` — Results (dispatches to the narrative node map)
+- `/results` — Results (renders `ResultsExperience`, the dark role-cards screen; D-029 Phase C — the node map is dormant)
 - `/select` — the role-pick comparator (`RoleSelect`, the industry-professional arm)
 - _(Documented cut: `/flow` also ran the cut Exam flow; `/results` also dispatched the exam dashboard and the classic results; the `/sort` and `/build` routes served the classic interest-sort and Build beat. All deleted in Phase 4, D-027. `defaultFlowId = 'narrative'`, D-021.)_
 

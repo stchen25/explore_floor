@@ -2,13 +2,15 @@
 rubric: results-screen
 name: Results Screen Quality
 applies_to: [tsx]
-version: 1
+version: 2
 severity_defaults:
   default: p2
 source:
   - docs/knowledge/REALIGNMENT.md §4 (the real work ahead is the narrative results screen)
+  - docs/knowledge/VISUAL_REARCHITECTURE.md §2/§6 (the dark 5-screen results system; D-029)
+  - "Claude Design mockup: design_handoff_quiz_to_results/Quiz to Results.dc.html (the cards screen is the visual source of truth)"
   - docs/PRD.md §5.0 / §5.4 (recommendation, not a verdict)
-  - docs/DATA_MODEL.md §17 (the node map, the role sheet, the fit line)
+  - docs/DATA_MODEL.md §17 (the role cards, signal bars, why-you-matched, fit read)
 sections:
   clarity:
     order: 1
@@ -35,17 +37,17 @@ sections:
         check: Detail (the breakdown, the role sheet) sits behind progressive disclosure rather than dumping everything at once
       - id: fit-line-present
         severity: p2
-        check: The always-on education/pay fit line is shown and legible next to the role in focus
+        check: The education/pay fit read is present and legible (Phase C folds it into the why-you-matched "openers" rather than a standalone banner)
   discoverability:
     order: 3
     title: Discoverability of the compare
     criteria:
       - id: compare-discoverable
         severity: p1
-        check: The compare interaction (the node-map swap) is discoverable without instruction
+        check: The other roles are reachable without instruction (Phase C - the ranked signal bars + the prev/next role arrows + the Compare control; later phases add the compare + bubble-map screens)
       - id: somewhere-to-go
         severity: p2
-        check: The result gives an outbound next step (training programs, real listings), not a dead end
+        check: The result gives an outbound next step (the Tab-2 "how to bridge the gap" bridge programs; later, real listings), not a dead end
   framing:
     order: 4
     title: Honest, encouraging framing
@@ -74,10 +76,12 @@ Judges the high-fidelity results screen, the single most important and currently
 - *Parent over the shoulder* — should understand the result in 30 seconds: which paths, why, what they ask for.
 - *ARM client reviewer* — checks the result is a real recommendation with a path to a program, the conversion ARM cares about.
 
+> **Phase C scope (D-029).** The results are now the dark **role-cards** screen (the first of a 5-screen system: cards → compare → map → constellation → job, the last four landing in Phases D–F). The cards screen carries the hero (match label, role name, match %, ranked **signal bars**), an inline **"why you matched"** breakdown (01 what you chose / 02 how they connected / 03 what it means / what you passed on), and two tabs (The role / Skills, path & next steps). Judge the cards screen against the criteria below; the node-map is retired as the headline.
+
 **Realistic scenarios**
-- A user lands on a 31% Specialist match; the screen says in one line what 31% means, interprets which of their answers drove it, and offers programs that build toward it.
+- A user lands on a 91% Specialist match; the collapsed line says where the 91% comes from ("X of the 11 moments pointed toward Specialist"), and "see full breakdown" interprets which answers drove it.
 - A user who scores Technician sees it framed as an entry point with a visible path up to Specialist/Integrator, plus links, not "you're a Technician, the end."
-- A user taps a behind-node on the narrative map; it swaps to center, the heading updates ("You're exploring …"), and the fit line follows the centered role.
+- A user steps prev/next through the ranked roles; the hero, signal-bar highlight, match label ("Your second closest match"), and tabs update, and the breakdown follows the active role.
 
 **Anti-scenarios (should fail)**
 - The match percentage appears with no definition ("11% match to … what?").

@@ -4,10 +4,10 @@ import { narrativeFlow } from '../../src/data/flows/narrativeFlow';
 import type { BucketId } from '../../src/data/types';
 
 // Guards the prefers-reduced-motion path: with reduced motion the narrative flow (the default,
-// and the only flow after the strip) must still work end to end — MC transitions and the scene
-// bucket-sort crossfade instead of animating, Results' layout reflow is instant, and Landing's
-// content entrance is skipped. We assert it completes with no console errors and the node-map
-// compare still swaps.
+// and the only flow after the strip) must still work end to end. MC transitions and the scene
+// bucket-sort crossfade instead of animating, the results signal bars + view transitions are
+// instant, and Landing's content entrance is skipped. We assert it completes with no console
+// errors and the role cards still step.
 
 const mcAnswers: Record<string, string> = {
   'n-q0': 'n-q0-no',
@@ -74,11 +74,12 @@ test('narrative flow works under prefers-reduced-motion', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/results$/, { timeout: 7000 });
 
-  // The node-map compare still swaps without motion: every scene's specialist choice was
-  // "That's me", so Specialist is the top match; tapping the technician node swaps in.
-  await expect(page.getByRole('heading', { name: 'Specialist' })).toBeVisible();
-  await page.getByTestId('category-node-technician').click();
-  await expect(page.getByRole('heading', { name: 'Technician' })).toBeVisible();
+  // The role cards render and step without motion: every scene's specialist choice was "That's
+  // me", so Specialist is the top match; prev/next steps to the second-ranked role (Integrator —
+  // on the no-college path the branch-aware maxes make integrator 1/10 edge out technician 1/11).
+  await expect(page.getByTestId('role-name')).toHaveText('Specialist');
+  await page.getByTestId('role-next').click();
+  await expect(page.getByTestId('role-name')).toHaveText('Integrator');
 
   expect(consoleErrors, `console errors:\n${consoleErrors.join('\n')}`).toEqual([]);
 });

@@ -112,7 +112,8 @@ Short phases, sequenced so the data-dependent screens come last (giving ARM time
 - *Confirm:* slide direction/feel; whether the intro "prompt" lead-in lines map to any of our questions; bucket rows vs the mockup's single-select rating visual.
 - *Verify:* narrative E2E updated to the new DOM; scoring unchanged.
 
-### Phase C — Results: role cards (the headline screen)
+### Phase C — Results: role cards (the headline screen) — **DONE (2026-06-29, D-029 Phase C)**
+> Built and green (lint, typecheck, 55 unit, 3 E2E, build); graded `/design-review` PASS on system-compliance, 1 p1 + 1 p2 fixed on results-screen, 1 p3 (signal-bar contrast) deferred to Phase G. Handoff `sessions/2026-06-29-phase-C-results-role-cards.md`. **Execution note vs the plan below:** the role name + match % are **neutral on-dark** (not `accentSoft`) — faithful to the mockup, the accent lives in the active signal bar; salary/education moved to Tab 1 stat cards (the hero is name/%/bars/why only); Tab 2 chips are **real ARM competencies** (not generic skills); bridge programs are per-role placeholder pending ARM. Compare/Map are stubbed (Phases D/E) on a `useResultsNav` seam.
 - Build `ResultsPanel` (rounded panel + sticky glass control bar), `RoleHero` (role name in accentSoft, match label, **match %**, salary, education, **signal bars** per role), `Tabs` (The Role / Skills+Path+Next Steps), `WhyYouMatched` (inline expand, wired to `categoryBreakdown.ts`), prev/next through ranked roles.
 - Land the three **step-8 content goals** here: (1) a one-line plain-language **definition of what the match % means**; (2) frame the **Technician as a starting rung** with a visible path up to Specialist/Integrator + outbound links, not a verdict; (3) the **"why you matched"** provenance from `categoryBreakdown.ts`.
 - Resolve the **3-axis radar**: the mockup uses horizontal **signal bars**, not a triangle radar — adopt bars in the hero and retire the degenerate triangle radar (carry the geometry in `nodeLayout.ts` only if the map/constellation still want it).
@@ -139,6 +140,7 @@ Short phases, sequenced so the data-dependent screens come last (giving ARM time
 
 ### Phase G — Polish, motion, responsive, a11y, review
 - Tune Motion across the flow (button life, sheet expand/collapse, screen transitions); finalize reduced-motion behavior.
+  - **Already landed (2026-06-29 quiz-fidelity pass, post-Phase-B; see `sessions/2026-06-29-quiz-fidelity-back-slide-morph.md`):** the scene **slide-up morph** (Continue compresses the scene card and reveals the choices, sliding it up via the centered column), the flow-step **horizontal slide** + **selected-row gold-hold through the exit** (the "stays lit to show state" convention), and a persistent **Back** affordance (branch-aware reverse traversal with prior picks pre-lit). All reduced-motion-gated and green. **Still do at G:** a fresh look at whether the morph/slide can go further (the mockup also slides the *first choice card* in after the reveal settles, vs our simultaneous reveal), directional slide on Back vs forward (we match the mockup's single direction today), and any other motion polish across the flow. Don't treat the motion bullet as closed.
 - Mobile/tablet responsiveness (the mockup is desktop 1400px — define the responsive story for each screen); 44px touch targets.
 - Light a11y (keyboard nav, AA contrast on the new dark palette, `aria-label`s, focus states).
 - Final graded `/design-review`; `/phase-check`; `/compound` a session note + any new decisions (palette, dark system, results architecture).

@@ -12,12 +12,18 @@ export type IconName =
   | 'search'
   | 'user'
   | 'chevron-d'
+  | 'chevron-u'
+  | 'chevron-l'
   | 'chevron-r'
+  | 'arrow-l'
   | 'arrow-r'
   | 'arrow-up-r'
   | 'check'
   | 'x'
   | 'close'
+  | 'compare'
+  | 'bookmark'
+  | 'split'
   | 'briefcase'
   | 'graduation'
   | 'route'
@@ -27,19 +33,29 @@ export type IconName =
   | 'building'
   | 'map-pin'
   | 'bolt'
-  | 'star';
+  | 'star'
+  | 'precision'
+  | 'hub'
+  | 'verified'
+  | 'settings';
 
 // Design-semantic name → Material Icons ligature.
 const LIGATURE: Record<IconName, string> = {
   search: 'search',
   user: 'person',
   'chevron-d': 'expand_more',
+  'chevron-u': 'expand_less',
+  'chevron-l': 'chevron_left',
   'chevron-r': 'chevron_right',
+  'arrow-l': 'arrow_back',
   'arrow-r': 'arrow_forward',
   'arrow-up-r': 'north_east',
   check: 'check',
   x: 'close',
   close: 'close',
+  compare: 'compare_arrows',
+  bookmark: 'bookmark_border',
+  split: 'call_split',
   briefcase: 'work',
   graduation: 'school',
   route: 'route',
@@ -50,6 +66,10 @@ const LIGATURE: Record<IconName, string> = {
   'map-pin': 'place',
   bolt: 'bolt',
   star: 'star',
+  precision: 'precision_manufacturing',
+  hub: 'hub',
+  verified: 'verified',
+  settings: 'settings',
 };
 
 interface IconProps {

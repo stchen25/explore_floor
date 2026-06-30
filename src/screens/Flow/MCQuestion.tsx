@@ -1,34 +1,53 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { MCStep } from '@/data/types';
+import { durationsMs } from '@/lib';
 
 interface MCQuestionProps {
   step: MCStep;
   /** 1-based position among the flow's MC steps, for the "Question N of M" cue. */
   questionNumber: number;
   questionTotal: number;
+  /** The answer already on record for this step (pre-lit on a Back revisit); undefined if fresh. */
+  selectedId?: string;
+  reduce: boolean;
   onChoose: (choiceId: string) => void;
 }
 
 // A single-select multiple-choice step, re-skinned dark for step 8 (D-029 Phase B): a glass
 // question card (muted "Question N of M" → hairline divider → optional prompt → the question)
 // over a stack of full-width, left-aligned answer rows. Native buttons — tap or Tab/Enter.
-// Rows invert to brand gold (dark ink) on hover; picking one fills it gold and auto-advances
-// (no submit), per the mockup's intro screeners.
+// Rows invert to brand gold (dark ink) on hover; picking one fills it gold and auto-advances.
 //
-// Locks after the first pick. The runner transitions with AnimatePresence mode="wait", so this
-// card lingers in the DOM (fading) for the exit window; an opacity fade keeps the buttons
-// hit-testable, so a fast click meant for the NEXT question could otherwise land here and
-// overwrite this answer (and skip a step). The lock resets per question because the runner keys
-// the card by step id, remounting this component. Tracking the picked id also lets the chosen
-// row hold its gold fill through the fade.
-export function MCQuestion({ step, questionNumber, questionTotal, onChoose }: MCQuestionProps) {
-  const [picked, setPicked] = useState<string | null>(null);
+// "Stays lit to show state" (Caelan, matching the mockup): picking a row fills it gold and HOLDS
+// for a beat before the step advances. The runner wraps this card in AnimatePresence, which keeps
+// it mounted (with its `picked` state) while it slides out — so the lit row stays lit through the
+// exit. `acted` disables every row the moment one is picked, so a stray tap can't land on this card
+// while it slides away (it would otherwise overwrite the answer or skip a step). A Back revisit is a
+// fresh mount: `selectedId` pre-lights the stored answer but `acted` starts false, so the user can
+// re-pick (any answer, even the same one, re-advances).
+export function MCQuestion({
+  step,
+  questionNumber,
+  questionTotal,
+  selectedId,
+  reduce,
+  onChoose,
+}: MCQuestionProps) {
+  const [picked, setPicked] = useState<string | null>(selectedId ?? null);
+  const [acted, setActed] = useState(false);
+  const timer = useRef<number | null>(null);
+  useEffect(() => () => clearTimeout(timer.current ?? undefined), []);
 
   const choose = (choiceId: string) => {
-    if (picked !== null) return;
-    setPicked(choiceId);
-    onChoose(choiceId);
+    if (acted) return;
+    setActed(true);
+    setPicked(choiceId); // light it now; it holds through the exit slide
+    if (reduce) {
+      onChoose(choiceId);
+      return;
+    }
+    timer.current = window.setTimeout(() => onChoose(choiceId), durationsMs.snap);
   };
 
   return (
@@ -49,7 +68,7 @@ export function MCQuestion({ step, questionNumber, questionTotal, onChoose }: MC
             <button
               key={choice.id}
               type="button"
-              disabled={picked !== null}
+              disabled={acted}
               onClick={() => choose(choice.id)}
               className={`w-full rounded-md border px-space-4 py-space-3 text-left font-body text-body transition-colors disabled:pointer-events-none ${
                 isPicked

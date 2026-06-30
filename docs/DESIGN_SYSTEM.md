@@ -158,6 +158,8 @@ The quiz renders **dark-only** (no theme toggle); the light semantic tokens in �
 
 Consumed through `ROLE_ACCENT` (§3.3), never as literals.
 
+**Results role-cards usage (D-029 Phase C).** On the results role cards the role name (H2) and the match % are **neutral on-dark** (`text-on-dark`), not accent-colored; the role accent appears in the **active signal bar** (`bg` derivative) — faithful to the mockup. The `-soft` name tint is therefore reserved for later results screens (compare/map), not the cards hero. Inactive signal bars use the neutral `text-subtle` fill (an intentional subdued treatment; the bar's value is also printed as text, so the read never depends on bar contrast alone — graphical-contrast polish is a Phase G a11y item).
+
 ## 4. Typography
 
 ### 4.1 Type pairing (locked)
@@ -244,10 +246,11 @@ Inherited verbatim. The 0-indexed scale where `space/0 = 4px` is deliberate; it 
 | `container-md` | 912 |
 | `container-lg` | 1248 |
 | `container-xl` | 1500 |
+| `container-results` | 760 (the results role-cards reading column; D-029 Phase C) |
 | `container-px` | 16 (horizontal padding) |
 | `section-py` | 48 (vertical section padding) |
 
-The experience targets desktop primarily. Use `container-lg` (1248) as the typical layout max-width; the live flows and results sit comfortably within it. _(The wider `container-xl` (1500) was sized for the documented-cut conveyor scene.)_
+The experience targets desktop primarily. Use `container-lg` (1248) as the typical layout max-width; the live flows and results panel sit within it. The results role cards center a narrower **`container-results`** (760) reading column inside the `container-lg` panel, so the hero's prev/next arrows sit in the side gutter (D-029 Phase C). _(The wider `container-xl` (1500) was sized for the documented-cut conveyor scene.)_
 
 ## 6. Radius
 

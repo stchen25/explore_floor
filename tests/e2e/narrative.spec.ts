@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { narrativeFlow } from '../../src/data/flows/narrativeFlow';
+import { roleDetails } from '../../src/data/roleDetails';
 import type { BucketId } from '../../src/data/types';
 import { calculateCategoryScores } from '../../src/lib/categoryScoring';
 
@@ -100,41 +101,43 @@ test('narrative: branch over Q2, sort every scene into buckets, results match th
     }
   }
 
-  // Role results: the node graph. Specialist is the runaway top match; displayed percentages
-  // equal the engine's read of the same MC answers + scene buckets.
+  // Role results: the dark role cards (D-029 Phase C). Specialist is the runaway top match; the
+  // hero match % and each signal bar equal the engine's read of the same MC answers + buckets.
   await expect(page).toHaveURL(/\/results$/, { timeout: 7000 });
   const expected = calculateCategoryScores(narrativeFlow, mcAnswers, sceneBuckets);
   expect(expected.primaryCategory).toBe('specialist'); // every scene's specialist choice was "That's me"
-  await expect(page.getByRole('heading', { name: 'Specialist' })).toBeVisible();
+  await expect(page.getByTestId('role-name')).toHaveText('Specialist');
+  await expect(page.getByTestId('match-pct-specialist')).toHaveText(
+    `${expected.matchPercentages.specialist}%`,
+  );
   for (const category of ['technician', 'specialist', 'integrator'] as const) {
-    await expect(page.getByTestId(`category-pct-${category}`)).toHaveText(
+    await expect(page.getByTestId(`signal-bar-${category}`)).toContainText(
       `${expected.matchPercentages[category]}%`,
     );
   }
 
-  // Screener fit line (D-020): education + pay read on the top match. No college (Q1=No) +
-  // a Specialist top match → an education heads-up; $85k target under Specialist pay → fits.
-  await expect(page.getByTestId('fit-note')).toBeVisible();
-  await expect(page.getByTestId('fit-education')).toContainText('Heads up');
-  await expect(page.getByTestId('fit-pay')).toBeVisible();
+  // "Why you matched" expands inline to the full breakdown: the screener-fit read (no college +
+  // a Specialist top match → an education heads-up) and "what you passed on".
+  await page.getByTestId('why-toggle').first().click();
+  await expect(page.getByTestId('why-matched')).toContainText('What you passed on');
+  await expect(page.getByTestId('why-matched')).toContainText('Heads up');
 
-  // The active category's job titles branch off the front — tap one for the role sheet
-  // (RC.org content + fit radar), then close it.
-  await page.getByTestId('title-node').filter({ hasText: 'Robotics Specialist' }).click();
-  await expect(page.getByTestId('role-sheet')).toBeVisible();
-  await expect(page.getByTestId('role-sheet')).toContainText('Specialist');
-  await expect(page.getByTestId('role-sheet')).toContainText('national median $105,000/yr');
-  await expect(page.getByTestId('fit-radar')).toBeVisible();
-  await page.getByTestId('sheet-close').click();
-  await expect(page.getByTestId('role-sheet')).not.toBeVisible();
+  // Tab 2 surfaces the role's competencies (ARM) + bridge programs.
+  await page.getByTestId('role-tab-1').click();
+  await expect(page.getByRole('heading', { name: /Competencies/ })).toBeVisible();
 
-  // Tapping a behind-node swaps it into the center: the heading and its branched titles update.
-  // The entry Technician (Operate-derived, $45,936) is the node that yields "Technician".
-  await page.getByTestId('category-node-technician').click();
-  await expect(page.getByRole('heading', { name: 'Technician' })).toBeVisible();
-  await expect(
-    page.getByTestId('title-node').filter({ hasText: 'Automation Technician' }),
-  ).toBeVisible();
+  // Prev/next steps through the ranked roles: next → the engine's second-ranked role. (It's
+  // Integrator, not Technician: on the no-college path the branch-aware maxes differ, so
+  // integrator 1/10 edges out technician 1/11.)
+  const secondRoleName = roleDetails[expected.ranking[1]].roleName;
+  await page.getByTestId('role-next').click();
+  await expect(page.getByTestId('role-name')).toHaveText(secondRoleName);
+
+  // The Compare control opens the (Phase D) stub and back returns to the cards.
+  await page.getByTestId('open-compare').click();
+  await expect(page.getByTestId('results-stub')).toBeVisible();
+  await page.getByTestId('stub-back').click();
+  await expect(page.getByTestId('role-name')).toBeVisible();
 
   // "Start over" returns to Landing with the condition still selected (reset-survival).
   await page.getByTestId('retake').click();
