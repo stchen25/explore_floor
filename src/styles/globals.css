@@ -59,6 +59,7 @@
   --color-glass-border: rgb(255 255 255 / 0.1); /* hairline border */
   --color-glass-border-soft: rgb(255 255 255 / 0.07);
   --color-glass-panel: rgb(38 38 38 / 0.85); /* panel-tinted glass (near-black tint) */
+  --color-constellation-line: rgb(224 224 224); /* dashed center→node edges on the results constellation (mockup rgba(224,224,224,0.5)); per-state opacity set in ConstellationField */
   --blur-bar: 8px; /* sticky control bars → backdrop-blur-bar */
   --blur-panel: 14px; /* map / results card → backdrop-blur-panel */
 

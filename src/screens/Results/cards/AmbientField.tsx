@@ -1,7 +1,5 @@
 import { motion } from 'motion/react';
 
-import { easings } from '@/lib';
-
 // The atmospheric layer behind the results bubble map (D-029 Phase E): large, heavily-blurred,
 // role-tinted orbs that slowly breathe. Purely decorative (aria-hidden, pointer-events-none) — it
 // keeps the four-grey dark palette from going flat without competing with the bubbles. Colors come
@@ -43,13 +41,20 @@ export function AmbientField({ reduce }: { reduce: boolean }) {
             filter: 'blur(52px)',
           }}
           initial={false}
-          animate={reduce ? { opacity: 0.16 } : { opacity: [0.1, 0.22, 0.1] }}
+          animate={reduce ? { opacity: 0.16 } : { opacity: [0.1, 0.22] }}
           transition={
             reduce
               ? { duration: 0 }
-              : // Slow, per-orb-varied breathe; durations are deliberately off the UI motion scale
-                // (no token home for a multi-second ambient loop), the easing stays on-token.
-                { duration: 7 + i, delay: i * 0.4, repeat: Infinity, ease: easings.soft }
+              : // Slow, per-orb-varied breathe; `mirror` keeps the fade symmetric (eases to a stop at
+                // both ends). Durations are deliberately off the UI motion scale (no token home for a
+                // multi-second ambient loop); easing is a symmetric easeInOut.
+                {
+                  duration: 7 + i,
+                  delay: i * 0.4,
+                  repeat: Infinity,
+                  repeatType: 'mirror',
+                  ease: 'easeInOut',
+                }
           }
         />
       ))}

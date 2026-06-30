@@ -83,7 +83,12 @@ export const narrativeFlow: CategoryFlow = {
       prompt: 'Workers in robotics do many different things throughout the day...',
       question: 'What would you be happy spending your day doing?',
       choices: [
-        { id: 'n-q4-hands', label: 'Doing hands-on work to keep things running', categories: ['technician'] },
+        {
+          id: 'n-q4-hands',
+          label: 'Doing hands-on work to keep things running',
+          chipLabel: 'Hands-on work',
+          categories: ['technician'],
+        },
         { id: 'n-q4-typing', label: 'Typing on a computer', categories: ['specialist'] },
         { id: 'n-q4-leading', label: 'Leading others', categories: ['integrator'] },
       ],
@@ -95,7 +100,12 @@ export const narrativeFlow: CategoryFlow = {
       question: 'What do you think will bring you the most happiness?',
       choices: [
         { id: 'n-q5-inspiring', label: 'Inspiring others', categories: ['integrator'] },
-        { id: 'n-q5-building', label: 'Seeing something I built actually work', categories: ['technician'] },
+        {
+          id: 'n-q5-building',
+          label: 'Seeing something I built actually work',
+          chipLabel: 'Seeing my build work',
+          categories: ['technician'],
+        },
         { id: 'n-q5-solving', label: 'Solving difficult problems', categories: ['specialist'] },
       ],
     },
@@ -109,14 +119,21 @@ export const narrativeFlow: CategoryFlow = {
         {
           id: 'n-s1-integrator',
           label: 'Get dressed in the outfit I planned the night before',
+          chipLabel: 'Wear my planned outfit',
           category: 'integrator',
         },
         {
           id: 'n-s1-technician',
           label: 'Make breakfast and help a younger sibling get ready',
+          chipLabel: 'Help a sibling get ready',
           category: 'technician',
         },
-        { id: 'n-s1-specialist', label: 'Write down a step-by-step to-do list', category: 'specialist' },
+        {
+          id: 'n-s1-specialist',
+          label: 'Write down a step-by-step to-do list',
+          chipLabel: 'Write a to-do list',
+          category: 'specialist',
+        },
       ],
     },
     {
@@ -125,11 +142,17 @@ export const narrativeFlow: CategoryFlow = {
       prompt: 'You arrive at school, but have some time to kill.',
       question: 'What do you want to check out in that time?',
       choices: [
-        { id: 'n-s2-technician', label: 'Take a look at the shop class', category: 'technician' },
+        {
+          id: 'n-s2-technician',
+          label: 'Take a look at the shop class',
+          chipLabel: 'Check out shop class',
+          category: 'technician',
+        },
         { id: 'n-s2-specialist', label: 'Explore the computer lab', category: 'specialist' },
         {
           id: 'n-s2-integrator',
           label: 'Meet with my friends to make some afterschool plans',
+          chipLabel: 'Make afterschool plans',
           category: 'integrator',
         },
       ],
@@ -141,11 +164,17 @@ export const narrativeFlow: CategoryFlow = {
         'The bell rings so you head to class. Your teacher hands you a handout of all the assignments for that year.',
       question: 'What are you most excited for?',
       choices: [
-        { id: 'n-s3-integrator', label: 'Taking the lead on a group project', category: 'integrator' },
+        {
+          id: 'n-s3-integrator',
+          label: 'Taking the lead on a group project',
+          chipLabel: 'Lead a group project',
+          category: 'integrator',
+        },
         { id: 'n-s3-technician', label: 'Building a 3D model', category: 'technician' },
         {
           id: 'n-s3-specialist',
           label: 'Solving some difficult math problems',
+          chipLabel: 'Solve math problems',
           category: 'specialist',
         },
       ],
@@ -169,7 +198,12 @@ export const narrativeFlow: CategoryFlow = {
       choices: [
         { id: 'n-s5-specialist', label: 'Coding a game', category: 'specialist' },
         { id: 'n-s5-technician', label: 'Fix your bike', category: 'technician' },
-        { id: 'n-s5-integrator', label: 'Planning the rest of my week', category: 'integrator' },
+        {
+          id: 'n-s5-integrator',
+          label: 'Planning the rest of my week',
+          chipLabel: 'Plan my week',
+          category: 'integrator',
+        },
       ],
     },
     {
@@ -178,8 +212,18 @@ export const narrativeFlow: CategoryFlow = {
       prompt: 'You have to do some homework.',
       question: 'Which assignment would you want to complete the most?',
       choices: [
-        { id: 'n-s6-integrator', label: 'Working on my presentation', category: 'integrator' },
-        { id: 'n-s6-technician', label: 'Make 10 posters for a club event', category: 'technician' },
+        {
+          id: 'n-s6-integrator',
+          label: 'Working on my presentation',
+          chipLabel: 'Build a presentation',
+          category: 'integrator',
+        },
+        {
+          id: 'n-s6-technician',
+          label: 'Make 10 posters for a club event',
+          chipLabel: 'Make club posters',
+          category: 'technician',
+        },
         { id: 'n-s6-specialist', label: 'Writing code', category: 'specialist' },
       ],
     },
@@ -253,6 +297,7 @@ export const narrativeFlow: CategoryFlow = {
           'These two are close. {high} edges ahead, but either one is a solid place to start.',
       },
       backToMap: 'Back to the map',
+      exploreRoleCta: 'Explore {role} careers',
       map: {
         title: 'Your results',
         intro: 'Each role’s score comes from how often your answers leaned its way.',
@@ -267,7 +312,7 @@ export const narrativeFlow: CategoryFlow = {
         jobEyebrow: 'Job in {role}',
         jobOverviewCta: 'Job overview',
         responsibilitiesHeading: 'What you’ll do',
-        overviewBack: 'Back',
+        overviewBack: 'Back to {role} careers',
         setTargetCta: 'Set as target role',
         overviewTabs: ['Job overview', 'Skills & competencies', 'How you fit'],
         jobSkillsHeading: 'Skills for this job',

@@ -11,6 +11,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
   technician: {
     categoryId: 'technician',
     roleName: 'Technician',
+    tierLabel: 'Entry level',
     description:
       "In entry-level robot operating roles, you'll be responsible for the set-up, operation, and maintenance of robots and other automation equipment.",
     jobActivities: [
@@ -77,6 +78,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
   specialist: {
     categoryId: 'specialist',
     roleName: 'Specialist',
+    tierLabel: 'Mid level',
     description:
       "In mid-level robotics roles, you'll design, develop, program, and implement robotic systems and technologies to enhance the efficiency, productivity, and functionality of a manufacturer.",
     jobActivities: [
@@ -137,6 +139,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
   integrator: {
     categoryId: 'integrator',
     roleName: 'Integrator',
+    tierLabel: 'Planning',
     description:
       "Planning roles require experts who understand robotics at the highest level. You'll create automation plans and recommend the most efficient, effective, and profitable automation work centers for your company.",
     jobActivities: [

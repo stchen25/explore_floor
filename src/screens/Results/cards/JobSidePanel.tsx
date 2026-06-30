@@ -61,7 +61,7 @@ export function JobSidePanel(props: JobSidePanelProps) {
       data-testid="job-side-panel"
     >
       {/* header back row */}
-      <div className="shrink-0 px-space-4 pt-space-4 pb-space-2">
+      <div className="shrink-0 px-space-4 py-space-2">
         {view === 'selected' ? (
           <button type="button" onClick={props.onBackToMap} data-testid="job-panel-back" className={backRow}>
             <Icon name="chevron-l" size={18} />
@@ -81,7 +81,7 @@ export function JobSidePanel(props: JobSidePanelProps) {
       </div>
 
       {/* body (scrolls) */}
-      <div className="min-h-0 flex-1 overflow-y-auto px-space-4 py-space-2">
+      <div className="min-h-0 flex-1 overflow-y-auto px-space-4 py-space-4">
         <AnimatePresence mode="wait" initial={false}>
           {view === 'selected' ? (
             <motion.div key="role-summary" {...fade}>

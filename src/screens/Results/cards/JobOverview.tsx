@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { Icon } from '@/components/Icon';
-import { bridgePrograms } from '@/data';
+import { bridgePrograms, fitNarrative } from '@/data';
 import type { Job, ResultsCardsCopy, RoleDetail } from '@/data/types';
 
 import { BridgeProgramRow } from './BridgeProgramRow';
@@ -30,17 +30,11 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
   const [tab, setTab] = useState(0);
   const programs = bridgePrograms[detail.categoryId];
 
+  // Control bar mirrors the role screens: the primary nav (here, Back) sits on the RIGHT, with the
+  // inert "Set as target role" chrome on the left (Caelan's call — diverges from the mockup's
+  // left-back layout for cross-screen consistency).
   const controlBar = (
     <>
-      <button
-        type="button"
-        onClick={onBack}
-        data-testid="job-overview-back"
-        className="inline-flex h-9 items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill"
-      >
-        <Icon name="chevron-l" size={18} />
-        {explore.overviewBack}
-      </button>
       {/* Inert chrome (no real "set target" action in scope). */}
       <span
         data-testid="set-target"
@@ -49,6 +43,15 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
         <Icon name="star" size={18} />
         {explore.setTargetCta}
       </span>
+      <button
+        type="button"
+        onClick={onBack}
+        data-testid="job-overview-back"
+        className="inline-flex h-9 items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill"
+      >
+        <Icon name="chevron-l" size={18} />
+        {fill(explore.overviewBack, { role: detail.roleName })}
+      </button>
     </>
   );
 
@@ -59,7 +62,14 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
           <p className="font-body text-small text-text-on-dark-faint">
             {fill(explore.jobEyebrow, { role: detail.roleName })}
           </p>
-          <h1 className="mt-space-1 font-heading text-h3 text-text-on-dark">{job.title}</h1>
+          {/* Title + tier pill in a justify-between row (reference parity): the level pill on the
+              right lightly reinforces the rung framing (Entry level / Mid level / Planning). */}
+          <div className="mt-space-1 flex items-start justify-between gap-space-3">
+            <h1 className="font-heading text-h2 text-text-on-dark">{job.title}</h1>
+            <span className="mt-space-1 shrink-0 rounded-full border border-glass-border bg-glass-fill px-space-3 py-space-1 font-body text-small text-text-on-dark-muted">
+              {detail.tierLabel}
+            </span>
+          </div>
         </header>
 
         <div className="flex gap-space-5 border-b border-glass-border" role="tablist">
@@ -155,7 +165,9 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
               <h2 className="font-heading text-h5 text-text-on-dark">
                 {fill(explore.youAsHeading, { noun: job.roleNoun ?? job.title })}
               </h2>
-              <p className="mt-space-2 font-body text-body text-text-on-dark-muted">{detail.description}</p>
+              <p className="mt-space-2 font-body text-body text-text-on-dark-muted">
+                {fill(fitNarrative[detail.categoryId], { noun: job.roleNoun ?? job.title })}
+              </p>
             </section>
             <section>
               <h2 className="font-heading text-h5 text-text-on-dark">{explore.trajectoryHeading}</h2>

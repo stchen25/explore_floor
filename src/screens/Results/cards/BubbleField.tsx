@@ -51,21 +51,23 @@ export function BubbleField({ ranking, matchPercentages, reduce, onDive }: Bubbl
               aspectRatio: '1 / 1',
             }}
             initial={reduce ? false : { opacity: 0, scale: 0.9 }}
-            animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: [0, -12, 0] }}
+            animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: [0, -9] }}
             transition={
               reduce
                 ? { duration: 0 }
                 : {
                     opacity: { duration: durations.glide, delay: b.rank * 0.08, ease: easings.soft },
                     scale: { duration: durations.glide, delay: b.rank * 0.08, ease: easings.soft },
-                    // Long, per-rank-varied idle float for an organic feel — the durations are
-                    // deliberately off the UI motion scale (which tops out at reveal: 1s, no home
-                    // for a multi-second ambient loop); the easing stays on-token.
+                    // Gentle, per-rank-varied idle float — `mirror` so it eases to a stop at both the
+                    // top and bottom of the bob (an asymmetric ease on a [0,-y,0] loop reads jerky at
+                    // the turnaround). Durations are deliberately off the UI motion scale (no token
+                    // home for a multi-second ambient loop); easing is a symmetric easeInOut.
                     y: {
                       duration: 5 + b.rank * 0.6,
                       delay: b.rank * 0.4,
                       repeat: Infinity,
-                      ease: easings.soft,
+                      repeatType: 'mirror',
+                      ease: 'easeInOut',
                     },
                   }
             }

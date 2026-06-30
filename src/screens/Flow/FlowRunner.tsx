@@ -68,8 +68,19 @@ export function FlowRunner() {
   // always the scene intro behind, and any step past the first has a previous step on the stack.
   const canGoBack = (step.type === 'scene' && scenePhase === 'rating') || history.length > 0;
 
+  // Vertical anchor differs by step kind on purpose. Scenes stay vertically centered so the
+  // intro→rating morph reads as the liked "slide upward" as the choices grow. Intro MC steps
+  // top-anchor instead: they vary in height (2–5 answer rows), and centering them made every
+  // question swap re-center and *jump* vertically. Top-anchoring pins the card so the swap is a
+  // clean horizontal slide (and it matches the reference, whose intro screeners sit under the header).
+  const isScene = step.type === 'scene';
+
   return (
-    <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center p-space-5">
+    <main
+      className={`relative mx-auto flex w-full max-w-2xl flex-1 flex-col items-center p-space-5 ${
+        isScene ? 'justify-center' : 'justify-start pt-space-7'
+      }`}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={step.id}

@@ -34,6 +34,9 @@ export interface RoleDuty {
 export interface RoleDetail {
   categoryId: CategoryId;
   roleName: string; // "Technician"
+  /** The role's tier in ARM's three-rung ladder, shown as the job-overview header level pill
+   *  (reference parity): Technician "Entry level", Specialist "Mid level", Integrator "Planning". */
+  tierLabel: string;
   description: string;
   jobActivities: string[];
   /** Richer "What you'll do" blurbs for the results card's role tab (heading + text),
@@ -103,6 +106,19 @@ export interface Job {
   education?: string;
 }
 
+/** A role's branching "where this can lead" trajectory for the job-overview "How you fit" tab
+ *  (Phase G, the Claude Design branching diamond): the user's current role at the base climbs
+ *  through two mid-level branch roles to one senior role at the top. ⚠️ PLACEHOLDER titles in the
+ *  project voice pending ARM sourcing (docs/reference/Job_Program_Data_Request.md). */
+export interface CareerTrajectory {
+  /** Base node — where the user is now (this role). */
+  current: string;
+  /** Two mid-level roles the path can branch into. */
+  branches: [string, string];
+  /** The senior role both branches climb toward. */
+  senior: string;
+}
+
 // ---------- Flow (study instrument — DATA_MODEL §17) ----------
 
 export type FlowId = 'narrative';
@@ -123,6 +139,9 @@ export interface BucketDef {
 export interface MCChoice {
   id: string;
   label: string;
+  /** Short label for the results "why you matched" chips, where the full `label` can run long
+   *  (e.g. "Meet with my friends to make some afterschool plans"). Falls back to `label`. */
+  chipLabel?: string;
   /** Empty = unscored background question. One or more = scored; a choice can feed two
    *  roles (e.g. "$85,000+" → specialist + integrator). */
   categories: CategoryId[];
@@ -142,6 +161,9 @@ export interface MCStep {
 export interface SceneChoice {
   id: string;
   label: string;
+  /** Short label for the results "why you matched" chips (the scene `label` can run long).
+   *  Falls back to `label` when omitted. */
+  chipLabel?: string;
   category: CategoryId; // exactly one; the three choices in a scene cover all three roles
 }
 
@@ -206,6 +228,9 @@ export interface ResultsCardsCopy {
   recommendation: CompareRecommendationCopy;
   // --- Map (Phase E) ---
   backToMap: string; // cards control bar (after a map dive): "Back to the map"
+  /** Cards control bar, when reached via the map path: "Explore {role} careers" → that role's
+   *  constellation (Phase G; replaces the old "Back to the map" back-action). */
+  exploreRoleCta: string;
   map: ResultsMapCopy;
   // --- Explore: constellation / job panel / job overview (Phase F) ---
   explore: ResultsExploreCopy;

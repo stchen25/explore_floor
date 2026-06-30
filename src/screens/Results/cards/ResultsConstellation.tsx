@@ -71,7 +71,7 @@ export function ResultsConstellation({
           />
         </div>
 
-        <div className="relative flex min-h-0 flex-1 items-center justify-center">
+        <div className="relative flex min-h-0 min-w-0 flex-1 items-center justify-center">
           <ConstellationField
             category={detail.categoryId}
             roleName={detail.roleName}

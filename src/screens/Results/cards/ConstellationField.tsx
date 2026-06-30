@@ -42,20 +42,21 @@ export function ConstellationField({
 
   return (
     <div
-      className="relative mx-auto h-full max-w-full"
-      // Height-driven so the field fits the available vertical space; width follows the aspect ratio,
-      // capped at the --container-constellation width and the viewport (mirrors BubbleField).
+      className="relative mx-auto max-h-full"
+      // Aspect-locked to its WIDTH (the parent flex cell is min-w-0, so the field shrinks to the
+      // space left of the 404px rail instead of overflowing right). Width caps at the
+      // --container-constellation token; height follows the aspect ratio so the ring stays circular.
+      // Desktop-first; the responsive story is Phase G.
       style={{
         aspectRatio: `${VW} / ${VH}`,
-        width: 'auto',
-        maxWidth: 'min(100%, var(--container-constellation))',
+        width: 'min(100%, var(--container-constellation))',
       }}
       data-testid="constellation-field"
     >
       {/* dashed edges, center rim → node rim */}
       <svg aria-hidden viewBox={`0 0 ${VW} ${VH}`} className="absolute inset-0 h-full w-full" fill="none">
         {nodes.map((n) => {
-          const opacity = jobActive ? (selectedJob === n.index ? 0.6 : 0.14) : 0.4;
+          const opacity = jobActive ? (selectedJob === n.index ? 0.7 : 0.18) : 0.5;
           return (
             <line
               key={n.index}
@@ -63,9 +64,9 @@ export function ConstellationField({
               y1={n.edge.y1}
               x2={n.edge.x2}
               y2={n.edge.y2}
-              stroke="var(--color-text-on-dark-faint)"
+              stroke="var(--color-constellation-line)"
               strokeWidth={1.5}
-              strokeDasharray="6 8"
+              strokeDasharray="7 7"
               strokeOpacity={opacity}
             />
           );
@@ -118,11 +119,9 @@ export function ConstellationField({
       {/* node labels (below each node; titles run wider than the node circle) */}
       {nodes.map((n) => {
         const dimmed = jobActive && selectedJob !== n.index;
-        const tone = dimmed
-          ? 'text-text-on-dark-faint'
-          : selectedJob === n.index
-            ? accent.textSoft
-            : 'text-text-on-dark-muted';
+        // Non-dimmed labels carry the role's soft accent tint (per the reference) so the ring reads
+        // as one role's constellation; only the backgrounded (another job open) labels fade to faint.
+        const tone = dimmed ? 'text-text-on-dark-faint' : accent.textSoft;
         return (
           <span
             key={`label-${jobs[n.index].id}`}

@@ -80,7 +80,7 @@ export function categoryContributions(
             if (isOpener) {
               out[category].openerCount += 1;
             } else {
-              out[category].momentLabels.push(chosen!.label);
+              out[category].momentLabels.push(chosen!.chipLabel ?? chosen!.label);
               out[category].momentCount += 1;
             }
           } else if (!isOpener) {
@@ -101,7 +101,7 @@ export function categoryContributions(
           if (bucket === 'thats-me') {
             entry.earned.push(choice.label);
             entry.earnedCount += 1;
-            entry.momentLabels.push(choice.label);
+            entry.momentLabels.push(choice.chipLabel ?? choice.label);
             entry.momentCount += 1;
           } else if (bucket === 'maybe') {
             entry.maybe.push(choice.label);

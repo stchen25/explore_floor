@@ -187,13 +187,14 @@ test('narrative: branch over Q2, sort every scene into buckets, results match th
   await expect(page.getByTestId('trajectory')).toBeVisible();
 
   // Back chain: job overview → job overlay → constellation; then "Role overview" routes to the
-  // role's cards and marks fromMap, so the cards offer a way back to the map.
+  // role's cards and marks fromMap, so the cards now offer a forward "Explore {role} careers"
+  // pill that dives back into that role's job constellation.
   await page.getByTestId('job-overview-back').click();
   await expect(page.getByTestId('job-side-panel')).toBeVisible();
   await page.getByTestId('job-panel-back').click();
   await page.getByTestId('role-overview-cta').click();
   await expect(page.getByTestId('role-name')).toHaveText(topRole);
-  await expect(page.getByTestId('back-to-map')).toBeVisible();
+  await expect(page.getByTestId('explore-role')).toBeVisible();
 
   // "Start over" returns to Landing with the condition still selected (reset-survival).
   await page.getByTestId('retake').click();

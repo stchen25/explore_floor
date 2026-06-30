@@ -5,6 +5,7 @@ import { Icon } from '@/components/Icon';
 import type { ResultsCardsCopy, RoleDetail } from '@/data/types';
 import { durations, easings } from '@/lib';
 import type { CategoryContribution } from '@/lib/categoryBreakdown';
+import { type ChipFit,fitChips } from '@/lib/chipFit';
 import type { FitLine } from '@/lib/screenerFit';
 
 import { Chip } from './Chip';
@@ -144,16 +145,12 @@ export function WhyYouMatched({
                 pct,
               })}
             </p>
-            <div className="mt-space-3 flex flex-wrap items-center gap-space-1">
-              {contribution.momentLabels.slice(0, 2).map((label, i) => (
-                <Chip key={`${label}-${i}`}>{label}</Chip>
-              ))}
-              {contribution.momentCount > 2 && (
-                <span className="font-body text-small text-text-on-dark-faint">
-                  {fill(copy.moreAnswers, { n: contribution.momentCount - 2 })}
-                </span>
-              )}
-            </div>
+            <CollapsedChips
+              // A touch more char budget than the default so two short chips usually show, capped
+              // at two so the row stays one line even in the narrower compare column.
+              fit={fitChips(contribution.momentLabels, { maxChars: 40, maxCount: 2 })}
+              moreAnswers={copy.moreAnswers}
+            />
             <div className="mt-space-3 flex justify-end">
               <button
                 type="button"
@@ -168,6 +165,24 @@ export function WhyYouMatched({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// Collapsed answer chips on one line: the chips fitChips picked, then a protected "+N more"
+// tail. `flex` (not flex-wrap) + overflow-hidden keep the row to a single line even when a long
+// label would otherwise wrap it; the tail is shrink-0 so it never gets clipped.
+function CollapsedChips({ fit, moreAnswers }: { fit: ChipFit; moreAnswers: string }) {
+  return (
+    <div className="mt-space-3 flex min-w-0 items-center gap-space-1 overflow-hidden">
+      {fit.shown.map((label, i) => (
+        <Chip key={`${label}-${i}`}>{label}</Chip>
+      ))}
+      {fit.more > 0 && (
+        <span className="shrink-0 whitespace-nowrap font-body text-small text-text-on-dark-faint">
+          {fill(moreAnswers, { n: fit.more })}
+        </span>
+      )}
     </div>
   );
 }

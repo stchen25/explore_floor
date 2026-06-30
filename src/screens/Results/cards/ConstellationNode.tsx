@@ -2,20 +2,21 @@ import { motion } from 'motion/react';
 import type { CSSProperties } from 'react';
 
 import type { RoleAccent } from '@/components/categoryAccent';
-import { Icon } from '@/components/Icon';
+import { SparkleStar } from '@/components/SparkleStar';
 import type { Job } from '@/data/types';
 import { durations, easings } from '@/lib';
 
-// One job node on the results constellation (D-029 Phase F). A circular button (star glyph) that
-// rings the role center; the label sits below it (rendered by ConstellationField, since titles run
-// wider than the node). The outer wrapper owns the gentle idle float so it never fights the inner
-// button's hover lift (the BubbleField two-layer pattern). Active = the open job (accent fill +
-// glow); dimmed = another job is open. Reduced motion drops the float, entrance, and hover.
+// One job node on the results constellation (D-029 Phase F). A circular button holding a four-point
+// sparkle star (the Claude Design glyph) that rings the role center; the label sits below it (rendered
+// by ConstellationField, since titles run wider than the node). Three motion layers, deliberately on
+// separate elements so they never fight: the outer wrapper owns the gentle idle float, the inner
+// button owns the hover lift, and the star owns its glow + twinkle. Active = the open job (accent fill
+// + glow); dimmed = another job is open. Reduced motion drops the float, twinkle, entrance, and hover.
 
 interface ConstellationNodeProps {
   job: Job;
   accent: RoleAccent;
-  /** Layout index (drives the per-node float stagger). */
+  /** Layout index (drives the per-node float/twinkle stagger). */
   index: number;
   active: boolean;
   dimmed: boolean;
@@ -43,7 +44,7 @@ export function ConstellationNode({
       animate={
         reduce
           ? { opacity: dimmed ? 0.45 : 1 }
-          : { opacity: dimmed ? 0.45 : 1, scale: 1, y: [0, -10, 0] }
+          : { opacity: dimmed ? 0.45 : 1, scale: 1, y: [0, -7] }
       }
       transition={
         reduce
@@ -51,9 +52,18 @@ export function ConstellationNode({
           : {
               opacity: { duration: durations.glide, delay: index * 0.06, ease: easings.soft },
               scale: { duration: durations.glide, delay: index * 0.06, ease: easings.soft },
-              // Per-node-varied idle float — deliberately off the UI motion scale (no token home
-              // for a multi-second ambient loop, like BubbleField); the easing stays on-token.
-              y: { duration: 5 + index * 0.5, delay: index * 0.3, repeat: Infinity, ease: easings.soft },
+              // Gentle symmetric idle float — mirror so it eases to a stop at both the top and
+              // bottom of the bob (an asymmetric ease on a [0,-y,0] loop reads jerky at the peak).
+              // Off the UI motion scale (multi-second ambient loop, no token home); a symmetric
+              // easeInOut on purpose — the mirror loop wants symmetry, and easings.soft is slightly
+              // asymmetric.
+              y: {
+                duration: 4 + index * 0.4,
+                delay: index * 0.3,
+                repeat: Infinity,
+                repeatType: 'mirror',
+                ease: 'easeInOut',
+              },
             }
       }
     >
@@ -72,9 +82,36 @@ export function ConstellationNode({
         whileHover={reduce ? undefined : { y: -6, scale: 1.06 }}
         transition={{ duration: durations.snap, ease: easings.soft }}
       >
-        {/* Inactive glyph uses the soft tint (not the saturated accent) so it clears the 3:1
-            graphical-contrast bar on the glass node fill, e.g. teal #117289 is only 2.64:1. */}
-        <Icon name="star" size={30} className={active ? accent.onAccent : accent.textSoft} />
+        {/* The sparkle twinkles (opacity + scale) and carries a soft role-tinted glow so it reads as
+            lit even at rest. Inactive uses the soft tint (clears the 3:1 graphical-contrast bar on the
+            glass fill); the open node uses on-accent ink and stays solid (no twinkle) for legibility. */}
+        <motion.span
+          className="grid place-items-center"
+          animate={reduce || active ? undefined : { opacity: [0.6, 1], scale: [0.9, 1.1] }}
+          transition={
+            reduce || active
+              ? undefined
+              : {
+                  duration: 2.4 + index * 0.5,
+                  delay: index * 0.4,
+                  repeat: Infinity,
+                  repeatType: 'mirror',
+                  ease: 'easeInOut',
+                }
+          }
+        >
+          <SparkleStar
+            size={32}
+            className={active ? accent.onAccent : accent.textSoft}
+            // Layered drop-shadows (tight core + wider halo) read as a real glow at rest, not a
+            // faint smudge; the glow token is low-alpha so a single 7px pass barely showed.
+            style={
+              active
+                ? undefined
+                : { filter: `drop-shadow(0 0 5px ${accent.glow}) drop-shadow(0 0 12px ${accent.glow})` }
+            }
+          />
+        </motion.span>
       </motion.button>
     </motion.div>
   );

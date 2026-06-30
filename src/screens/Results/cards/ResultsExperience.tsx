@@ -9,6 +9,7 @@ import { deriveScreenerProfile, screenerFitLines } from '@/lib/screenerFit';
 import { useFlow, useSessionStore } from '@/state';
 
 import { CompareView } from './CompareView';
+import { fill } from './copy';
 import { JobOverview } from './JobOverview';
 import { ResultsConstellation } from './ResultsConstellation';
 import { ResultsMap } from './ResultsMap';
@@ -79,9 +80,16 @@ export function ResultsExperience() {
         {cards.compareCta}
       </button>
       {nav.fromMap ? (
-        <button type="button" onClick={() => nav.setView('map')} data-testid="back-to-map" className={pill}>
-          <Icon name="chevron-l" size={18} />
-          {cards.backToMap}
+        // Reached cards via the map → constellation → "Role overview" path: the forward action dives
+        // back into THIS role's job constellation (matches the mockup's "Explore {role} careers").
+        <button
+          type="button"
+          onClick={() => nav.openConstellation(nav.roleIndex)}
+          data-testid="explore-role"
+          className={pill}
+        >
+          {fill(cards.exploreRoleCta, { role: detail.roleName })}
+          <Icon name="arrow-r" size={18} />
         </button>
       ) : nav.atEnd ? (
         <button
