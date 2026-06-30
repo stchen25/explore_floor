@@ -60,6 +60,7 @@ Snapped to the RC UI Kit, matching `career_dashboard` (D-024 here; its D-026). V
 |---|---|---|
 | `arm-gold` | `#FFB81C` | Primary brand color, the "ARM gold." Primary CTA fill + brand signature (a fill, not a text color on white). Renamed from `arm-yellow`. |
 | `arm-gold-soft` | `#FDC547` | CTA hover tint. |
+| `gold-deep` | `#8A6500` | Deep gold — the nav profile-avatar gradient end (`arm-gold → gold-deep`); matches the dashboard TopNav. D-029 Phase D. |
 | `arm-teal` | `#117289` | Secondary Teal — the single interactive voice: links, CTAs, the match indicator. |
 | `arm-orange` | `#BF5309` | Secondary Orange — rare attention, AA-safe as text at 4.71:1 (was `#F56A00`, which failed AA at 3.02:1). |
 | ~~`arm-blue`~~ | ~~`#38A5EE`~~ | **Retired (D-029, step 8 Phase A).** Was the specialist accent + legacy link voice; failed AA as text (2.7:1). The token is removed from `globals.css`; specialist is now teal and the result-screen links read `arm-teal`. |
@@ -249,8 +250,11 @@ Inherited verbatim. The 0-indexed scale where `space/0 = 4px` is deliberate; it 
 | `container-results` | 760 (the results role-cards reading column; D-029 Phase C) |
 | `container-px` | 16 (horizontal padding) |
 | `section-py` | 48 (vertical section padding) |
+| `nav` | 60 (app top-nav height; the results sheet sizes off it — D-029 Phase D) |
 
 The experience targets desktop primarily. Use `container-lg` (1248) as the typical layout max-width; the live flows and results panel sit within it. The results role cards center a narrower **`container-results`** (760) reading column inside the `container-lg` panel, so the hero's prev/next arrows sit in the side gutter (D-029 Phase C). _(The wider `container-xl` (1500) was sized for the documented-cut conveyor scene.)_
+
+**App top nav (D-029 Phase D).** A 60px (`--spacing-nav`) solid `near-black` bar shared across routes — the real RC `rc_logo_white_text.png` wordmark, a centered scoped search (placeholder chrome), and a gradient-gold profile pill (`arm-gold → gold-deep`, no auth). Ported from the dashboard repo's `TopNav`; the dashboard's secondary page-nav is intentionally not carried over. The results `<main>` is a viewport-height scroll container sized `calc(100dvh − nav − space-5)` so its sticky glass header pins a constant `space-5` gap below the nav and the sheet bottom is revealed (with a matching gap) only at the end of scroll.
 
 ## 6. Radius
 

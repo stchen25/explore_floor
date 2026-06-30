@@ -56,6 +56,10 @@ export interface RoleDetail {
   educationLevel: 0 | 1 | 2;
   commonJobTitles: string[];
   salary: string;
+  /** The national-median figure alone (e.g. "National median $45,936/yr"). The results cards +
+   *  compare show this for a consistent one-figure read across roles (Technician has no range),
+   *  while the fuller `salary` range stays for the /select sheet. */
+  salaryMedian: string;
   /** Pay ladder for the screener fit line (D-020): 0 = ~$46k (Technician), 2 = $85k+
    *  (Specialist/Integrator). Compared against the user's stated pay expectation. */
   payLevel: 0 | 1 | 2;
@@ -168,6 +172,21 @@ export interface ResultsCardsCopy {
   bridgeSubtitle: string;
   salaryLabel: string;
   educationLabel: string;
+  // --- Compare (Phase D) ---
+  backToRole: string; // control bar: "Back to {role}"
+  compareWithLabel: string; // dropdown lead-in before the target role name
+  recommendationLabel: string; // small lead-in above the recommendation line
+  recommendation: CompareRecommendationCopy;
+}
+
+/** The compare-screen recommendation line, by variant (see lib/compareRecommendation).
+ *  Soft, non-verdict copy that leads with fit but foregrounds the lower-barrier role when
+ *  the two are close. Templates fill role-name slots: {high}/{low} (clear winner),
+ *  {lowBarrier}/{growToward} (close, differing barrier), {high} (close, equal barrier). */
+export interface CompareRecommendationCopy {
+  clearWinner: string;
+  closeLowerBarrier: string;
+  closeEqualBarrier: string;
 }
 
 /** Copy the results screen reads: the dark role cards (`cards`) plus the legacy node-map /

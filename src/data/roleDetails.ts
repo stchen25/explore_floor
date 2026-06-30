@@ -71,6 +71,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Robotics Maintenance Technician',
     ],
     salary: 'National median $45,936/yr',
+    salaryMedian: 'National median $45,936/yr',
     payLevel: 0,
   },
   specialist: {
@@ -130,6 +131,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Robotic Systems Engineer',
     ],
     salary: '$85,000 to $147,700/yr; national median $105,000/yr',
+    salaryMedian: 'National median $105,000/yr',
     payLevel: 2,
   },
   integrator: {
@@ -179,6 +181,7 @@ export const roleDetails: Record<CategoryId, RoleDetail> = {
       'Advanced Industrial Integrator',
     ],
     salary: '$87,000 to $153,000/yr; national median $99,250/yr',
+    salaryMedian: 'National median $99,250/yr',
     payLevel: 2,
   },
 };

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { defaultFlowId, flows } from '@/data';
-import type { BucketId, LandingConditionId, SessionState } from '@/data/types';
+import type { BucketId, CategoryId, LandingConditionId, SessionState } from '@/data/types';
 import { calculateCategoryScores } from '@/lib';
 
 // The single session store (DATA_MODEL §17). Store actions are the ONLY place that touches
@@ -39,6 +39,9 @@ interface SessionStore {
    *  prior scene at its last choice). Branch-aware via `history`; a no-op at the very first step. */
   goBack: () => void;
   completeFlow: () => void; // triggers category scoring
+  /** DEV ONLY: seed a plausible completed run and jump to results, skipping the quiz. Wired to a
+   *  dev-only control on Landing; remove before ship (VISUAL_REARCHITECTURE.md Phase G). */
+  devSeedResults: () => void;
   reset: () => void;
 }
 
@@ -169,6 +172,44 @@ export const useSessionStore = create<SessionStore>((set, get) => {
           store.state.statementBuckets,
         );
         return { state: { ...store.state, categoryResult, currentScreen: 'results' } };
+      }),
+
+    devSeedResults: () =>
+      set(() => {
+        const flow = flows[defaultFlowId];
+        const answers: Record<string, string> = {};
+        const statementBuckets: Record<string, BucketId> = {};
+        // Rotate which role "wins" each scene for a believable, non-degenerate spread.
+        const winners: CategoryId[] = ['specialist', 'integrator', 'technician'];
+        let sceneN = 0;
+        for (const step of flow.steps) {
+          if (step.type === 'mc') {
+            const pick =
+              step.choices.find((c) => c.categories.includes('specialist')) ?? step.choices[0];
+            answers[step.id] = pick.id;
+          } else {
+            const winner = winners[sceneN % winners.length];
+            sceneN += 1;
+            for (const choice of step.choices) {
+              statementBuckets[choice.id] =
+                choice.category === winner
+                  ? 'thats-me'
+                  : choice.category === 'technician'
+                    ? 'maybe'
+                    : 'not-me';
+            }
+          }
+        }
+        const categoryResult = calculateCategoryScores(flow, answers, statementBuckets);
+        return {
+          state: {
+            ...createInitialState(),
+            answers,
+            statementBuckets,
+            categoryResult,
+            currentScreen: 'results',
+          },
+        };
       }),
 
     // Replaces only `state` — flowId is intentionally preserved (see header comment).

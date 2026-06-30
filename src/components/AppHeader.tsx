@@ -1,40 +1,50 @@
+import { Link } from 'react-router-dom';
+
 import { Icon } from './Icon';
 
-// The dark app shell header (D-029 / VISUAL_REARCHITECTURE.md Phase A). A sticky bar shared across
-// every route: the RC wordmark, an inert search affordance (chrome only — no backend/search per the
-// repo scope), and a generic account stub (no auth). Honest fidelity to ARM's My Match chrome
-// without faking function.
+// The RC.org top nav (D-029 / VISUAL_REARCHITECTURE.md). The real finalized TopNav, ported from the
+// dashboard repo (career_dashboard/src/shell/TopNav): a 60px dark utility bar — the RC brand mark, a
+// centered scoped search, and a profile pill. Search + profile are placeholder chrome (no backend /
+// no auth per repo scope); the prototype has no /profile route, so the pill is non-interactive.
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-space-3 border-b border-glass-border bg-glass-panel px-space-4 backdrop-blur-bar">
-      <a
-        href="#/"
-        aria-label="RoboticsCareer.org home"
-        className="flex items-center gap-space-1 no-underline"
-      >
-        <span className="grid h-8 w-8 place-items-center rounded-sm bg-arm-gold font-heading text-small font-bold text-near-black">
-          RC
-        </span>
-        <span className="hidden font-heading text-small font-bold text-text-on-dark sm:inline">
-          RoboticsCareer<span className="text-text-on-dark-faint">.org</span>
-        </span>
-      </a>
+    <header className="sticky top-0 z-40 h-nav shrink-0 border-b border-glass-border bg-near-black">
+      <div className="mx-auto flex h-full max-w-lg items-center gap-space-3 px-space-3">
+        <Link
+          to="/"
+          aria-label="RoboticsCareer.org home"
+          className="group flex shrink-0 items-center no-underline"
+        >
+          <img
+            src={`${import.meta.env.BASE_URL}rc_logo_white_text.png`}
+            alt="RoboticsCareer.org"
+            className="h-10 w-auto shrink-0 transition-opacity duration-100 group-hover:opacity-90"
+          />
+        </Link>
 
-      {/* Inert search affordance — present for fidelity, non-interactive (no backend per scope). */}
-      <div
-        aria-hidden="true"
-        className="ml-space-2 hidden h-9 max-w-md flex-1 items-center gap-space-1 rounded-full border border-glass-border bg-glass-fill px-space-3 text-text-on-dark-faint sm:flex"
-      >
-        <Icon name="search" size={18} />
-        <span className="text-small">Search roles, jobs, and programs</span>
-      </div>
+        {/* Centered scoped search — placeholder chrome (no backend per scope). */}
+        <div className="mx-auto flex h-10 w-full max-w-[440px] items-center gap-space-1 rounded-md border border-glass-border bg-glass-fill px-space-2">
+          <Icon name="search" size={16} className="shrink-0 text-text-on-dark-faint" />
+          <input
+            type="search"
+            aria-label="Search"
+            placeholder="Search roles, jobs, and programs"
+            className="w-full bg-transparent font-body text-small text-text-on-dark placeholder:text-text-on-dark-faint focus:outline-none"
+          />
+          <Icon name="sliders" size={16} className="shrink-0 text-text-on-dark-faint" />
+        </div>
 
-      {/* Account stub — no auth; a generic pill for chrome fidelity. */}
-      <div className="ml-auto flex items-center gap-space-1 rounded-full border border-glass-border bg-glass-fill py-space-0 pl-space-0 pr-space-2">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-arm-gold text-near-black">
-          <Icon name="user" size={16} />
-        </span>
-        <span className="text-small text-text-on-dark-muted">Guest</span>
+        {/* Profile pill — no auth; a generic account stub for chrome fidelity. */}
+        <div className="flex shrink-0 items-center gap-space-1 rounded-full bg-glass-fill py-space-0 pl-space-0 pr-space-2 text-text-on-dark">
+          <span
+            className="grid h-7 w-7 place-items-center rounded-full bg-gradient-to-br from-arm-gold to-gold-deep text-near-black"
+            aria-hidden
+          >
+            <Icon name="user" size={15} />
+          </span>
+          <span className="hidden font-body text-small font-medium sm:inline">Guest</span>
+          <Icon name="chevron-d" size={12} className="text-text-on-dark-faint" />
+        </div>
       </div>
     </header>
   );

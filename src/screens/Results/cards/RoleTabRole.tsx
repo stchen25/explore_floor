@@ -28,7 +28,7 @@ export function RoleTabRole({ copy, detail }: { copy: ResultsCardsCopy; detail: 
 
       <div className="flex flex-col gap-space-3 sm:flex-row">
         <StatBox label={copy.salaryLabel}>
-          <p className="font-heading text-h4 text-text-on-dark">{detail.salary}</p>
+          <p className="font-heading text-h4 text-text-on-dark">{detail.salaryMedian}</p>
         </StatBox>
         <StatBox label={copy.educationLabel}>
           <ul className="flex flex-col gap-space-1">

@@ -16,6 +16,7 @@
      below (--color-role-*); arm-blue is retired (D-029). */
   --color-arm-gold: #ffb81c; /* kit: ARM Gold — primary brand + CTA fill */
   --color-arm-gold-soft: #fdc547; /* CTA hover tint */
+  --color-gold-deep: #8a6500; /* deep gold — nav avatar gradient end (matches dashboard TopNav) */
   --color-arm-teal: #117289; /* kit: Secondary Teal — the interactive voice: links, CTAs, match */
   --color-arm-orange: #bf5309; /* kit: Secondary Orange — rare attention, AA-safe (was #f56a00) */
 
@@ -96,6 +97,7 @@
   --spacing-space-7: 64px;
   --spacing-container-px: 16px; /* horizontal page padding */
   --spacing-section-py: 48px; /* vertical section padding */
+  --spacing-nav: 60px; /* app top-nav height (real RC TopNav); the results sheet sizes off it */
 
   /* ---- Container widths (§5). Override v4's sm/md/lg/xl scale with RC-CC values;
      usage: max-w-lg = 1248 (typical), max-w-xl = 1500 (sort/scene). ---- */

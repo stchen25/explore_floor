@@ -17,6 +17,7 @@ export function Landing() {
   const startSession = useSessionStore((s) => s.startSession);
   const flowId = useSessionStore((s) => s.flowId);
   const selectFlow = useSessionStore((s) => s.selectFlow);
+  const devSeedResults = useSessionStore((s) => s.devSeedResults);
   const flow = useFlow();
   const landingCopy = flowId === 'select' ? roleSelectLanding : flow.landingCopy;
   const reduce = !!useReducedMotion();
@@ -58,6 +59,22 @@ export function Landing() {
           onChange={selectFlow}
           data-testid="flow"
         />
+
+        {/* DEV ONLY: jump straight to results with mock data (skips the quiz) for fast iteration on
+            the results screens. Stripped from production builds; remove at Phase G. */}
+        {import.meta.env.DEV && (
+          <button
+            type="button"
+            data-testid="dev-skip-to-results"
+            onClick={() => {
+              devSeedResults();
+              navigate('/results');
+            }}
+            className="rounded-full border border-dashed border-glass-border px-space-3 py-space-1 font-body text-small text-text-on-dark-faint transition-colors hover:bg-glass-fill hover:text-text-on-dark"
+          >
+            Dev: skip to results
+          </button>
+        )}
       </motion.div>
     </main>
   );

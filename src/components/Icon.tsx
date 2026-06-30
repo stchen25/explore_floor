@@ -10,6 +10,7 @@ import type { CSSProperties } from 'react';
 
 export type IconName =
   | 'search'
+  | 'sliders'
   | 'user'
   | 'chevron-d'
   | 'chevron-u'
@@ -42,6 +43,7 @@ export type IconName =
 // Design-semantic name → Material Icons ligature.
 const LIGATURE: Record<IconName, string> = {
   search: 'search',
+  sliders: 'tune',
   user: 'person',
   'chevron-d': 'expand_more',
   'chevron-u': 'expand_less',

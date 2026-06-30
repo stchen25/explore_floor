@@ -48,6 +48,9 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
   });
 
   it('has complete, non-empty owned copy (landing + results, incl. the dark cards copy)', () => {
+    // The cards copy is mostly flat strings (+ the matchLabels array); the compare
+    // recommendation is a nested {variant: string} object — pull it out and check its values too.
+    const { recommendation, ...cardScalars } = flow.resultsCopy.cards;
     const strings = [
       ...Object.values(flow.landingCopy),
       flow.resultsCopy.heading,
@@ -55,8 +58,9 @@ describe.each(categoryFlows)('§17 flow invariants — $name', (flow) => {
       flow.resultsCopy.centerLabel,
       flow.resultsCopy.retake,
       ...Object.values(flow.resultsCopy.sheet),
-      // ResultsCardsCopy: strings + the matchLabels array, flattened.
-      ...Object.values(flow.resultsCopy.cards).flat(),
+      // ResultsCardsCopy: scalar strings + the matchLabels array, flattened.
+      ...Object.values(cardScalars).flat(),
+      ...Object.values(recommendation),
     ];
     for (const value of strings) {
       expect(typeof value).toBe('string');

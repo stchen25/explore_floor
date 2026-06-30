@@ -9,6 +9,7 @@ import { categoryContributions } from '@/lib/categoryBreakdown';
 import { deriveScreenerProfile, screenerFitLines } from '@/lib/screenerFit';
 import { useFlow, useSessionStore } from '@/state';
 
+import { CompareView } from './CompareView';
 import { ResultsPanel } from './ResultsPanel';
 import { RoleHero } from './RoleHero';
 import { RoleTabs } from './RoleTabs';
@@ -48,8 +49,11 @@ export function ResultsExperience() {
   const role = ranking[nav.roleIndex];
   const detail = roleDetails[role];
   const pct = categoryResult.matchPercentages[role];
-  const contribution = categoryContributions(flow, answers, statementBuckets)[role];
-  const fitLines = screenerFitLines(role, deriveScreenerProfile(flow.id, answers));
+  // The breakdown engine returns every role at once; compare reads two of them, cards reads one.
+  const contributions = categoryContributions(flow, answers, statementBuckets);
+  const profile = deriveScreenerProfile(flow.id, answers);
+  const contribution = contributions[role];
+  const fitLines = screenerFitLines(role, profile);
 
   const handleRetake = () => {
     reset();
@@ -68,7 +72,7 @@ export function ResultsExperience() {
 
   const controlBar = (
     <>
-      <button type="button" onClick={() => nav.setView('compare')} data-testid="open-compare" className={pill}>
+      <button type="button" onClick={nav.openCompare} data-testid="open-compare" className={pill}>
         <Icon name="compare" size={19} />
         {cards.compareCta}
       </button>
@@ -92,7 +96,10 @@ export function ResultsExperience() {
   );
 
   return (
-    <main className="mx-auto w-full max-w-lg px-space-4 py-space-5" data-testid="results">
+    <main
+      className="mx-auto mt-space-5 h-[calc(100dvh-var(--spacing-nav)-var(--spacing-space-5))] w-full max-w-lg overflow-y-auto rounded-t-lg pb-space-5 shadow-dark-panel"
+      data-testid="results"
+    >
       <AnimatePresence mode="wait" initial={false}>
         {nav.view === 'cards' ? (
           <motion.div key="cards" {...fade}>
@@ -136,6 +143,18 @@ export function ResultsExperience() {
               </div>
             </ResultsPanel>
           </motion.div>
+        ) : nav.view === 'compare' ? (
+          <motion.div key="compare" {...fade}>
+            <CompareView
+              copy={cards}
+              ranking={ranking}
+              matchPercentages={categoryResult.matchPercentages}
+              contributions={contributions}
+              profile={profile}
+              nav={nav}
+              reduce={reduce}
+            />
+          </motion.div>
         ) : (
           <motion.div key="stub" {...fade}>
             <ResultsPanel
@@ -155,9 +174,7 @@ export function ResultsExperience() {
                 className="flex flex-col items-center gap-space-3 py-space-6 text-center"
                 data-testid="results-stub"
               >
-                <h2 className="font-heading text-h4 text-text-on-dark">
-                  {nav.view === 'compare' ? cards.compareCta : 'Results map'}
-                </h2>
+                <h2 className="font-heading text-h4 text-text-on-dark">Results map</h2>
                 <p className="font-body text-body text-text-on-dark-muted">
                   This is coming in the next pass.
                 </p>

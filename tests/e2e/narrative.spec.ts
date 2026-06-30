@@ -133,11 +133,27 @@ test('narrative: branch over Q2, sort every scene into buckets, results match th
   await page.getByTestId('role-next').click();
   await expect(page.getByTestId('role-name')).toHaveText(secondRoleName);
 
-  // The Compare control opens the (Phase D) stub and back returns to the cards.
+  // Compare (D-029 Phase D): the control opens a two-column side-by-side of the current role
+  // (left) and a switchable target (right), with a recommendation line. We're on the second
+  // role now, so left = it; the default target is the next ranked role.
+  const leftRole = roleDetails[expected.ranking[1]].roleName; // current role → left column
+  const defaultTarget = roleDetails[expected.ranking[2]].roleName; // roleIndex+1 → right column
   await page.getByTestId('open-compare').click();
-  await expect(page.getByTestId('results-stub')).toBeVisible();
-  await page.getByTestId('stub-back').click();
-  await expect(page.getByTestId('role-name')).toBeVisible();
+  await expect(page.getByTestId('compare-columns')).toBeVisible();
+  await expect(page.getByTestId('compare-role-name')).toHaveText([leftRole, defaultTarget]);
+  await expect(page.getByTestId('compare-recommendation')).toContainText('Our take');
+
+  // The dropdown switches the right column to another role (the top match here).
+  const topRole = roleDetails[expected.ranking[0]].roleName;
+  await page.getByTestId('compare-target-trigger').click();
+  await page.getByTestId(`compare-target-${expected.ranking[0]}`).click();
+  await expect(page.getByTestId('compare-role-name')).toHaveText([leftRole, topRole]);
+
+  // Each column's "why you matched" expands on its own; back returns to the cards.
+  await page.getByTestId('why-toggle').first().click();
+  await expect(page.getByTestId('why-matched').first()).toContainText('What you passed on');
+  await page.getByTestId('compare-back').click();
+  await expect(page.getByTestId('role-name')).toHaveText(leftRole);
 
   // "Start over" returns to Landing with the condition still selected (reset-survival).
   await page.getByTestId('retake').click();

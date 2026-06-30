@@ -204,7 +204,7 @@ export const narrativeFlow: CategoryFlow = {
     heading: 'Here’s how your day matches up',
     mapHint: 'Tap another role to bring it front and center, then tap a job title to learn more.',
     centerLabel: 'Your top match',
-    retake: 'Start over',
+    retake: 'Retake quiz',
     cards: {
       matchLabels: ['Your top match', 'Your second closest match', 'Your third closest match'],
       stepLabel: '{index} of {total}',
@@ -241,6 +241,17 @@ export const narrativeFlow: CategoryFlow = {
         'Training programs that get you the competencies and credentials for this path.',
       salaryLabel: 'Salary',
       educationLabel: 'Education',
+      backToRole: 'Back to {role}',
+      compareWithLabel: 'Compare with',
+      recommendationLabel: 'Our take',
+      recommendation: {
+        clearWinner:
+          'Your answers point more to {high}. {low} is still worth a look if it pulls at you.',
+        closeLowerBarrier:
+          '{lowBarrier} and {growToward} are close. {lowBarrier} is the easier place to start, since it needs less school to get going, and you can grow toward {growToward} from there.',
+        closeEqualBarrier:
+          'These two are close. {high} edges ahead, but either one is a solid place to start.',
+      },
     },
     sheet: {
       activities: 'Job activities',

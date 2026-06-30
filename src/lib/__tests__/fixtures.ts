@@ -49,6 +49,14 @@ const cardsCopyFixture: ResultsCardsCopy = {
   bridgeSubtitle: 'sub',
   salaryLabel: 'Salary',
   educationLabel: 'Education',
+  backToRole: 'Back to {role}',
+  compareWithLabel: 'Compare with',
+  recommendationLabel: 'Our take',
+  recommendation: {
+    clearWinner: '{high} {low}',
+    closeLowerBarrier: '{lowBarrier} {growToward}',
+    closeEqualBarrier: '{high}',
+  },
 };
 
 export const resultsCopyFixture = {

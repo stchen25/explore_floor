@@ -1,6 +1,8 @@
 export type { CategoryContribution, CategoryContributions } from './categoryBreakdown';
 export { categoryContributions } from './categoryBreakdown';
 export { calculateCategoryScores, computeCategoryMax, MAYBE_WEIGHT } from './categoryScoring';
+export type { CompareRecommendation, RecommendationVariant } from './compareRecommendation';
+export { COMPARE_CLOSE_THRESHOLD,compareRecommendation } from './compareRecommendation';
 export * from './motion';
 export type { Point } from './nodeLayout';
 export { CATEGORY_ANGLES, fanPoints, polarPoint, radarPoints } from './nodeLayout';
