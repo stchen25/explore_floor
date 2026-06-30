@@ -57,6 +57,13 @@ const cardsCopyFixture: ResultsCardsCopy = {
     closeLowerBarrier: '{lowBarrier} {growToward}',
     closeEqualBarrier: '{high}',
   },
+  backToMap: 'back to map',
+  map: {
+    title: 'your results',
+    intro: 'intro',
+    hint: 'hint',
+    back: 'back',
+  },
 };
 
 export const resultsCopyFixture = {

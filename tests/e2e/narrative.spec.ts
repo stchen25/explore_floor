@@ -155,6 +155,20 @@ test('narrative: branch over Q2, sort every scene into buckets, results match th
   await page.getByTestId('compare-back').click();
   await expect(page.getByTestId('role-name')).toHaveText(leftRole);
 
+  // Map (D-029 Phase E): the control opens the ambient bubble map; the three roles render as
+  // bubbles sized by match %. Tapping the top-match bubble dives into its card (fromMap), and the
+  // card then offers a way back to the map. The bubbles float continuously (no reduced motion
+  // here), so the click is forced past Playwright's element-stability wait.
+  await page.getByTestId('open-map').click();
+  await expect(page.getByTestId('results-map')).toBeVisible();
+  for (const category of ['technician', 'specialist', 'integrator'] as const) {
+    await expect(page.getByTestId(`map-bubble-${category}`)).toBeVisible();
+  }
+  await page.getByTestId(`map-bubble-${expected.ranking[0]}`).click({ force: true });
+  await expect(page).toHaveURL(/\/results$/);
+  await expect(page.getByTestId('role-name')).toHaveText(topRole);
+  await expect(page.getByTestId('back-to-map')).toBeVisible();
+
   // "Start over" returns to Landing with the condition still selected (reset-survival).
   await page.getByTestId('retake').click();
   await expect(page).toHaveURL(/\/$/);

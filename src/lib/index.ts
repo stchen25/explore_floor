@@ -1,3 +1,5 @@
+export type { BubbleLayout } from './bubbleLayout';
+export { BUBBLE_VIEW, bubbleLayout, bubbleRadius } from './bubbleLayout';
 export type { CategoryContribution, CategoryContributions } from './categoryBreakdown';
 export { categoryContributions } from './categoryBreakdown';
 export { calculateCategoryScores, computeCategoryMax, MAYBE_WEIGHT } from './categoryScoring';

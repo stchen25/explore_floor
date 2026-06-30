@@ -404,7 +404,7 @@ Do not cut, in any scenario:
 
 - The scoring engine producing weighted recommendations across all three roles (never a single prescriptive verdict).
 - The results screen showing all the matches, not one.
-- The compare interaction (live as the dark role-cards screen's prev/next role-stepping; the narrative node-map swap that first served it is dormant, D-029 Phase C): it can degrade visually but must work. _(The cut exam dashboard's ranked roles were the other presentation the study compared.)_
+- The compare interaction (live as the dark role-cards screen's prev/next role-stepping; the narrative node-map swap that first served it was deleted at Phase E, D-029): it can degrade visually but must work. _(The cut exam dashboard's ranked roles were the other presentation the study compared.)_
 - The result explaining itself: the match read, the "why you scored that way" interpretation, and the education/pay fit line.
 - Real, plain-language copy that an actual high schooler would understand.
 

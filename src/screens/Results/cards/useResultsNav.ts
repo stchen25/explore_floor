@@ -25,6 +25,12 @@ export interface ResultsNav {
   setActiveTab: (t: number) => void;
   expanded: boolean;
   toggleExpanded: () => void;
+  // --- map (Phase E) ---
+  /** True once the user dove into a role from the bubble map; the cards control bar then offers
+   *  a way back to the map (mirrors the mockup's `fromMap` chrome). */
+  fromMap: boolean;
+  /** Jump straight to a ranked role's cards from a map bubble (sets the role + marks fromMap). */
+  diveToRole: (i: number) => void;
   // --- compare ---
   /** The right-column role index (never equal to roleIndex). */
   compareWith: number;
@@ -44,6 +50,7 @@ export function useResultsNav(roleCount: number): ResultsNav {
   const [roleIndex, setRoleIndex] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [fromMap, setFromMap] = useState(false);
   const [compareWith, setCompareWithState] = useState(roleCount > 1 ? 1 : 0);
   const [compareExpanded, setCompareExpanded] = useState<[boolean, boolean]>([false, false]);
 
@@ -76,6 +83,13 @@ export function useResultsNav(roleCount: number): ResultsNav {
     setActiveTab,
     expanded,
     toggleExpanded: () => setExpanded((e) => !e),
+    fromMap,
+    diveToRole: (i) => {
+      if (i < 0 || i >= roleCount) return;
+      goToRole(i);
+      setFromMap(true);
+      setViewState('cards');
+    },
     compareWith,
     openCompare: () => {
       setCompareWithState((t) => (t === roleIndex ? defaultTarget(roleIndex) : t));

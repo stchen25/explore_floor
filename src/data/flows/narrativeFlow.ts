@@ -252,6 +252,13 @@ export const narrativeFlow: CategoryFlow = {
         closeEqualBarrier:
           'These two are close. {high} edges ahead, but either one is a solid place to start.',
       },
+      backToMap: 'Back to the map',
+      map: {
+        title: 'Your results',
+        intro: 'Each role’s score comes from how often your answers leaned its way.',
+        hint: 'Tap any role to dive into your match.',
+        back: 'Back to your matches',
+      },
     },
     sheet: {
       activities: 'Job activities',

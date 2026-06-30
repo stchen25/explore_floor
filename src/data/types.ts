@@ -177,6 +177,18 @@ export interface ResultsCardsCopy {
   compareWithLabel: string; // dropdown lead-in before the target role name
   recommendationLabel: string; // small lead-in above the recommendation line
   recommendation: CompareRecommendationCopy;
+  // --- Map (Phase E) ---
+  backToMap: string; // cards control bar (after a map dive): "Back to the map"
+  map: ResultsMapCopy;
+}
+
+/** Copy for the ambient bubble-map results view (D-029 Phase E): the glass intro card + its
+ *  back-to-cards control. No placeholders — these are plain lines. */
+export interface ResultsMapCopy {
+  title: string; // glass card heading
+  intro: string; // one line on what the scores mean
+  hint: string; // one line on how to use the map (tap a bubble)
+  back: string; // the map's own back-to-your-matches control
 }
 
 /** The compare-screen recommendation line, by variant (see lib/compareRecommendation).

@@ -1,7 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Button } from '@/components';
 import { Icon } from '@/components/Icon';
 import { roleDetails } from '@/data';
 import { durations, easings } from '@/lib';
@@ -10,6 +9,7 @@ import { deriveScreenerProfile, screenerFitLines } from '@/lib/screenerFit';
 import { useFlow, useSessionStore } from '@/state';
 
 import { CompareView } from './CompareView';
+import { ResultsMap } from './ResultsMap';
 import { ResultsPanel } from './ResultsPanel';
 import { RoleHero } from './RoleHero';
 import { RoleTabs } from './RoleTabs';
@@ -76,7 +76,12 @@ export function ResultsExperience() {
         <Icon name="compare" size={19} />
         {cards.compareCta}
       </button>
-      {nav.atEnd ? (
+      {nav.fromMap ? (
+        <button type="button" onClick={() => nav.setView('map')} data-testid="back-to-map" className={pill}>
+          <Icon name="chevron-l" size={18} />
+          {cards.backToMap}
+        </button>
+      ) : nav.atEnd ? (
         <button
           type="button"
           onClick={() => nav.setView('map')}
@@ -95,11 +100,15 @@ export function ResultsExperience() {
     </>
   );
 
+  // The map is full-bleed (its own dark canvas + ambient field), so it breaks out of the rounded,
+  // max-w-lg scroll panel that cards/compare live in.
+  const mainClassName =
+    nav.view === 'map'
+      ? 'relative h-[calc(100dvh-var(--spacing-nav))] w-full overflow-hidden'
+      : 'mx-auto mt-space-5 h-[calc(100dvh-var(--spacing-nav)-var(--spacing-space-5))] w-full max-w-lg overflow-y-auto rounded-t-lg pb-space-5 shadow-dark-panel';
+
   return (
-    <main
-      className="mx-auto mt-space-5 h-[calc(100dvh-var(--spacing-nav)-var(--spacing-space-5))] w-full max-w-lg overflow-y-auto rounded-t-lg pb-space-5 shadow-dark-panel"
-      data-testid="results"
-    >
+    <main className={mainClassName} data-testid="results">
       <AnimatePresence mode="wait" initial={false}>
         {nav.view === 'cards' ? (
           <motion.div key="cards" {...fade}>
@@ -156,31 +165,15 @@ export function ResultsExperience() {
             />
           </motion.div>
         ) : (
-          <motion.div key="stub" {...fade}>
-            <ResultsPanel
-              controlBar={
-                <button
-                  type="button"
-                  onClick={() => nav.setView('cards')}
-                  data-testid="stub-back"
-                  className={pill}
-                >
-                  <Icon name="chevron-l" size={18} />
-                  Back to your matches
-                </button>
-              }
-            >
-              <div
-                className="flex flex-col items-center gap-space-3 py-space-6 text-center"
-                data-testid="results-stub"
-              >
-                <h2 className="font-heading text-h4 text-text-on-dark">Results map</h2>
-                <p className="font-body text-body text-text-on-dark-muted">
-                  This is coming in the next pass.
-                </p>
-                <Button onClick={() => nav.setView('cards')}>Back to your matches</Button>
-              </div>
-            </ResultsPanel>
+          <motion.div key="map" className="absolute inset-0" {...fade}>
+            <ResultsMap
+              copy={cards.map}
+              ranking={ranking}
+              matchPercentages={categoryResult.matchPercentages}
+              reduce={reduce}
+              onDive={nav.diveToRole}
+              onBack={() => nav.setView('cards')}
+            />
           </motion.div>
         )}
       </AnimatePresence>

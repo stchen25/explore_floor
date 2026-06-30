@@ -81,5 +81,14 @@ test('narrative flow works under prefers-reduced-motion', async ({ page }) => {
   await page.getByTestId('role-next').click();
   await expect(page.getByTestId('role-name')).toHaveText('Integrator');
 
+  // The bubble map renders without motion and a dive still works (D-029 Phase E): with reduced
+  // motion the bubbles are static, so a normal click lands. Open the map, tap the top-match bubble,
+  // and land back on its card.
+  await page.getByTestId('open-map').click();
+  await expect(page.getByTestId('results-map')).toBeVisible();
+  await expect(page.getByTestId('map-bubble-specialist')).toBeVisible();
+  await page.getByTestId('map-bubble-specialist').click();
+  await expect(page.getByTestId('role-name')).toHaveText('Specialist');
+
   expect(consoleErrors, `console errors:\n${consoleErrors.join('\n')}`).toEqual([]);
 });

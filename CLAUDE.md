@@ -45,7 +45,7 @@ Research found the barrier to robotics manufacturing careers is not lack of inte
 | Styling | Tailwind CSS (v4, CSS-first) | All design tokens live in the `@theme` block in `src/styles/globals.css` (loaded via `@tailwindcss/vite`). No magic hex values in components. |
 | Animation (UI) | Motion (ex-Framer Motion) | React-state-driven motion: screen + flow-step transitions, the bucket-sort drag, the dark results role-cards screen, `prefers-reduced-motion`. |
 | Animation (scene) | GSAP + plugins | **No live use as of step 8 Phase A** — the Landing `DrawSVG` reveal (its last consumer) was removed when the Landing went type-led dark. `lib/gsap.ts` still registers `DrawSVGPlugin` + `@gsap/react`'s `useGSAP` at app start as a future seam. _(The cinematic build beat and conveyor choreography GSAP was chosen for are the documented cut.)_ The two libraries share a motion-token file and never animate the same property on the same node. |
-| Scene rendering | SVG (React components) | The live SVG geometry is the `/select` fit radar; the node map is dormant since the dark role-cards screen became the results headline (D-029 Phase C). _(The composed-SVG assembly line is the documented cut.)_ |
+| Scene rendering | SVG (React components) | The live SVG geometry is the `/select` fit radar and the results ambient bubble map (D-029 Phase E); the old node map was deleted at Phase E (superseded by the bubble map — it had been the results headline until the dark role-cards screen replaced it at Phase C). _(The composed-SVG assembly line is the documented cut.)_ |
 | State | Zustand | One store per domain. No Redux. |
 | Audio | Howler.js | _(Documented cut: sound was a Phase 3 seasoning, never integrated.)_ |
 | Testing | Vitest + Playwright | Vitest for pure-function units (the category scoring engine especially, `data-integrity`); Playwright for the flow E2E specs (narrative / role-select / reduced-motion). |
@@ -66,7 +66,7 @@ If you want to add a dependency, check `ARCHITECTURE.md` first. Prefer the stack
   /components         Shared UI (buttons, sort cards, segmented control, AppHeader, Icon, role accents)
   /state              Zustand stores (sessionStore, useFlow)
   /data               Mock data: the flow (§17, live), roleDetails (three roles), screeners, roleSelect
-  /lib                Pure helpers: categoryScoring (the brain), screenerFit, categoryBreakdown, nodeLayout
+  /lib                Pure helpers: categoryScoring (the brain), screenerFit, categoryBreakdown, nodeLayout, bubbleLayout
   /styles             Tailwind v4 entry + the @theme design-token block (globals.css)
 /tests                Playwright specs (narrative / role-select / reduced-motion)
 src/styles/globals.css  Design tokens via Tailwind v4 @theme. Single source of truth for color/type/spacing (motion tokens live in src/lib/motion.ts).

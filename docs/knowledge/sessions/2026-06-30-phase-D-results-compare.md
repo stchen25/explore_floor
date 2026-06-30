@@ -14,7 +14,7 @@ Built the **Compare** screen (screen 4 of the mockup's 5-screen results system; 
 
 - **Recommendation engine** (`lib/compareRecommendation.ts`, pure + 6 unit tests). Returns `{ leaned, other, close, lowerBarrier, growToward, variant }`. `leaned` = higher match % (ties → left); `close` = gap ≤ `COMPARE_CLOSE_THRESHOLD` (8 pts); `lowerBarrier` by `educationLevel` (Technician 0 < Specialist/Integrator 2; equal → null); `variant` ∈ `clearWinner` / `closeLowerBarrier` / `closeEqualBarrier`. The wording is templated copy, not in the lib.
 
-- **Copy as data** (`data-author`). `ResultsCardsCopy` gained `backToRole`, `compareWithLabel`, `recommendationLabel` ("Our take"), and a `recommendation: { clearWinner, closeLowerBarrier, closeEqualBarrier }` block, authored in the narrative flow's `resultsCopy.cards` in the project voice (no em dashes). New `CompareRecommendationCopy` type. **Caelan to sign off on the recommendation wording** (drafts in `narrativeFlow.ts` + `VISUAL_REARCHITECTURE.md` §6).
+- **Copy as data** (`data-author`). `ResultsCardsCopy` gained `backToRole`, `compareWithLabel`, `recommendationLabel` ("Our take"), and a `recommendation: { clearWinner, closeLowerBarrier, closeEqualBarrier }` block, authored in the narrative flow's `resultsCopy.cards` in the project voice (no em dashes). New `CompareRecommendationCopy` type. **Caelan signed off on the recommendation wording (2026-06-30) — final** (copy in `narrativeFlow.ts` `resultsCopy.cards.recommendation`).
 
 - **State.** `useResultsNav` extended with `compareWith` (defaults to the role after the current, never == roleIndex), `setCompareWith` (guards self/out-of-range), `openCompare` (sets a sensible default target + resets expand + scroll-top), and per-column `compareExpanded: [boolean, boolean]` + `toggleCompareSide`. The cards `expanded` stays separate.
 
@@ -51,7 +51,7 @@ After Phase D landed, a round of live polish on the results shell (all gates re-
 
 ## Not done on purpose / next
 
-- **Recommendation copy** is drafted and wired but **awaits Caelan's sign-off** (the variants live in `narrativeFlow.ts` `resultsCopy.cards.recommendation`).
+- **Recommendation copy** is drafted, wired, and **signed off by Caelan (2026-06-30) — final** (the variants live in `narrativeFlow.ts` `resultsCopy.cards.recommendation`).
 - The **drag path** stays dormant. **Bridge programs** stay placeholder pending ARM.
 - **Next is Phase E** (results map; decide the node map's final fate) per `VISUAL_REARCHITECTURE.md` §6 — the `useResultsNav` `map` view is still the "coming next" stub. Then Phase F (constellation + job overview, data-dependent), Phase G (polish/motion/responsive/a11y — folds in the deferred p3s above + the Phase C signal-bar contrast).
 - **No commit** — left for Caelan.

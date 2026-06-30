@@ -25,13 +25,13 @@ The build is a design showcase, so motion gets two complementary engines with a 
 - **GSAP** owns timeline-choreographed, multi-element, scene-level sequences and the SVG effects Motion can't do cleanly. It has **no live animation as of step 8 Phase A** (D-029): the Landing `DrawSVG` reveal, its last live use, was removed when the Landing went type-led dark. GSAP stays registered in `lib/gsap.ts` as a future seam for the high-fidelity results work. _(The conveyor item travel + arm reach + part-to-robot + snap timeline, the cinematic build beat, `MorphSVG`, and `MotionPath` parts-into-robot-slots are the documented cut, see the live ownership note below.)_ GSAP is fully free as of 2025, including these formerly-paid plugins.
 - **React integration is fixed, not improvised.** Every GSAP animation runs inside the `useGSAP` hook (`@gsap/react`) with a scope ref, so it's scoped and auto-cleaned on unmount via `gsap.context().revert()`. Never a bare `gsap` selector in a component. Plugins are registered once at app start (`gsap.registerPlugin(useGSAP, MorphSVGPlugin, DrawSVGPlugin, MotionPathPlugin)`); the registration stands even though no live consumer draws on it yet.
 - **One motion language across both engines.** All durations, easings, and the spring config live in `/src/lib/motion.ts` (easings mirrored into the `@theme` block in `src/styles/globals.css`; durations stay in code). Motion transitions and GSAP timelines both read those constants, so the feel is unified even though two engines produce it. These tokens live in code only; they are not synced to Figma (Figma Variables can't model easing or springs).
-- **Ownership per screen (live):** Landing — Motion for the CTA card; the GSAP `DrawSVG` reveal of the scene hint was removed at step 8 Phase A when the Landing went type-led dark (D-029), so the Landing now has no GSAP. Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion drives the live dark role-cards screen (D-029 Phase C); the node-map layout and compare swap (`layout`) Motion was built for here are dormant with the node map, and the exam-dashboard reflow went with the Phase-4 cut. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; GSAP now has no live animation surface at all.)_
+- **Ownership per screen (live):** Landing — Motion for the CTA card; the GSAP `DrawSVG` reveal of the scene hint was removed at step 8 Phase A when the Landing went type-led dark (D-029), so the Landing now has no GSAP. Flow — Motion owns the bucket-sort drag gesture, the card UI, and the step-to-step transitions. Results — Motion drives the live dark role-cards screen (D-029 Phase C) and the ambient bubble map's continuously floating bubbles (D-029 Phase E, gated by `prefers-reduced-motion`); the node-map layout and compare swap (`layout`) Motion was built for here went with the node map when it was deleted at Phase E, and the exam-dashboard reflow went with the Phase-4 cut. _(Documented cut: the conveyor belt + item-to-robot choreography and the cinematic Build-beat GSAP timeline were the showcase scene work, never built. The heavy GSAP timelines the two-engine split was designed for are parked; GSAP now has no live animation surface at all.)_
 - **Use the official GSAP AI skills.** GreenSock ships `greensock/gsap-skills` (Agent Skills format: core, timeline, plugins, react, performance). Install it into the repo's Claude Code skills in Phase 0 so the agent authors GSAP with GreenSock's canonical patterns rather than guessing. See `ROADMAP.md` Phase 0.
 - **Not used:** anime.js (overlaps GSAP, adds a third paradigm) and Lottie (passive playback, can't drive the interactive robot). Rive is a documented future exploration for the robot only; see section 9.
 
 ### Scene rendering
 
-- **Plain SVG as React components.** The live SVG geometry is the three-axis fit radar (a triangle, `lib/nodeLayout.ts`), live in the `/select` comparator; the node map (same lib) is **dormant on disk** since the dark role-cards screen replaced it as the results headline (D-029 Phase C, whose `SignalBars` replaced the triangle radar on the headline). The `/src/scene/` directory was deleted at step 8 Phase A (D-029) when the Landing went type-led dark and dropped its `LandingSceneHint` placeholder, so there is no scene layer left. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
+- **Plain SVG as React components.** The live SVG geometry is the three-axis fit radar (a triangle, `lib/nodeLayout.ts`), live in the `/select` comparator, plus the results ambient bubble map (`lib/bubbleLayout.ts`, D-029 Phase E). The node map (which shared `nodeLayout.ts`) was **deleted at Phase E**, superseded by the bubble map — after the dark role-cards screen had already replaced it as the results headline (D-029 Phase C, whose `SignalBars` replaced the triangle radar on the headline). The `/src/scene/` directory was deleted at step 8 Phase A (D-029) when the Landing went type-led dark and dropped its `LandingSceneHint` placeholder, so there is no scene layer left. No canvas, no WebGL: a deliberate choice for debuggability and Claude Code's success rate.
 - _(Documented cut: the full assembly-line scene, conveyor, robotic arms, bins, and the composed-SVG robot in the old `/src/scene/` were the original plan, never built. §5 and the §9 3D path are parked with them.)_
 
 ### State
@@ -47,7 +47,7 @@ The build is a design showcase, so motion gets two complementary engines with a 
 ### Testing
 
 - **Playwright** for end-to-end and visual regression. Set up in Phase 0 with one happy-path test. Expanded each phase.
-- **Vitest** for unit tests of pure functions. The live brain is `categoryScoring.ts` (exhaustively tested), with `screenerFit.ts`, `categoryBreakdown.ts`, and `nodeLayout.ts` alongside it; `data-integrity.test.ts` guards the §17 narrative invariants. 49 tests across 5 files. The classic `scoring.ts` / `robotAssembly.ts` specs were deleted with the classic flow in Phase 4 (D-027).
+- **Vitest** for unit tests of pure functions. The live brain is `categoryScoring.ts` (exhaustively tested), with `screenerFit.ts`, `categoryBreakdown.ts`, `compareRecommendation.ts`, `nodeLayout.ts`, and `bubbleLayout.ts` alongside it; `data-integrity.test.ts` guards the §17 narrative invariants. 65 tests across 7 files (the `bubbleLayout` suite added at step 8 Phase E, D-029). The classic `scoring.ts` / `robotAssembly.ts` specs were deleted with the classic flow in Phase 4 (D-027).
 
 ### Tooling
 
@@ -136,13 +136,15 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   │   └── index.ts
 │   │   ├── Results/
 │   │   │   ├── Results.tsx        Renders ResultsExperience (the dark role-cards screen)
-│   │   │   ├── cards/             LIVE — the dark role-cards screen (D-029 Phase C):
+│   │   │   ├── cards/             LIVE — the dark role-cards screen (D-029 Phase C) +
+│   │   │   │                      the ambient bubble map (D-029 Phase E):
 │   │   │   │                      ResultsExperience, ResultsPanel, RoleHero, SignalBars,
-│   │   │   │                      WhyYouMatched, RoleTabs (view-state via useResultsNav)
-│   │   │   ├── category/          DORMANT — narrative node map, retired as the headline
-│   │   │   │                      (D-029 Phase C); kept on disk for the Phase E map work
-│   │   │   │   ├── CategoryResults.tsx, NodeMap.tsx, FitNote.tsx
-│   │   │   │   ├── RoleDetailSheet.tsx, FitRadar.tsx (both still live in /select)
+│   │   │   │                      WhyYouMatched, RoleTabs, ResultsMap, AmbientField, BubbleField
+│   │   │   │                      (view-state via useResultsNav: fromMap + diveToRole)
+│   │   │   ├── category/          RoleDetailSheet.tsx, FitRadar.tsx — both still live in /select
+│   │   │   │                      (the narrative node map — CategoryResults.tsx, NodeMap.tsx,
+│   │   │   │                       FitNote.tsx — was deleted at Phase E, D-029, superseded by
+│   │   │   │                       the bubble map)
 │   │   └── Select/                RoleSelect.tsx — the /select role-pick comparator
 │   │
 │   │                              (no /src/scene — the dir was deleted at step 8 Phase A, D-029,
@@ -169,12 +171,16 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   ├── screenerFit.ts         LIVE — the education/pay fit line
 │   │   ├── categoryBreakdown.ts   LIVE — score provenance; wired in step 8 Phase C into the
 │   │   │                          role-cards WhyYouMatched (openers/moments + passedLabels, D-029)
-│   │   ├── nodeLayout.ts          LIVE — node-graph + fit-radar geometry (node map dormant; /select radar)
+│   │   ├── nodeLayout.ts          LIVE — fit-radar geometry for /select (the node map it also
+│   │   │                          served was deleted at Phase E, D-029)
+│   │   ├── bubbleLayout.ts        LIVE — ambient bubble-map layout (rank-based bubble sizing/
+│   │   │                          placement, D-029 Phase E)
 │   │   ├── gsap.ts                LIVE — GSAP plugin registration (a future seam; no live
 │   │   │                          animation since the Landing reveal was removed, D-029)
 │   │   ├── motion.ts              Motion tokens (durations/easings); both engines read these
-│   │   ├── __tests__/             categoryScoring, screenerFit, categoryBreakdown, nodeLayout,
-│   │   │                          data-integrity (49 tests across 5 files)
+│   │   ├── __tests__/             categoryScoring, screenerFit, categoryBreakdown,
+│   │   │                          compareRecommendation, nodeLayout, bubbleLayout,
+│   │   │                          data-integrity (65 tests across 7 files)
 │   │   └── index.ts
 │   │
 │   └── styles/
@@ -223,7 +229,7 @@ None in v1. State lives in memory and resets on refresh. This is intentional for
 
 ## 5. Scene composition — documented cut
 
-> **Parked.** The assembly-line scene was never built, and `/src/scene/` is now gone entirely: its last file, the `LandingSceneHint` placeholder, was deleted at step 8 Phase A (D-029) when the Landing went type-led dark (`RobotPlaceholder` had already gone with the Phase-4 Exam/Classic archive). None of the `ConveyorBelt` / `RoboticArm` / `Bin` / `Factory` / `robot/parts` hierarchy below exists. The two-engine ownership rule (§1) still governs the **live** modest motion, but it is Motion-only in practice now: Motion owns the bucket-sort drag, step transitions, and the node-map compare; GSAP has no live animation (the Landing `DrawSVG` reveal was removed). The composition spec below is the original direction, kept for the record.
+> **Parked.** The assembly-line scene was never built, and `/src/scene/` is now gone entirely: its last file, the `LandingSceneHint` placeholder, was deleted at step 8 Phase A (D-029) when the Landing went type-led dark (`RobotPlaceholder` had already gone with the Phase-4 Exam/Classic archive). None of the `ConveyorBelt` / `RoboticArm` / `Bin` / `Factory` / `robot/parts` hierarchy below exists. The two-engine ownership rule (§1) still governs the **live** modest motion, but it is Motion-only in practice now: Motion owns the bucket-sort drag, step transitions, the role-cards compare stepping, and the ambient bubble map's floating bubbles (D-029 Phase E); GSAP has no live animation (the Landing `DrawSVG` reveal was removed). The composition spec below is the original direction, kept for the record.
 
 The assembly-line scene is built as a hierarchy of SVG React components. The scene choreography (belt, item travel, arm, part-to-robot) is driven by GSAP timelines; the drag-to-bin gesture and any React-state-driven transitions are Motion. See the ownership rule in section 1.
 
@@ -255,7 +261,7 @@ Routes (`/src/app/router.tsx`):
 
 - `/` — Landing (the researcher flow switcher; live segments are Narrative / Select)
 - `/flow` — the `FlowRunner` (narrative): renders the current step by type
-- `/results` — Results (renders `ResultsExperience`, the dark role-cards screen; D-029 Phase C — the node map is dormant)
+- `/results` — Results (renders `ResultsExperience`, the dark role-cards screen, plus the ambient bubble map; D-029 Phase C/E — the old node map was deleted at Phase E)
 - `/select` — the role-pick comparator (`RoleSelect`, the industry-professional arm)
 - _(Documented cut: `/flow` also ran the cut Exam flow; `/results` also dispatched the exam dashboard and the classic results; the `/sort` and `/build` routes served the classic interest-sort and Build beat. All deleted in Phase 4, D-027. `defaultFlowId = 'narrative'`, D-021.)_
 
@@ -318,7 +324,7 @@ Playwright is set up in Phase 0 and runs as part of `pnpm test`. It serves two p
 ### Test types
 
 - **Flow E2E (live).** `narrative.spec` walks a known set of answers through `/flow` to `/results`, asserting the displayed percentages match the engine and the right top match shows; `role-select.spec` covers the `/select` comparator; `reduced-motion.spec` (rehomed to the narrative flow in Phase 4) checks the `prefers-reduced-motion` path. Three specs total.
-- **Interaction tests.** The bucket-sort drag, the node-map compare swap, the landing flow switcher.
+- **Interaction tests.** The bucket-sort drag, the role-cards compare stepping, the bubble-map dive-into-a-role, the landing flow switcher.
 - _(Documented cut: `exam.spec` drove the cut exam flow, and `happy-path`/`compare` drove the classic flow via a dev-only store handle. All deleted in Phase 4, D-027.)_
 - **Visual regression.** Snapshot key screens. A later add.
 

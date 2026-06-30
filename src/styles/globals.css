@@ -106,6 +106,8 @@
   --container-lg: 1248px;
   --container-xl: 1500px;
   --container-results: 760px; /* the results reading column inside the role-cards panel (D-029 Phase C) */
+  --container-map-card: 640px; /* the glass "your results" intro card on the bubble map (D-029 Phase E) */
+  --container-map: 1040px; /* the bubble field on the results map; matches BUBBLE_VIEW.width in lib/bubbleLayout (D-029 Phase E) */
 
   /* ---- Radius (§6 — overrides defaults) ---- */
   --radius-sm: 6px; /* kit Refined (was 4px) */

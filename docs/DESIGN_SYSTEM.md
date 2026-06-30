@@ -161,6 +161,8 @@ Consumed through `ROLE_ACCENT` (§3.3), never as literals.
 
 **Results role-cards usage (D-029 Phase C).** On the results role cards the role name (H2) and the match % are **neutral on-dark** (`text-on-dark`), not accent-colored; the role accent appears in the **active signal bar** (`bg` derivative) — faithful to the mockup. The `-soft` name tint is therefore reserved for later results screens (compare/map), not the cards hero. Inactive signal bars use the neutral `text-subtle` fill (an intentional subdued treatment; the bar's value is also printed as text, so the read never depends on bar contrast alone — graphical-contrast polish is a Phase G a11y item).
 
+**Results bubble-map usage (D-029 Phase E).** The ambient bubble map is where the role `glow` finally earns its keep. Each role bubble fills with `ROLE_ACCENT[cat].bg`, names the role + match % in `onAccent` (so the gold bubble carries dark ink, teal/orange carry white — all AA), and casts a soft role-tinted drop glow built from `glow` (the colored glow has no `--shadow-dark-*` equivalent; only its offset/blur are literals). The decorative `AmbientField` orbs use the base `--color-role-*` tokens at low opacity behind a heavy blur. Bubble size encodes match % (pure `lib/bubbleLayout`, rank-based); the float + ambient pulse are reduced-motion-gated and use `easings.soft` (the long idle-loop durations are intentionally off the UI motion scale, which has no multi-second home). Bubble label sizing is fluid (`clamp()`, anchored toward the type scale) since the text scales with the viewport-sized bubble.
+
 ## 4. Typography
 
 ### 4.1 Type pairing (locked)
@@ -248,6 +250,8 @@ Inherited verbatim. The 0-indexed scale where `space/0 = 4px` is deliberate; it 
 | `container-lg` | 1248 |
 | `container-xl` | 1500 |
 | `container-results` | 760 (the results role-cards reading column; D-029 Phase C) |
+| `container-map-card` | 640 (the glass "your results" intro card on the bubble map; D-029 Phase E) |
+| `container-map` | 1040 (the bubble field on the results map; matches `BUBBLE_VIEW.width`; D-029 Phase E) |
 | `container-px` | 16 (horizontal padding) |
 | `section-py` | 48 (vertical section padding) |
 | `nav` | 60 (app top-nav height; the results sheet sizes off it — D-029 Phase D) |
