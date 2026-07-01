@@ -8,7 +8,7 @@ This file is the operating manual for this repo. Read it fully at the start of e
 
 An interactive, narrative career-discovery experience for **RoboticsCareer.org** (RC.org), the ARM Institute's workforce platform. A user walks through a day in their life, sorting the choices each scene offers into three buckets (That's me / Kinda me / Not me), and lands on a results screen that recommends how they match ARM's three robotics career roles (Robotics Technician, Specialist, Integrator). It replaces three weak existing tools on the site (Explore the Floor, My Goal, Interest Quiz) with one focused, engaging flow. This ships as the single **Narrative** flow (`DATA_MODEL.md` §17).
 
-> **Realignment (2026-06, Phases 4–5 done).** The original concept, a stylized assembly-line sort that built a custom robot, is the **documented cut**: it was never built as a scene and its scaffolding (Classic flow + the Exam study condition) was deleted in Phase 4 (D-027, recoverable at git tag `archive/pre-narrative-only`). The live build is the **narrative quiz only**, and as of Phase 5 (D-028) it scores ARM's live **three-role** structure (Technician / Specialist / Integrator), collapsed from the four categories the study used. Realignment memo (complete, archived): `docs/knowledge/archive/REALIGNMENT.md`; live model: `DATA_MODEL.md` §17; live state: `docs/knowledge/STATUS.md`.
+> **Realignment (2026-06, complete).** The original assembly-line-sort concept is the **documented cut**; the live build is the narrative quiz only, scoring ARM's three live roles (Technician / Specialist / Integrator). Rationale and phase trail: `docs/knowledge/archive/REALIGNMENT.md` (D-027/D-028). Live model: `DATA_MODEL.md` §17; live state: `docs/knowledge/STATUS.md`.
 
 This is a **high-fidelity prototype**, not production code. It exists to (a) prove the concept to the ARM client and (b) be tested with real users. ARM's dev team would rebuild from it later. Optimize for clarity, feel, and iteration speed, not for production hardening.
 
@@ -44,10 +44,10 @@ Research found the barrier to robotics manufacturing careers is not lack of inte
 | UI | React 18 | Function components and hooks only. |
 | Styling | Tailwind CSS (v4, CSS-first) | All design tokens live in the `@theme` block in `src/styles/globals.css` (loaded via `@tailwindcss/vite`). No magic hex values in components. |
 | Animation (UI) | Motion (ex-Framer Motion) | React-state-driven motion: screen + flow-step transitions, the bucket-sort drag, the dark results role-cards screen, `prefers-reduced-motion`. |
-| Animation (scene) | GSAP + plugins | **No live use as of step 8 Phase A** — the Landing `DrawSVG` reveal (its last consumer) was removed when the Landing went type-led dark. `lib/gsap.ts` still registers `DrawSVGPlugin` + `@gsap/react`'s `useGSAP` at app start as a future seam. _(The cinematic build beat and conveyor choreography GSAP was chosen for are the documented cut.)_ The two libraries share a motion-token file and never animate the same property on the same node. |
-| Scene rendering | SVG (React components) | The live SVG geometry is the `/select` fit radar and the results ambient bubble map (D-029 Phase E); the old node map was deleted at Phase E (superseded by the bubble map — it had been the results headline until the dark role-cards screen replaced it at Phase C). _(The composed-SVG assembly line is the documented cut.)_ |
+| Animation (scene) | GSAP + plugins | Registered at app start (`lib/gsap.ts`: `DrawSVGPlugin` + `useGSAP`) as a future seam; **no live use** today. Shares a motion-token file with Motion and never animates the same property on the same node. _(The conveyor choreography it was chosen for is the documented cut — `REALIGNMENT.md`.)_ |
+| Scene rendering | SVG (React components) | Live SVG geometry is the `/select` fit radar and the results ambient bubble map. _(The old node map and the composed-SVG assembly line are the documented cut — `DECISIONS.md` D-029.)_ |
 | State | Zustand | One store per domain. No Redux. |
-| Audio | Howler.js | _(Documented cut: sound was a Phase 3 seasoning, never integrated.)_ |
+| Audio | Howler.js | Documented cut — never integrated; deps removed (D-028). |
 | Testing | Vitest + Playwright | Vitest for pure-function units (the category scoring engine especially, `data-integrity`); Playwright for the flow E2E specs (narrative / role-select / reduced-motion). |
 | Package manager | pnpm | |
 | Lint/format | ESLint + Prettier | Run before considering a task done. |
@@ -62,7 +62,6 @@ If you want to add a dependency, check `ARCHITECTURE.md` first. Prefer the stack
 /src
   /app                App shell (AppLayout: dark canvas + AppHeader mount), routing, top-level providers
   /screens            Landing (type-led dark hero), Flow (the narrative runner), Results (the dark role-cards results), Select
-                      (/scene removed in step 8 Phase A — it held only LandingSceneHint; the conveyor/robot scene was never built)
   /components         Shared UI (buttons, sort cards, segmented control, AppHeader, Icon, role accents)
   /state              Zustand stores (sessionStore, useFlow)
   /data               Mock data: the flow (§17, live), roleDetails (three roles), screeners, roleSelect
@@ -98,7 +97,7 @@ Use Playwright to self-check visual and flow changes rather than asking the user
 
 This repo carries a small, owned agent + design harness. Use it; don't work around it.
 
-- **Session start.** Read `docs/knowledge/STATUS.md` (where we are) and the newest note in `docs/knowledge/sessions/` (what last happened) before touching anything. Built-in memory mirrors a few durable facts, but `docs/knowledge/` is the source of truth.
+- **Session start.** Read `docs/knowledge/STATUS.md` (where we are), then the newest `sessions/` note's **Resume here** header (what last happened); read the full note only if you're continuing that thread. Built-in memory mirrors a few durable facts, but `docs/knowledge/` is the source of truth.
 - **Layer map.** Context = the six `docs/` files + `docs/knowledge/` (read `STATUS.md` first; the completed `REALIGNMENT.md` + `VISUAL_REARCHITECTURE.md` plans now sit in `docs/knowledge/archive/`, cited for rationale, never duplicated). Skills (`.claude/skills/`): `data-author` for `/src/data`, `scene-motion` for the Motion-vs-GSAP rule, plus the installed GSAP + Motion skills. Commands (`.claude/commands/`): `/phase-check`, `/design-review`, `/compound`, `/capture-figma`, `/pull-figma`, `/revise-doc` (edit a spec doc safely, reconciling the others). Evaluation = `docs/rubrics/`, graded by the `design-reviewer` subagent; `verifier` runs the gates; `doc-steward` reconciles cross-doc ripples (driven by `/revise-doc`).
 - **Gates.** Run `/design-review` for visual work; run `/phase-check` at phase boundaries (it ticks `STATUS.md`). A task isn't done until lint + typecheck + test pass.
 - **Compounding.** Capture non-obvious calls with `/compound decision`, workflow/craft learnings with `/compound lesson`, and a handoff note at the end of a large change with `/compound session`. A lesson that recurs gets promoted to a rule here in `CLAUDE.md`.
@@ -106,20 +105,13 @@ This repo carries a small, owned agent + design harness. Use it; don't work arou
 
 ## Phasing
 
-Phase 0 and Phase 1 shipped (scaffold; the classic flow, testable end to end). Then the product pivoted to the narrative quiz, and the original Phase 2–3 plan is superseded. That realignment (and its step-8 visual re-architecture) is now **complete** — the memos are archived at `docs/knowledge/archive/`; live state is `docs/knowledge/STATUS.md`.
+Phase 0 (scaffold) and Phase 1 (the classic flow, testable end to end) shipped. The product then pivoted to the narrative quiz and the step-8 dark re-architecture, both now **complete**. The original Phase 2 (conveyor feel pass) and most of Phase 3 are the **documented cut**.
 
-- **Phase 0** — Scaffold, tokens, mock data, screens stubbed, clickable end to end. **Complete.**
-- **Phase 1** — Real flow content, working scoring, testable results. **Complete** (first user test).
-- **Study insert** — the Narrative + Exam flows, four categories, per-flow results (`DECISIONS.md` D-016–D-023). _Both shipped; the narrative won the June study._
-- **Realignment Phase 4 (strip)** — Classic deleted, Exam archived; the build is the narrative flow only (D-027). **Done.**
-- **Realignment Phase 5 (three roles)** — the four categories collapsed to ARM's three live roles (D-028). **Done.**
-- **Phase 2 (conveyor feel pass) — documented cut.** The conveyor scene, the robotic arm, the live robot, and the Build beat were never built and are no longer the plan.
-- **Phase 3 — partly superseded.** The polish that applies to the live flows survives (copy, light a11y, mobile, reduced-motion, Figma sync); the sound/conveyor/robot polish is cut.
-- **Next** — step 8 (the high-fidelity narrative results screen + dark re-skin) **shipped**; the realignment and visual re-architecture are complete. Current work lives in `docs/knowledge/REMAINING_WORK.md` (the design-system run + the late-July handoff).
+Full phase history and decision trail: `ROADMAP.md`, `docs/knowledge/archive/REALIGNMENT.md`, and `DECISIONS.md` (D-024–D-029). Live state and remaining work: `docs/knowledge/STATUS.md` + `docs/knowledge/REMAINING_WORK.md`.
 
 ## Hard rules
 
-- Never invent the ARM role taxonomy. The live model scores RC.org's **three published robotics roles: Robotics Technician (entry), Robotics Specialist (mid), Robotics Integrator (planning)** — ARM's current site structure (`docs/reference/ARM Updated Role Structure - Source Content.md`). Their content is fixed mock data in `roleDetails.ts`, keyed by `CategoryId` = `technician | specialist | integrator`. Do not add or rename roles. (The entry Technician folds in what the site used to split as Operate/Operator and Repair; "Operator" survives only as a common job title under Technician. The old four-category model and the D-017 carve-out are retired — D-028.)
+- Never invent the ARM role taxonomy. The live model scores RC.org's **three published robotics roles: Robotics Technician (entry), Robotics Specialist (mid), Robotics Integrator (planning)** — ARM's current site structure (`docs/reference/ARM Updated Role Structure - Source Content.md`). Their content is fixed mock data in `roleDetails.ts`, keyed by `CategoryId` = `technician | specialist | integrator`. Do not add or rename roles. (Entry Technician absorbs the site's old Operate/Repair split; the retired four-category model is documented at `DECISIONS.md` D-028.)
 - Never make the result a single prescriptive role. Always a weighted match across all three roles. See `PRD.md` scoring section + `DATA_MODEL.md` §17.
 - Never use the neon palette from early brainstorm docs. Palette is defined in `DESIGN_SYSTEM.md` and the `@theme` block in `src/styles/globals.css`.
 - Never add a screen, step, or feature not described in `PRD.md` without flagging it first.

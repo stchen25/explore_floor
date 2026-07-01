@@ -19,7 +19,7 @@ It's adapted from the five-layer "design harness" idea (context · skills · orc
 
 ## How it connects
 
-- **Session start:** read `STATUS.md` + the newest `sessions/` note (see `CLAUDE.md` → Harness & session protocol).
+- **Session start:** read `STATUS.md`, then the newest `sessions/` note's **Resume here** header (the full note only if continuing that thread) — see `CLAUDE.md` → Harness & session protocol.
 - **Capture:** `/compound [decision|lesson|session]` writes to the right file.
 - **Gate:** `/phase-check` verifies the current phase and ticks `STATUS.md`; `/design-review` grades UI against [`../rubrics/`](../rubrics).
 - **Promote:** a lesson that recurs becomes a rule in `CLAUDE.md` (done by hand, no ceremony).

@@ -6,7 +6,56 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 ---
 
+## Index
+
+_Every decision, newest first — one row per heading, kept 1:1 (the `knowledge-guard` hook checks the count). When you append a decision, add its row here._
+
+- **D-033** (07-01) — Warn-only knowledge-guard hook + snapshot/index conventions
+- **D-032** (07-01) — Reorganize REMAINING_WORK into owner/timeframe docs (router)
+- **D-031** (07-01) — Remove the dormant drag path (DragSortCard / DropZone)
+- **D-030** (06-30) — Quiz-flow legibility pass (scenario-first, token-only sizes)
+- **D-029** Phase F (06-30) — the job constellation + job overview
+- **D-029** Phase E (06-30) — the ambient bubble map
+- **D-029** Phase C (06-29) — the dark results role-cards screen
+- **D-029** (06-26) — Step 8 = the dark visual re-architecture (plan + locked calls)
+- **D-028** (06-25) — Realignment Phase 5: collapse four categories to three roles
+- **D-027** (06-25) — Realignment Phase 4: strip to the narrative flow
+- **D-026** (06-25) — Realignment Phase 3: re-point harness gates at §17 invariants
+- **D-025** (06-25) — Realignment Phase 2: re-center the spec set (documented-cut convention)
+- **D-024** (06-25) — Kit-align explore_floor's design tokens to the RC UI Kit
+- **D-023** (06-22) — Narrative intro questions (education + salary) nudge the match
+- **D-022** (06-11) — Role select arms on the switcher; the CTA launches it
+- **D-021** (06-11) — Classic leaves the switcher; role-select takes its slot; narrative default
+- **D-020** (06-08) — Screeners drive an always-on education/pay fit line on results
+- **D-019** (06-08) — Exam screener questions (Q1/Q2) nudge the category match
+- **D-018** (06-08) — Narrative scenes are a per-choice 3-bucket sort; middle "Kinda me"
+- **D-017** (06-07) — Question-structure study: three flows, four categories, per-flow results
+- **D-016** (06-04) — A/B question-set instrument between Phase 1 and Phase 2
+- **D-015** (05-30) — Phase 1 sort is drag + tap only (no arrow-key/Enter mechanic)
+- **D-014** (05-30) — Phase 2 sort model: drag parts off the belt (superseded-in-practice)
+- **D-013** (05-29) — Tailwind v4 (CSS-first): tokens live in `@theme`
+- **D-012** (05-29) — Don't ship a project `.mcp.json`; configure MCP globally
+- **D-011** (05-29) — Defer the live RC.org capture (superseded-in-practice)
+- **D-010** (05-29) — Motion skills via the free MIT community package
+- **D-009** (05-29) — Declare project MCP servers in `.mcp.json` (superseded by D-012)
+- **D-008** (05-29) — Knowledge lives in-repo; mirror durable facts to built-in memory
+- **D-007** (05-29) — Build a bespoke harness; don't install the BilLogic plugin
+- **D-006** (05-29) — Allow demo affordances (superseded-in-practice)
+- **D-005** (05-29) — Remove project timeframes from the docs
+- **D-004** (05-29) — Landing scene gets a Phase 1 GSAP `DrawSVG` reveal
+- **D-003** (05-29) — Vitest is part of the stack and `pnpm test`
+- **D-002** (05-29) — Standardize the file-size re-check threshold at ~250 lines
+- **D-001** (05-29) — Innovator archetype max = 27; scoring normalizes per archetype
+
+---
+
 ## 2026-07-01
+
+### D-033 — Warn-only knowledge-guard hook + snapshot/index conventions for the knowledge layer
+- **Decision:** Slim the session-start context and keep it slim. `STATUS.md`'s header is now a tight **snapshot** (`Current focus` / `Next up` a few sentences each; per-session detail lives in the `sessions/` notes, linked from a new `### Earlier sessions` list, never inlined), `DECISIONS.md` carries a 1:1 `## Index` at the top, and a single **warn-only** `PostToolUse` hook (`.claude/hooks/knowledge-guard.sh`, matcher `Edit|Write|MultiEdit`) nudges — never blocks, never edits — when the STATUS header re-bloats (>9KB, or any run-on header bullet >1500 chars) or the DECISIONS index falls out of sync with its `### D-` headings. The session-start ritual is now header-first: read `STATUS.md`, then the newest note's **Resume here** header, the full note only if continuing that thread. Also dropped the inert `firecrawl` entry from `enabledMcpjsonServers` (its plugin is disabled globally).
+- **Why:** Every session paid a fixed first-turn token cost before real work started; `STATUS.md` had grown to ~27KB (~79% of it a run-on header) and `DECISIONS.md` (~75KB) had no index, so a lookup scanned the whole file. Relocating detail into the `sessions/` notes and a decisions index (nothing deleted) cut STATUS to ~11KB and made lookups cheap; the guard stops the hygiene from silently regressing. Mirrors the sibling `career_dashboard` job (its commit `cf105a1`), tuned to this repo's run-on-header shape rather than a stacked changelog.
+- **Alternatives:** A *blocking* hook (rejected — a guard must never break the flow); *deleting* old history (rejected — it's ARM-handoff + portfolio material, so relocate, don't delete); restructuring the heavy on-demand docs (`REALIGNMENT` / `VISUAL_REARCHITECTURE` / `DATA_MODEL`) in the same pass (rejected — nothing pulls them at session start, so on-demand is already fine).
+- **Affected:** `docs/knowledge/STATUS.md` (header rewritten; the live checklist section left byte-identical), `docs/knowledge/DECISIONS.md` (+`## Index`), `.claude/hooks/knowledge-guard.sh` (new), `.claude/settings.json` (hook wired; `firecrawl` dropped), `.claude/commands/compound.md` · `phase-check.md` · `revise-doc.md`, `CLAUDE.md`, `docs/knowledge/HARNESS.md`, `docs/knowledge/README.md`, root `README.md`.
 
 ### D-032 — Reorganize REMAINING_WORK into owner/timeframe docs (router + three homes)
 - **Decision:** Split the flat `REMAINING_WORK.md` catalog into three purpose-built docs and slim the original to a router. **`HANDOFF_GUIDE.md`** = what ARM/Fivestar must do after handoff (per-job/bridge content swap, AI-role-variant integration, three-role name confirmation, CTA destination) plus the cleanup we owe first (delete `devSeedResults()`). **`DEFERRED_DIRECTIONS.md`** = consciously deferred polish + open decisions to revisit after the v3 test (rung cue, results polish, the scene first-card motion nuance, responsive, a11y, `MAYBE_WEIGHT`/Q0 calls, the drag-removal end-state). **`DESIGN_SYSTEM_RUN.md`** = the `rc-design-system` package build sheet + `/capture-figma` queue for the dedicated design-system run. `REMAINING_WORK.md` becomes a one-screen router pointing at all three.

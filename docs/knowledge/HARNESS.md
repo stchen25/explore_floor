@@ -93,7 +93,7 @@ Configured **globally** (`claude mcp add`), not via a shipped project `.mcp.json
 
 In-repo, version-controlled, doubles as ARM handoff + portfolio material. See `docs/knowledge/README.md` for the index. The loop: **work → capture (`/compound`) → recurring lessons get promoted to rules in `CLAUDE.md`.**
 
-- **`STATUS.md`** — where we are; read first each session; ticked by `/phase-check`.
+- **`STATUS.md`** — where we are; read first each session (then the newest `sessions/` note's **Resume here** header); a glanceable snapshot, ticked by `/phase-check`. Session-by-session detail lives in the `sessions/` notes, not inline in its header.
 - **`DECISIONS.md`** — ADR-lite log (why we did things). The handoff backbone.
 - **`LESSONS.md`** — agentic-workflow + design-craft learnings.
 - **`CASESTUDY.md`** — the portfolio narrative spine.
@@ -103,15 +103,16 @@ In-repo, version-controlled, doubles as ARM handoff + portfolio material. See `d
 ## 8. Settings (`.claude/settings.json`)
 
 - `permissions.allow` — a permission allowlist for safe, frequent commands (`pnpm …`, read-only git, `npx playwright`, `npx skills add`) so you aren't prompted constantly; `deny` blocks `git push` and `rm -rf`.
-- `enabledMcpjsonServers` — whitelists the three MCP server names (`figma`/`playwright`/`firecrawl`); a forward-compat no-op unless a project `.mcp.json` exists (see §6 + `DECISIONS.md` D-012).
+- `enabledMcpjsonServers` — whitelists the MCP server names (`figma`/`playwright`); a forward-compat no-op unless a project `.mcp.json` exists (see §6 + `DECISIONS.md` D-012). (`firecrawl` was dropped — its plugin is disabled globally, so the entry was inert.)
 - `enabledPlugins` — project-enabled plugins (e.g. commit-commands).
+- `hooks` — one **warn-only** `PostToolUse` guard (`.claude/hooks/knowledge-guard.sh`, matcher `Edit|Write|MultiEdit`): it nudges (never blocks, never edits) when `STATUS.md`'s header re-bloats or `DECISIONS.md`'s `## Index` falls out of sync with its `### D-` headings, so the knowledge-layer token hygiene doesn't silently regress (D-033).
 
 ---
 
 ## How it fits together (typical workflows)
 
 **Every session**
-1. The model reads `CLAUDE.md` + `MEMORY.md` automatically, then (per the ritual) `STATUS.md` + the newest `sessions/` note.
+1. The model reads `CLAUDE.md` + `MEMORY.md` automatically, then (per the ritual) `STATUS.md` and the newest `sessions/` note's **Resume here** header.
 2. You work. Relevant skills (`data-author`, `scene-motion`, GSAP/Motion) fire on their own.
 3. For visual work, run `/design-review`. At a phase boundary, run `/phase-check`.
 4. End a meaningful chunk with `/compound session` (and `/compound decision` for any non-obvious call).

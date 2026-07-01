@@ -28,10 +28,22 @@
   },
   "enabledMcpjsonServers": [
     "figma",
-    "playwright",
-    "firecrawl"
+    "playwright"
   ],
   "enabledPlugins": {
     "commit-commands@claude-code-plugins": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/knowledge-guard.sh\""
+          }
+        ]
+      }
+    ]
   }
 }
