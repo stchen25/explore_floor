@@ -11,8 +11,8 @@ _Execution ledger for `ECOSYSTEM_PLAN.md` (the rationale doc; read it for the "w
 | 1 | Asset rescue + this run sheet + D-035 bookkeeping | ✅ done 2026-07-02 |
 | 2 | Stand up `rc-design-system` (`@rc/ui`) | ✅ done 2026-07-02 (pushed, tag `v1`) |
 | 3 | Excavate Kayla's branches into `robotics_career` | ✅ done 2026-07-02 (pushed; + six-role content) |
-| 4 | Harness port into the UX repo | ☐ next |
-| 5 | Tokenize Kayla's ~90 hex literals | ☐ |
+| 4 | Harness port into the UX repo | ✅ done 2026-07-02 (+ baseline design review) |
+| 5 | Tokenize Kayla's ~90 hex literals | ☐ next |
 | 6 | explore_floor pre-sync pass | ☐ |
 | 7 | Figma: dark variables + Interest Quiz file + capture | ☐ |
 | — | Stretch (only if calm): consumer conversion, atoms tier | ☐ |
@@ -146,9 +146,15 @@ Executed as specced, plus the now-unblocked content call. Repo at `Prototypes/ro
 
 **Exit gates:** app runs on `@rc/ui` with zero local token authorship; both flows (landing→explore, sign-up) click through clean; repo pushed.
 
-## Pass 4 — Harness port into the UX repo — ~1 session
+## Pass 4 — Harness port into the UX repo — ✅ (2026-07-02)
 
-Hand-port, best-of-both (`ECOSYSTEM_PLAN.md` §4; no template repo before handoff — extract that later as a post-handoff artifact):
+Executed as specced, plus a baseline `/design-review`. `robotics_career` main @ `5899ca0` (local; push awaits Caelan): commands/subagents/guard-hook/settings ported from the dashboard (thresholds unchanged; hook verified firing on both violation classes), README shape from this repo, regenerated per-project: `CLAUDE.md`, the `content-data` skill, `docs/ROADMAP.md`, seeded FIGMA_MAP (Kayla's key **pull-only** per the Pass-3 ruling; capture target = TBD row for Pass 7), knowledge layer with D-001–D-005 seeded from the standing rulings. All exit gates green (lint/typecheck, cold cross-reference sweep, hook fires). The **baseline review** graded the screens against the new rubric: 87 hex (75 map value-exactly to tokens — Pass 5 is largely mechanical; 7 unmapped need calls), the 3 `font-montserrat` sites confirmed, all routes console-clean, and **two design-intent questions routed to Caelan's refinement** (gold-as-primary-CTA vs teal-acts; red requirement feedback vs the no-red status system). Session note: [2026-07-02](./sessions/2026-07-02-ecosystem-pass-4-harness-port.md).
+
+**Rulings this pass (Caelan, 2026-07-02):**
+- A small `docs/ROADMAP.md` joins the fresh knowledge layer (phases mirror the repo-touching passes) so `/phase-check` keeps the sibling shape.
+- The rubric is authored **normatively against the target `@rc/ui`/kit-aligned system**, not around Kayla's current screens — its failures are the Pass-5 + refinement worklist. The separate taste/screen-quality rubric is **deferred** until the Figma/Claude Design refinement direction exists (trims this pass's "rubrics beyond design-system-compliance" line).
+
+**Original spec (for the record).** Hand-port, best-of-both (`ECOSYSTEM_PLAN.md` §4; no template repo before handoff — extract that later as a post-handoff artifact):
 - From **career_dashboard**: `capture-figma.md` / `pull-figma.md` (FIGMA_MAP-aware generation) and `phase-check.md` (has the spec-consistency step), the 7-01 token-slimdown conventions (STATUS snapshot, DECISIONS index, guard hook — dashboard's shape + thresholds).
 - From **explore_floor**: the root `README.md` onboarding/harness sections (the dashboard has no root README).
 - Regenerate per-project: skills (a data-discipline skill for the inline mock content; an interaction skill only if a footgun appears), rubrics beyond design-system-compliance, the seeded per-project FIGMA_MAP — register Kayla's "RC.org Prototype" file `k3AjijocJEmzrvlKTd9vJM` as **design source, pull-only**; the capture target is the new file from the Figma pass (Pass-3 ruling).
