@@ -165,9 +165,11 @@ Executed as specced, plus a baseline `/design-review`. `robotics_career` main @ 
 
 ## Pass 5 — Tokenize Kayla's hex literals — ~0.5 day
 
-In the UX repo (post-excavation): ~90 hard-coded hex literals, almost all 1:1 token values (20× `#E0E0E0` → `border`/`--color-border-*`, 17× `#595959` → ink-2, etc.). Mechanical replace against the `@rc/ui` vocabulary. Fix `font-montserrat` → `font-heading` (the class doesn't exist as a token; silently renders Roboto). Fix the stray `;;`. Do this **before any Figma capture from the repo** so captures bind to variables. This is the mini version of the dashboard's DEF-008 at 1/6 the size.
+**Run this pass from `robotics_career`** (its harness only fires in-repo; Pass-4 ruling). The full execution spec is **`robotics_career/docs/knowledge/PASS_5_TOKENIZATION.md`** — written at Pass-4 close-out from the baseline `/design-review`, with the graded census (87 hex: 75 mechanical 1:1, 7 unmapped, 5 exempt), the batch plan, and the Batch-F decision list for Caelan. Close-out ticks THIS ledger cross-repo (docs commit here), the mirror of how Passes 2–4 were closed from this side. Reference snapshots of this doc + the plan live at `robotics_career/docs/reference/ECOSYSTEM_{PLAN,RUN}.md` (read-only copies; this file stays canonical).
 
-**Exit gates:** zero raw hex in components (grep), lint/typecheck green, screens visually unchanged (Playwright eyeball).
+Original scope (for the record): ~90 hard-coded hex literals, almost all 1:1 token values (20× `#E0E0E0` → `border`/`--color-border-*`, 17× `#595959` → ink-2, etc.). Mechanical replace against the `@rc/ui` vocabulary. Fix `font-montserrat` → `font-heading` (the class doesn't exist as a token; silently renders Roboto). ~~Fix the stray `;;`~~ (landed in Pass 3). Do this **before any Figma capture from the repo** so captures bind to variables. This is the mini version of the dashboard's DEF-008 at 1/6 the size.
+
+**Exit gates:** zero project-owned raw hex in components (grep; 5 exempt brand SVG fills), lint/typecheck green, screens visually unchanged (Playwright eyeball), `/design-review` tokens+type sections flip to pass.
 
 ## Pass 6 — explore_floor pre-sync pass — ~0.5 session
 
