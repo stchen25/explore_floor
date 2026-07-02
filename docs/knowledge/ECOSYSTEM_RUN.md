@@ -9,7 +9,7 @@ _Execution ledger for `ECOSYSTEM_PLAN.md` (the rationale doc; read it for the "w
 | Pass | What | Status |
 |---|---|---|
 | 1 | Asset rescue + this run sheet + D-035 bookkeeping | ✅ done 2026-07-02 |
-| 2 | Stand up `rc-design-system` (`@rc/ui`) | ✅ done 2026-07-02 (unpushed — auth hold) |
+| 2 | Stand up `rc-design-system` (`@rc/ui`) | ✅ done 2026-07-02 (pushed, tag `v1`) |
 | 3 | Excavate Kayla's branches into `robotics_career` | ☐ next (prereq: Kayla) |
 | 4 | Harness port into the UX repo | ☐ |
 | 5 | Tokenize Kayla's ~90 hex literals | ☐ |
@@ -32,7 +32,7 @@ The 10 hot-linked `figma.com/api/mcp/asset/...` URLs on `career_dashboard` `orig
 
 ## Pass 2 — Stand up `rc-design-system` (`@rc/ui`) — ✅ (2026-07-02)
 
-Executed as specced; both gates PASS (133/133 base byte-identical, 27/27 dark with the two `-on` rewrites, 160/160 flatten parity; packed-tarball Mode-A smoke verified in-browser). Repo at `Prototypes/rc-design-system`, main @ `4dae373`, tag `v1`, typecheck green. **Open hold:** `gh` installed but unauthenticated — Caelan: `! gh auth login`, then `gh repo create caelar/rc-design-system --private --source=. --push && git push origin v1`. One divergence from the spec text: pnpm 11 needs `pnpm-workspace.yaml` `allowBuilds: esbuild` for tsup (committed). Session note: [2026-07-02](./sessions/2026-07-02-ecosystem-pass-2-rc-design-system.md).
+Executed as specced; both gates PASS (133/133 base byte-identical, 27/27 dark with the two `-on` rewrites, 160/160 flatten parity; packed-tarball Mode-A smoke verified in-browser). Repo at `Prototypes/rc-design-system`, main @ `4dae373`, tag `v1`, typecheck green; **pushed to `github.com/caelar/rc-design-system` (private) with the tag** — the git dep `"@rc/ui": "github:caelar/rc-design-system#v1"` is live for Pass 3. One divergence from the spec text: pnpm 11 needs `pnpm-workspace.yaml` `allowBuilds: esbuild` for tsup (committed). Session note: [2026-07-02](./sessions/2026-07-02-ecosystem-pass-2-rc-design-system.md).
 
 **Goal.** A new sibling repo at `Prototypes/rc-design-system`, the tokens-first backbone (`ECOSYSTEM_PLAN.md` §2): kit tokens + dark extension, fonts, base, one atom (`Icon`), FIGMA_MAP foundations. No more atoms, no consumer conversion, no design-sync — those are the stretch pass. Design was fully worked out in the Pass-1 session (multi-agent survey of both repos + a planning pass); execute as specced below.
 

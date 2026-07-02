@@ -1,6 +1,6 @@
 # 2026-07-02 — Ecosystem run Pass 2: `rc-design-system` (`@rc/ui`) stood up
 
-**Resume here.** Pass 2 is done: `Prototypes/rc-design-system` exists, is committed on `main` (root commit `4dae373`) and tagged `v1`, with both exit gates PASS. **One hold: the GitHub push.** `gh` CLI is installed (2.95.0) but unauthenticated — Caelan runs `! gh auth login`, then in `rc-design-system/`: `gh repo create caelar/rc-design-system --private --source=. --push && git push origin v1`. Local-and-committed satisfies the exit gate per the standing ruling. **Next: Pass 3** (excavate Kayla's branches into `robotics_career`), which still has the Kayla prerequisite (branch intent, the "RC.org Prototype" file key, Landing content calls). No code touched in this repo; gates unaffected.
+**Resume here.** Pass 2 is done: `Prototypes/rc-design-system` exists, is committed on `main` (root commit `4dae373`), tagged `v1`, and **pushed to `github.com/caelar/rc-design-system` (private)** with the tag — the git dep `"@rc/ui": "github:caelar/rc-design-system#v1"` is live. (Caelan authenticated `gh` in-session; no holds remain.) **Next: Pass 3** (excavate Kayla's branches into `robotics_career`), which still has the Kayla prerequisite (branch intent, the "RC.org Prototype" file key, Landing content calls). No code touched in this repo; gates unaffected.
 
 ## What we did
 
@@ -19,10 +19,10 @@ Executed the run sheet's Pass 2 spec verbatim (`ECOSYSTEM_RUN.md`; all source li
 
 ## State at end of session
 
-- `rc-design-system`: main @ `4dae373`, tag `v1`, clean tree, both gates PASS, unpushed (auth hold above).
+- `rc-design-system`: main @ `4dae373`, tag `v1`, clean tree, both gates PASS, pushed to `caelar/rc-design-system` (private) with the tag.
 - explore_floor: docs-only changes (this note, `ECOSYSTEM_RUN.md` ledger tick, `STATUS.md`); branch `narrative-v3-realign` untouched otherwise.
 - Ledger: Pass 2 ✅; Pass 3 next (Kayla prereq); Passes 4–7 + stretch queued.
 
 ## Next session
 
-Pass 3 per the run sheet — after Caelan's Kayla coordination. If auth landed meanwhile, confirm the remote exists before Pass 3 wires `"@rc/ui": "github:caelar/rc-design-system#v1"` (a `link:` fallback works for local dev until then).
+Pass 3 per the run sheet — after Caelan's Kayla coordination. The `"@rc/ui": "github:caelar/rc-design-system#v1"` dep is live on the remote and ready to wire.
