@@ -10,6 +10,7 @@ This is the highest-value handoff artifact: when ARM's dev team (or future-you) 
 
 _Every decision, newest first — one row per heading, kept 1:1 (the `knowledge-guard` hook checks the count). When you append a decision, add its row here._
 
+- **D-035** (07-02) — Ecosystem run GO: tokens-first package, multi-pass execution, asset rescue done
 - **D-034** (07-01) — Adopt ARM Fivestar's four ideas + a domain-mirror path to the AI roles (documented, build deferred)
 - **D-033** (07-01) — Warn-only knowledge-guard hook + snapshot/index conventions
 - **D-032** (07-01) — Reorganize REMAINING_WORK into owner/timeframe docs (router)
@@ -49,6 +50,14 @@ _Every decision, newest first — one row per heading, kept 1:1 (the `knowledge-
 - **D-001** (05-29) — Innovator archetype max = 27; scoring normalizes per archetype
 
 ---
+
+## 2026-07-02
+
+### D-035 — Ecosystem run GO: tokens-first package, multi-pass execution, asset rescue done
+- **Decision:** The `ECOSYSTEM_PLAN.md` strawman (2026-07-01) is **ratified**: go on the `rc-design-system` package, scoped **tokens-first** (kit `@theme` + the D-029 dark extension + fonts + base + `Icon` as the sole atom; the full atom tier later; step-5 consumer conversion is stretch-only), then excavate Kayla's two branches into `robotics_career` on `@rc/ui`, hand-port the harness (no template repo before handoff), and run the Figma work (dark variables into the DS library as additive named variables, a new Interest Quiz file, no token-sprawl campaign in this repo). Execution is split into **single-session passes** tracked in the new **`ECOSYSTEM_RUN.md`** ledger (Caelan's call: small sessions over one big pass, with a run sheet so each session starts cold). Pass 1 executed today: the 10 expiring Figma asset URLs on `career_dashboard` `origin/homepage-and-explore` were rescued into `robotics_career/public/figma-assets/` (3 PNG + 7 SVG + `MANIFEST.md`) ahead of their ~07-07 expiry. Two standing rulings recorded: the 07-01 Finder deletions were **intentional with nothing to recover**, and **the ARM UI-kit handoff is the Figma files alone** — the Angular `rc-ui-kit` only existed to seed the Figma style guide, which revises `archive/REALIGNMENT.md` §10's Fivestar-guardrail artifact list (was Figma file + Angular kit + prototype).
+- **Why:** The package's trigger changed: a third repo is about to exist (Kayla's branches cover the three "unborn prototypes" name for name), so without the package the new repo becomes a fifth token source — the exact sprawl §10 warned about; born-on-system was always §10's largest payoff. The asset rescue couldn't wait for the rest (hard ~07-07 expiry; URLs verified live before download). The multi-pass structure keeps each session's context lean and makes the expensive Pass-1 research (the both-repo token survey, the 27-token dark append set with its two `var()` rewrites, the tsup/committed-dist package design) durable in the ledger instead of re-derived.
+- **Alternatives:** One big session doing rescue + package + bookkeeping — rejected by Caelan (context economy; restructured to passes). Excavate first, retrofit tokens after — rejected: retrofitting a repo that already copied tokens is the churn the one-day package avoids. Merge Kayla's branches into career_dashboard main — rejected: couples the marketing site to the dashboard and ripples `competencies.ts` renames into its widgets and tests. Rescue the assets onto Kayla's branch — rejected for `robotics_career/public/` (her branch stays untouched; the files land where the excavation needs them).
+- **Affected:** new `docs/knowledge/ECOSYSTEM_RUN.md` (the pass ledger + the full Pass-2 package spec); `ECOSYSTEM_PLAN.md` (header: ratified, flag §7.1 resolved); `DESIGN_SYSTEM_RUN.md` (go/no-go answered GO); `REMAINING_WORK.md` (router row); `STATUS.md`; outside this repo: `Prototypes/robotics_career/public/figma-assets/` (10 files + manifest; not yet a git repo). No code changes; gates unaffected (docs-only in-repo). Parent `Capstone/CLAUDE.md`'s stale RC_Proto folder-map line is flagged for a Cowork session, not edited here.
 
 ## 2026-07-01
 

@@ -2,17 +2,18 @@
 
 **Read this first.** Live snapshot of where the build is. Updated as acceptance criteria clear (by `/phase-check` or by hand). Keep this a snapshot: session-by-session detail lives in the `sessions/` notes, linked below, not inline here.
 
-- **Last updated:** 2026-07-01
+- **Last updated:** 2026-07-02
 - **Current focus:** The single live flow is the **narrative career-discovery quiz** (post Phase-4 strip + Phase-5 three-role pivot; `DATA_MODEL.md` §17, `DECISIONS.md` D-027/D-028): a branching 6-question intro, 7 day-in-the-life bucket-sort scenes, and the dark 5-screen **role-cards results** scoring ARM's three roles (Technician / Specialist / Integrator), plus the standalone `/select` comparator. Step 8 (the dark visual re-architecture, D-029) is **complete and committed** on branch `narrative-v3-realign`; two follow-up polish passes and the quiz-flow legibility pass (D-030) landed on top, and the dead drag path was removed (D-031). Gates green: lint, typecheck, **82 unit (9 files)**, **3 E2E** (`narrative` / `role-select` / `reduced-motion`); both design rubrics PASS.
 - **Phase 1 status:** complete — all gates green; design-review passed all four classic screens with no p1/p2 findings. Built in 3 slices: Sort, Results (the conversion screen), Landing reveal + Build beat.
 - **Open items:** the step-8 content gaps (match-% line, Technician-as-rung framing, `categoryBreakdown` wiring, a programs set) all landed in Phase C. Remaining open work is catalogued in the `REMAINING_WORK.md` router (D-032): `HANDOFF_GUIDE.md` (ARM/Fivestar post-handoff content + our pre-handoff cleanup), `DESIGN_SYSTEM_RUN.md` (the `rc-design-system` build), and `DEFERRED_DIRECTIONS.md` (v4 polish + open scoring calls).
-- **Next up:** the near-term **design-system run** (`DESIGN_SYSTEM_RUN.md`) and prep for the **late-July client handoff** (`HANDOFF_GUIDE.md`). No in-flight build thread — branch `narrative-v3-realign` is committed and green.
+- **Next up:** the **ecosystem run** (`ECOSYSTEM_RUN.md`, ratified 2026-07-02, D-035) — executed as single-session passes. Pass 1 (asset rescue + run sheet) is done; **Pass 2 is standing up the `rc-design-system` package** (full spec in the run sheet). Then excavation of Kayla's branches into `robotics_career` (Pass 3, after Kayla coordination), harness port, and the Figma work — all feeding the **late-July client handoff** (`HANDOFF_GUIDE.md`). No in-flight build thread in this repo — branch `narrative-v3-realign` is committed and green.
 - **Future direction (documented, not built):** ARM's Fivestar deck (Release 4.3) was analyzed vs. our quiz: comparison + four adopted ideas in `ARM_FIVESTAR_COMPARISON.md`, and a **domain-mirror path to the three AI roles** (keep the 3-tier engine, add a physical/digital domain axis, derive 6 roles at results) in `AI_ROLES_INTEGRATION.md` (`DECISIONS.md` D-034). Build deferred; hard rules unchanged until green-lit.
 
 ### Earlier sessions
 
 Newest first; full detail lives in each note.
 
+- 2026-07-02 · D-035 · ecosystem run Pass 1: asset rescue + run sheet + GO bookkeeping → [note](./sessions/2026-07-02-ecosystem-pass-1-rescue-and-run-sheet.md)
 - 2026-07-01 · D-031/D-032 · docs hygiene + code follow-ups + REMAINING_WORK reorg → [note](./sessions/2026-07-01-hygiene-and-doc-reorg.md)
 - 2026-06-30 · virtual-test prep: narrative-only Landing + bold role-overview education → [note](./sessions/2026-06-30-virtual-test-prep-landing-education.md)
 - 2026-06-30 · Technician-top + all-low design review (both framing criteria PASS) → [note](./sessions/2026-06-30-technician-top-design-review.md)

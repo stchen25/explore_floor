@@ -2,7 +2,9 @@
 
 _Snapshot 2026-07-01. Branch `narrative-v3-realign`._
 
-The **`rc-design-system` shared package** and the **`/capture-figma`** of the final dark screens were both **deferred out of the 2026-07-01 hygiene pass** and belong to a dedicated **design-system run** (planned for later today). This doc is that run's reference: everything queued for it, in one place, so the run doesn't have to re-discover scope.
+The **`rc-design-system` shared package** and the **`/capture-figma`** of the final dark screens were both **deferred out of the 2026-07-01 hygiene pass** and belong to a dedicated **design-system run**. This doc is that run's reference: everything queued for it, in one place, so the run doesn't have to re-discover scope.
+
+> **GO — 2026-07-02 (D-035).** The run is committed and folded into the wider **ecosystem run**: `ECOSYSTEM_RUN.md` is the execution ledger (the package is its Pass 2, with the full build spec; the Figma capture is Pass 7), and `ECOSYSTEM_PLAN.md` holds the rationale. Scope call: **tokens-first** — the backbone (kit `@theme` + dark extension + fonts + base + `Icon`) ships first; the full atom tier comes later; step 5 (consumer conversion) is stretch-only. This doc stays as the §10 pointer + queue detail.
 
 The authoritative build sheet is **`archive/REALIGNMENT.md` §10** (with §6 Rec B, §7 Rec C, and D-024/D-029 for the "kit-align in-repo now, defer the package" call). This is a pointer + checklist, not a re-spec.
 
@@ -36,6 +38,6 @@ Capture the final dark results + quiz screens into the Fivestar Figma handoff (t
 
 ---
 
-## Go / no-go (worth one explicit call before handoff)
+## Go / no-go — answered: GO (2026-07-02, D-035)
 
-The risk `archive/REALIGNMENT.md` §10's timing section flagged is real: because the project ends at the late-July handoff, "defer until after ships" may mean the package **never happens**, which is the exact outcome that section warned against. Worth one explicit go/no-go before the July 21 handoff: either commit the design-system run now, or consciously accept that the two repos keep their local token authorship through handoff and the package becomes ARM/Fivestar's problem.
+The call is made: the package goes, scoped tokens-first, because the trigger changed — Kayla's two pushed branches mean a third repo is about to exist, and without the package it becomes a fifth token source. The §10 warning ("the package never happens") is answered: the package exists and the new UX repo is born on it. The consciously accepted residual: the two existing repos may keep their local token authorship through handoff (step 5 is stretch-only; zero client-visible payoff, real regression risk). Sequencing and the build spec: `ECOSYSTEM_RUN.md` Pass 2.
