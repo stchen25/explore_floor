@@ -72,7 +72,7 @@ export function ResultsExperience() {
   };
 
   const pill =
-    'inline-flex h-9 items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill';
+    'inline-flex h-control-lg items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill';
 
   const controlBar = (
     <>
@@ -97,7 +97,7 @@ export function ResultsExperience() {
           type="button"
           onClick={() => nav.setView('map')}
           data-testid="open-map"
-          className="inline-flex h-9 items-center gap-space-1 rounded-full bg-arm-gold px-space-4 font-body text-body font-medium text-near-black transition-colors hover:bg-arm-gold-soft"
+          className="inline-flex h-control-lg items-center gap-space-1 rounded-full bg-arm-gold px-space-4 font-body text-body font-medium text-near-black transition-colors hover:bg-arm-gold-soft"
         >
           {cards.exploreCta}
           <Icon name="arrow-r" size={18} />

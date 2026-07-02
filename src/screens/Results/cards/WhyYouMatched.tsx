@@ -128,7 +128,7 @@ export function WhyYouMatched({
               type="button"
               onClick={onToggle}
               data-testid="why-toggle"
-              className="flex items-center gap-space-0 self-start font-heading text-small font-medium text-text-on-dark-faint transition-opacity hover:opacity-70"
+              className="flex items-center gap-space-0 self-start font-heading text-small font-bold text-text-on-dark-faint transition-opacity hover:opacity-70"
             >
               {copy.hideBreakdown}
               <Icon name="chevron-u" size={18} />
@@ -156,7 +156,7 @@ export function WhyYouMatched({
                 type="button"
                 onClick={onToggle}
                 data-testid="why-toggle"
-                className="flex items-center gap-space-0 font-heading text-small font-medium text-text-on-dark transition-opacity hover:opacity-70"
+                className="flex items-center gap-space-0 font-heading text-small font-bold text-text-on-dark transition-opacity hover:opacity-70"
               >
                 {copy.seeBreakdown}
                 <Icon name="chevron-d" size={18} />

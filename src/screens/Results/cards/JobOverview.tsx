@@ -37,7 +37,7 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
       {/* Inert chrome (no real "set target" action in scope). */}
       <span
         data-testid="set-target"
-        className="inline-flex h-9 items-center gap-space-1 rounded-full bg-arm-gold px-space-4 font-heading text-body font-medium text-near-black"
+        className="inline-flex h-control-lg items-center gap-space-1 rounded-full bg-arm-gold px-space-4 font-heading text-body font-bold text-near-black"
       >
         <Icon name="star" size={18} />
         {explore.setTargetCta}
@@ -48,7 +48,7 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
         type="button"
         onClick={onBack}
         data-testid="job-overview-back"
-        className="inline-flex h-9 items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill"
+        className="inline-flex h-control-lg items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill"
       >
         {fill(explore.overviewBack, { role: detail.roleName })}
         <Icon name="arrow-r" size={18} />
@@ -84,10 +84,10 @@ export function JobOverview({ copy, detail, job, onBack }: JobOverviewProps) {
                 aria-selected={active}
                 onClick={() => setTab(i)}
                 data-testid={`job-overview-tab-${i}`}
-                className={`-mb-px border-b-2 pb-space-3 font-heading text-body transition-colors ${
+                className={`-mb-px border-b-2 pb-space-3 font-heading text-body font-bold transition-colors ${
                   active
-                    ? 'border-text-on-dark font-bold text-text-on-dark'
-                    : 'border-transparent font-medium text-text-on-dark-faint hover:text-text-on-dark-muted'
+                    ? 'border-text-on-dark text-text-on-dark'
+                    : 'border-transparent text-text-on-dark-faint hover:text-text-on-dark-muted'
                 }`}
               >
                 {label}

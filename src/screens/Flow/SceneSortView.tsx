@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Button, Icon } from '@/components';
 import { SORT_BUCKETS } from '@/data/flows/buckets';
 import type { SceneStep } from '@/data/types';
-import { durations, easings } from '@/lib';
+import { durations, easings, typeScale } from '@/lib';
 import { useSessionStore } from '@/state';
 
 import { BucketSort } from './BucketSort';
@@ -74,14 +74,13 @@ export function SceneSortView({ step, sceneNumber, sceneTotal, reduce }: SceneSo
         {/* Inverted hierarchy (research: the scenario above a bold question kept getting skipped).
             The SCENARIO now leads at a heading size + weight; the QUESTION drops below it, smaller and
             lighter, so the eye reads the setup first. Both morph smaller as the card compresses into
-            the rating beat. px strings, not bare numbers — Motion only auto-appends px to a known set
-            of values (x, width, padding…); fontSize isn't one. `initial={false}` pins the mount value
-            so a Back re-entry snaps to the right phase. Sizes are design-system tokens only
-            (DESIGN_SYSTEM §4): scenario h4(24)→body(16), question h5(20)→body(16). */}
+            the rating beat, between type-scale steps via the lib typeScale mirror (Motion needs px
+            strings; see typeScale.ts): scenario h4→body, question h5→body. `initial={false}` pins
+            the mount value so a Back re-entry snaps to the right phase. */}
         <motion.p
-          className="font-heading font-semibold text-text-on-dark"
+          className="font-heading font-bold text-text-on-dark"
           initial={false}
-          animate={{ fontSize: rating ? '16px' : '24px', lineHeight: rating ? '22px' : '32px' }}
+          animate={rating ? { ...typeScale.body } : { ...typeScale.h4 }}
           transition={morph}
         >
           {step.prompt}
@@ -89,7 +88,7 @@ export function SceneSortView({ step, sceneNumber, sceneTotal, reduce }: SceneSo
         <motion.h2
           className="font-body font-normal text-text-on-dark"
           initial={false}
-          animate={{ fontSize: rating ? '16px' : '20px', lineHeight: rating ? '22px' : '28px' }}
+          animate={rating ? { ...typeScale.body } : { ...typeScale.h5 }}
           transition={morph}
         >
           {step.question}

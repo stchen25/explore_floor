@@ -74,7 +74,7 @@ export function CompareView({
         type="button"
         data-testid="compare-back"
         onClick={() => nav.setView('cards')}
-        className="inline-flex h-9 items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill"
+        className="inline-flex h-control-lg items-center gap-space-1 rounded-full border border-glass-border px-space-3 font-body text-body text-text-on-dark transition-colors hover:bg-glass-fill"
       >
         <Icon name="arrow-l" size={19} />
         {fill(copy.backToRole, { role: leftDetail.roleName })}
@@ -96,7 +96,7 @@ export function CompareView({
         className="rounded-lg border border-glass-border-soft bg-glass-fill p-space-4"
         data-testid="compare-recommendation"
       >
-        <p className="flex items-center gap-space-1 font-heading text-small font-medium text-text-on-dark-faint">
+        <p className="flex items-center gap-space-1 font-heading text-small font-bold text-text-on-dark-faint">
           <Icon name="route" size={16} />
           {copy.recommendationLabel}
         </p>

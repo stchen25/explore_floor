@@ -107,7 +107,7 @@ export function JobSidePanel(props: JobSidePanelProps) {
             type="button"
             onClick={props.onRoleOverview}
             data-testid="role-overview-cta"
-            className="flex w-full items-center justify-center gap-space-2 rounded-md bg-arm-teal py-space-3 font-heading text-body font-medium text-white transition-colors hover:bg-arm-teal-soft"
+            className="flex w-full items-center justify-center gap-space-2 rounded-md bg-arm-teal py-space-3 font-heading text-body font-bold text-white transition-colors hover:bg-arm-teal-soft"
           >
             {explore.roleOverviewCta}
             <Icon name="arrow-r" size={18} />
@@ -117,7 +117,7 @@ export function JobSidePanel(props: JobSidePanelProps) {
             type="button"
             onClick={props.onOpenJobOverview}
             data-testid="job-overview-cta"
-            className="flex w-full items-center justify-center gap-space-2 rounded-md bg-arm-teal py-space-3 font-heading text-body font-medium text-white transition-colors hover:bg-arm-teal-soft"
+            className="flex w-full items-center justify-center gap-space-2 rounded-md bg-arm-teal py-space-3 font-heading text-body font-bold text-white transition-colors hover:bg-arm-teal-soft"
           >
             {explore.jobOverviewCta}
             <Icon name="arrow-r" size={18} />

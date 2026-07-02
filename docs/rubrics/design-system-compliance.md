@@ -60,7 +60,7 @@ sections:
     criteria:
       - id: space-scale
         severity: p2
-        check: Gaps and padding use the space-0..7 scale
+        check: Gaps and padding use the space-0..7 scale; interactive-element heights use the control-{sm/md/lg/xl/tap} ladder (D-036 ratifies the remaining raw non-control sizing — logo, avatar, meter/dot/tile geometry)
       - id: containers
         severity: p3
         check: Layout width uses a container token (lg default, xl for the sort scene)
@@ -133,7 +133,7 @@ The kit brand colors are exact and non-negotiable. The three roles are color-cod
 Montserrat for headings, Roboto for body, always. Sizes come from the scale (H1 56/64 … body 16/22, small 14/22). On the dark results cards the role name (H2) and the match % are **neutral on-dark** and the role accent lives in the active signal bar (D-029, faithful to the mockup), not an accent-colored number. **Fail:** a display font swapped in ad hoc, or a hand-set `font-size: 19px`.
 
 ## 4. Spacing & layout
-Use the `space-0..7` scale (4 → 64px) and container tokens (`container-lg` 1248 default; `container-xl` 1500 for the sort scene). **Fail:** `gap: 18px`.
+Use the `space-0..7` scale (4 → 64px) and container tokens (`container-lg` 1248 default; `container-xl` 1500 for the sort scene). Interactive-element heights use the control ladder (`control-sm/md/lg/xl/tap` = 24/32/36/40/44, D-036 — the dashboard's ladder plus the two minted steps); the remaining numeric steps (nav logo, profile avatar, meter/dot/tile geometry) are ratified raw non-control sizing, not violations. **Fail:** `gap: 18px`, or a new button/input height hand-set off the ladder.
 
 ## 5. Radius & elevation
 Only `rounded-sm` (6), `rounded-md` (8), `rounded-lg` (16 — dark quiz/result cards, D-029 Phase B), `rounded-full`. Two shadow styles (`shadow-card`, `shadow-elev-2`), used sparingly — the playful layer leans on warm fills and soft outlines, not shadow stacks.

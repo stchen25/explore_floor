@@ -71,7 +71,7 @@ export function CompareTargetMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex h-9 items-center gap-space-2 rounded-md border border-glass-border bg-glass-fill-strong px-space-3 transition-colors hover:bg-glass-fill"
+        className="inline-flex h-control-lg items-center gap-space-2 rounded-md border border-glass-border bg-glass-fill-strong px-space-3 transition-colors hover:bg-glass-fill"
       >
         <span className="font-body text-small text-text-on-dark-faint">{label}</span>
         <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${ROLE_ACCENT[targetCategory].bg}`} />
@@ -98,7 +98,7 @@ export function CompareTargetMenu({
                   onSelect(opt.index);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center gap-space-2 rounded-sm px-space-2 py-space-1 text-left font-heading text-body font-medium transition-colors ${
+                className={`flex w-full items-center gap-space-2 rounded-sm px-space-2 py-space-1 text-left font-heading text-body font-bold transition-colors ${
                   opt.current
                     ? 'bg-glass-fill-strong text-text-on-dark'
                     : 'text-text-on-dark hover:bg-glass-fill'

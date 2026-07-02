@@ -29,6 +29,8 @@ All underlying rubrics already PASS, so none is a gate:
 
 ## Motion refinements (remaining nuance)
 
+- **Mid-session reduced-motion flips don't stop the ambient loops (p3, Pass-6 review).** On-load `prefers-reduced-motion` is respected everywhere (the E2E spec covers it), but flipping the OS preference *during* a running results session leaves the bubble/constellation floats cycling. Likely fix: include the looped value in the reduced `animate` branches (`y: 0`) in `BubbleField.tsx` / `ConstellationNode.tsx` / `AmbientField.tsx` and confirm `useReducedMotion()` reactivity in `ResultsExperience.tsx`. Low: an on-load preference is the realistic case.
+
 - **First BucketSort card slides in after the scene reveal settles.** The intro-question rows already stagger in after the card (shipped 2026-07-01), but the **scene** case is different: when Continue is pressed, the choices region reveals and the first `BucketSort` prompt card slides in *simultaneously*. The nuance is to let that first card arrive a beat after the reveal (height) settles. Left deferred because it's non-trivial to do without disturbing the intro→rating morph choreography and the per-choice card swaps (the card entrance is shared across all choices; distinguishing the first reveal from a choice swap is the hard part). Revisit if the simultaneity reads off in testing.
 
 ## Responsive + accessibility follow-ups
@@ -39,6 +41,7 @@ The a11y items sit inside the repo's stated "keyboard sanity only" scope, so all
 
 - **Full dropdown keyboard roving / focus-trap.** `CompareTargetMenu.tsx` has ARIA + Escape + outside-click but no arrow-key roving or focus-trap.
 - **Signal-bar graphical contrast (p3, disposition unconfirmed).** A p3 finding on accent-fill vs recessed-track contrast on dark. `SignalBars.tsx` still describes the original fill; worth one check.
+- **`TrajectoryViz` node-ring literals (p3, Pass-6 review).** `TrajectoryViz.tsx` hand-sets its ring borders as `rgba(255,255,255,0.7)` / `0.25` — the same case `--color-constellation-line` already solved (token color, per-state opacity in the component). One-token cleanup when next in the file.
 - _(Closed 2026-07-01: the quiz reading-column container token — `FlowRunner` now uses `max-w-read` (`--container-read` 672px) instead of an ad-hoc `max-w-2xl`.)_
 
 ## Open scoring decisions and watch-items

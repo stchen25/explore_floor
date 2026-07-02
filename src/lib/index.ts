@@ -16,3 +16,4 @@ export type { Point } from './nodeLayout';
 export { CATEGORY_ANGLES, fanPoints, polarPoint, radarPoints } from './nodeLayout';
 export type { FitLine, ScreenerProfile } from './screenerFit';
 export { deriveScreenerProfile, screenerFitLines } from './screenerFit';
+export { typeScale } from './typeScale';

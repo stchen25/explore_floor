@@ -28,10 +28,10 @@ export function RoleTabs({ copy, detail, activeTab, onTab }: RoleTabsProps) {
               aria-selected={active}
               onClick={() => onTab(i)}
               data-testid={`role-tab-${i}`}
-              className={`-mb-px border-b-2 pb-space-3 font-heading text-body transition-colors ${
+              className={`-mb-px border-b-2 pb-space-3 font-heading text-body font-bold transition-colors ${
                 active
-                  ? 'border-text-on-dark font-bold text-text-on-dark'
-                  : 'border-transparent font-medium text-text-on-dark-faint hover:text-text-on-dark-muted'
+                  ? 'border-text-on-dark text-text-on-dark'
+                  : 'border-transparent text-text-on-dark-faint hover:text-text-on-dark-muted'
               }`}
             >
               {label}

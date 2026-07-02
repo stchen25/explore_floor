@@ -12,9 +12,9 @@ _Execution ledger for `ECOSYSTEM_PLAN.md` (the rationale doc; read it for the "w
 | 2 | Stand up `rc-design-system` (`@rc/ui`) | ✅ done 2026-07-02 (pushed, tag `v1`) |
 | 3 | Excavate Kayla's branches into `robotics_career` | ✅ done 2026-07-02 (pushed; + six-role content) |
 | 4 | Harness port into the UX repo | ✅ done 2026-07-02 (+ baseline design review) |
-| 5 | Tokenize Kayla's ~90 hex literals | ☐ next |
-| 6 | explore_floor pre-sync pass | ☐ |
-| 7 | Figma: dark variables + Interest Quiz file + capture | ☐ |
+| 5 | Tokenize Kayla's ~90 hex literals | ✅ done 2026-07-02 (from `robotics_career`) |
+| 6 | explore_floor pre-sync pass | ✅ done 2026-07-02 (+ full weight-honesty sweep) |
+| 7 | Figma: dark variables + Interest Quiz file + capture | ☐ next |
 | — | Stretch (only if calm): consumer conversion, atoms tier | ☐ |
 
 **Standing rulings** (Caelan, 2026-07-02):
@@ -175,9 +175,11 @@ Original scope (for the record): ~90 hard-coded hex literals, almost all 1:1 tok
 
 **Exit gates:** zero project-owned raw hex in components (grep; 5 exempt brand SVG fills), lint/typecheck green, screens visually unchanged (Playwright eyeball), `/design-review` tokens+type sections flip to pass.
 
-## Pass 6 — explore_floor pre-sync pass — ~0.5 session
+## Pass 6 — explore_floor pre-sync pass — ✅ (2026-07-02)
 
-No sprawl campaign needed (audit verdict: 5 arbitrary Tailwind values repo-wide, zero inline hex). Just:
+Executed as specced, with one ruling and one scope-add. **Ruling (Caelan):** the sizing preference call went the other way from the sheet's default — snap to the dashboard's existing token ladder where close, mint on the same ladder where not. So `control-sm/md/lg` (24/32/36) came over verbatim from `@rc/ui`, `control-xl` (40) + `control-tap` (44) were minted (v1.1 candidates), and nine control sites were swept (`h-9`→`h-control-lg` ×6, search bar→`h-control-xl`, hero arrows→`size-control-tap`); the rest ratified raw (D-036). The faux-600 sites went `font-bold`, the `SceneSortView` animated sizes now read the new `lib/typeScale.ts` @theme mirror, and docs reconciled per D-037 (`DESIGN_SYSTEM.md` §1/§2/§5/§7 code-outward + dark mapping + kit shadows; steward swept ARCHITECTURE / ROADMAP / HANDOFF_GUIDE / DESIGN_SYSTEM_RUN; rubric space-scale check updated). **Scope-add:** the `/design-review` re-run (both rubrics PASS) exposed the same weight-honesty bug class as faux-*500* at nine more Montserrat sites (seven `font-medium` + the two tab rows' never-rendering bold/medium contrast) — swept in-session, render-identical. Two pre-existing p3s catalogued in `DEFERRED_DIRECTIONS.md` (mid-session reduced-motion flips; `TrajectoryViz` ring literals). Flagged for Caelan, not edited (harness self-modification): the stale "Figma wins for token values" line in `.claude/commands/revise-doc.md` + `.claude/agents/doc-steward.md`. All gates green (lint / typecheck / 82 unit / 3 E2E); controls measured 36/40/44, pixel-identical. Session note: [2026-07-02](./sessions/2026-07-02-ecosystem-pass-6-presync.md).
+
+**Original spec (for the record).** No sprawl campaign needed (audit verdict: 5 arbitrary Tailwind values repo-wide, zero inline hex). Just:
 - Fix the two faux-600 `font-semibold` sites (no 600 face loaded — the dashboard's L-011 bug class) and the `SceneSortView` animated `fontSize` literals.
 - Reconcile two doc drifts via `/revise-doc`: `DESIGN_SYSTEM.md` §7 still documents the old Material triple-stack shadows (code moved to kit soft tiers); §2's Figma mapping omits the entire dark system (~30 tokens). Also retire §1's "Figma wins for tokens" claim re the dead RC-CC file (the declared code-outward flow supersedes it).
 - Preference call (Caelan): ratify the ~18 Tailwind-default sizing steps (`h-9`, `h-10` control heights) as raw, or mint control-height tokens (dashboard precedent exists). Default: ratify as raw.

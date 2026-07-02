@@ -361,6 +361,8 @@ Second user testing round:
 - Capture the final built screens back to the Figma file via code-to-canvas so the file reflects what shipped.
 - Update the Figma file's frame thumbnails so screenshots reflect the finished work.
 
+_(Destination updated: the original RC-CC file is dead. Final captures land in a new "Interest Quiz" Figma file subscribing to the Design System library, and the token flow is code-outward; see `DESIGN_SYSTEM.md` §2, queued as ecosystem Pass 7 in `docs/knowledge/ECOSYSTEM_RUN.md`.)_
+
 #### 4.7 ARM-facing demo polish
 
 - A landing demo mode: a query param like `?demo=true` that pre-fills a representative sorting outcome and jumps straight to results. So ARM can see results without sorting through 24 items on a phone in a conference room.

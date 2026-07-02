@@ -103,12 +103,13 @@ export function BucketSort({
               exit="exit"
               className="rounded-lg border border-glass-border bg-glass-fill p-space-4"
             >
-              {/* Body token (16px / Montserrat 600): small enough that every scene choice label fits on
+              {/* Body token (16px / Montserrat 700 — the only loaded heading face; a 600 request
+                  resolved to it anyway): small enough that every scene choice label fits on
                   ONE line (longest measured ~442px in a ~558px card), so the cards are a uniform, compact
                   single-line height — the rating rows below don't jump between choices, and the card no
                   longer dwarfs the scene recap above it. (At the old 20px some labels wrapped to two
                   lines, which was what drove the jump and the oversized look.) */}
-              <p className="font-heading text-body font-semibold text-text-on-dark">{current.label}</p>
+              <p className="font-heading text-body font-bold text-text-on-dark">{current.label}</p>
             </motion.div>
           )}
         </AnimatePresence>

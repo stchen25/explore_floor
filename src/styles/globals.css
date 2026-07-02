@@ -101,6 +101,16 @@
   --spacing-section-py: 48px; /* vertical section padding */
   --spacing-nav: 60px; /* app top-nav height (real RC TopNav); the results sheet sizes off it */
 
+  /* ---- Control heights (D-036) — the dashboard's ladder verbatim (career_dashboard globals /
+     @rc/ui: sm/md/lg), plus two steps minted here on the same ladder (xl, tap — @rc/ui v1.1
+     candidates). Intentional interactive-element heights; values may coincide with space steps
+     but carry a control-height meaning. sm/md are reserved (zero uses here yet). ---- */
+  --spacing-control-sm: 24px;
+  --spacing-control-md: 32px;
+  --spacing-control-lg: 36px; /* results pill buttons */
+  --spacing-control-xl: 40px; /* the nav search field */
+  --spacing-control-tap: 44px; /* minimum comfortable tap target (results nav arrows) */
+
   /* ---- Container widths (§5). Override v4's sm/md/lg/xl scale with RC-CC values;
      usage: max-w-lg = 1248 (typical), max-w-xl = 1500 (sort/scene). ---- */
   --container-sm: 564px;

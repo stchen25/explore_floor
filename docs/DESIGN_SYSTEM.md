@@ -11,12 +11,12 @@ The system is **kit-aligned** (`DECISIONS.md` D-024), snapped to the RC UI Kit s
 Three principles:
 
 - **Evolution, not rebrand.** A user who has seen RC.org should recognize this as part of the same product. The kit's ARM Gold leads, Secondary Teal is the interactive voice, and the charcoal ink ramp carries text. (Full kit values: `REALIGNMENT.md` Appendix B and `career_dashboard`'s `DESIGN_SYSTEM.md` §3.5.)
-- **One system, kit-aligned.** This repo subscribes to the same kit-aligned tokens as the dashboard. The earlier "two layers" model (a Material foundation plus a Goose-game playful scene) is a **documented cut**: the scene was never built, so there is one layer, the kit. The shared `rc-design-system` package that would formalize the subscription is deferred (`REALIGNMENT.md` §10).
+- **One system, kit-aligned.** This repo subscribes to the same kit-aligned tokens as the dashboard. The earlier "two layers" model (a Material foundation plus a Goose-game playful scene) is a **documented cut**: the scene was never built, so there is one layer, the kit. The shared `rc-design-system` package (`@rc/ui`) that formalizes the subscription is **live** (`caelar/rc-design-system`, tag `v1` — ecosystem Pass 2, D-035); this repo still authors its tokens locally, and converting it to consume the package is a stretch item (`ECOSYSTEM_RUN.md`).
 - **The Make.md neons are dead.** Anywhere in earlier brainstorm material that referenced neon teal `#06ffa5`, electric blue `#00d9ff`, or magenta `#ff006e`: ignored. Those colors do not appear anywhere in this build.
 
 ## 2. Token alignment with Figma
 
-The Figma file (RC-CC) is the source for tokens. The `@theme` block in `src/styles/globals.css` mirrors those tokens 1:1 (Tailwind v4 is CSS-first — tokens live in `@theme`, not a `tailwind.config.ts`). The token names below are unchanged; the mapping is mechanical:
+**The `@theme` block in `src/styles/globals.css` is canonical for this repo's tokens** (Tailwind v4 is CSS-first — tokens live in `@theme`, not a `tailwind.config.ts`), and the flow is code-outward. The old RC-CC file this section once named as the token source is dead (one blank cover, zero variables — verified live via MCP, `ECOSYSTEM_PLAN.md` §5); its "Figma wins for tokens" role is retired. The kit-aligned light values live in the Design System library (`afi5Q5nFtcnT9HJ04Cbylg`); the dark extension publishes there as **additional named variables, not a second mode** (code models dark as additive tokens, D-029) in ecosystem Pass 7, and screen captures land in a new Interest Quiz file (never RC-CC, never Kayla's file). The name mapping stays mechanical:
 
 | Figma path | Tailwind name | Notes |
 |---|---|---|
@@ -40,6 +40,7 @@ The Figma file (RC-CC) is the source for tokens. The `@theme` block in `src/styl
 | `color/neutral/black` | `black` | (overrides Tailwind default) |
 | `color/neutral/white` | `white` | |
 | `space/N` | `space-N` | 0-7 |
+| `space/control-{sm/md/lg/xl/tap}` | `control-{sm/md/lg/xl/tap}` | Control heights, 24/32/36/40/44 (D-036; §5) |
 | `container/{sm/md/lg/xl/px}` | `container-{sm/md/lg/xl/px}` | |
 | `section/py` | `section-py` | |
 | `radius/{sm/md/full}` | `rounded-{sm/md/full}` | (overrides defaults) |
@@ -47,6 +48,18 @@ The Figma file (RC-CC) is the source for tokens. The `@theme` block in `src/styl
 | `font/body` | `font-body` | Roboto |
 | `size/{h1..h5,body,small}` | `text-{h1..h5,body,small}` | |
 | `lh/{h1..h5,body,small}` | `leading-{h1..h5,body,small}` | |
+
+**Dark system** (§3.5; these are the variable names the Pass-7 publication creates in the DS library):
+
+| Figma path (to publish) | Tailwind name | Notes |
+|---|---|---|
+| `color/dark/{canvas/surface/panel}` | `dark-{canvas/surface/panel}` | Dark surfaces; `panel` references `near-black` |
+| `color/dark/text-on-dark{/-muted/-faint}` | `text-on-dark{,-muted,-faint}` | Off-white text ramp |
+| `color/dark/glass-{fill/fill-strong/border/border-soft/panel}` | `glass-*` | Glass fills + hairlines |
+| `color/dark/constellation-line` | `constellation-line` | Constellation edge stroke |
+| `color/role/{technician/specialist/integrator}{/-soft/-on/-glow}` | `role-*` | The 12 role-accent derivatives (§3.3/§3.5) |
+| — (effect styles, not variables) | `shadow-dark-{panel/card}` | Dark elevation; publishes as effect styles like the light tiers (§7) |
+| — (code-only) | `blur-{bar/panel}` | `backdrop-blur` steps; no clean Figma variable home |
 
 Variable names align by the mapping above so Figma Variables and Tailwind tokens stay legible to each other and the code-to-canvas round-trip (see `ARCHITECTURE.md` section 7) produces clean captures. Only values Figma Variables can hold are synced (color, type, spacing, radii). Motion is code-only. There is no Code Connect.
 
@@ -243,6 +256,20 @@ Inherited verbatim. The 0-indexed scale where `space/0 = 4px` is deliberate; it 
 | `space-6` | 48 |
 | `space-7` | 64 |
 
+### Control heights (D-036)
+
+Intentional interactive-element heights, distinct from the space scale even where values coincide. The ladder is the dashboard's (`career_dashboard` / `@rc/ui`: `control-sm/md/lg`) adopted verbatim, plus two steps minted here on the same ladder (`xl`, `tap` — `@rc/ui` v1.1 candidates):
+
+| Token | Value (px) | Use here |
+|---|---|---|
+| `control-sm` | 24 | Reserved (dashboard ladder; zero uses yet) |
+| `control-md` | 32 | Reserved (dashboard ladder; zero uses yet) |
+| `control-lg` | 36 | Results pill buttons (compare / map / back / set-target) |
+| `control-xl` | 40 | The nav search field |
+| `control-tap` | 44 | Minimum comfortable tap target — the results hero's prev/next arrows (`size-control-tap`) |
+
+The remaining numeric Tailwind steps in components are **ratified as raw, non-control sizing** (D-036): the nav logo image (`h-10`), the profile-pill avatar (`h-7 w-7`), and meter/dot/tile geometry (signal bars, menu dots, program-logo tiles, min-widths). They're layout and decoration, not interactive heights; don't token them.
+
 ### Container widths
 
 | Token | Value |
@@ -277,14 +304,16 @@ Minimal by design. `rounded-lg` is the one dark-system addition (the larger card
 
 ## 7. Shadow / elevation
 
-The Figma file defines two effect styles. Both are triple-shadow stacks following Material Design elevation conventions.
+Kit soft tiers (DEF-013 R1 — these replaced the old RC-CC Material triple-stacks; the code moved in the realignment and this section now matches it):
 
-| Token | Composition | Use |
+| Token | Value | Use |
 |---|---|---|
-| `shadow-card` | Elev-3 stack (radius 1+1+3, offsets 2/1/1, alphas .20/.14/.12) | Default card lift |
-| `shadow-elev-2` | Elev-5 stack (radius 1+2+5, offsets 3/2/1, alphas .20/.14/.12) | Hover, raised dialogs, the role-detail sheet |
+| `shadow-card` | `0 1px 2px rgb(38 38 38 / 0.06)` | Light diffuse resting lift |
+| `shadow-elev-2` | `0 1px 2px rgb(38 38 38 / 0.05)`, `0 4px 14px rgb(38 38 38 / 0.07)` | Clear hover lift, raised dialogs |
+| `shadow-dark-panel` | `0 20px 70px rgb(0 0 0 / 0.35)` | Dark: the results sheet/panel (§3.5) |
+| `shadow-dark-card` | `0 10px 40px rgb(0 0 0 / 0.28)` | Dark: floating cards on the dark canvas (§3.5) |
 
-Use sparingly. The playful layer should rely more on warm fills, soft outlines, and motion than on shadows.
+Use sparingly. The dark quiz leans on glass fills and hairline borders (§3.5) rather than shadow stacks; the role-tinted bubble/constellation glows are decorative one-offs built from `-glow` tokens, not elevation.
 
 ## 8. Motion
 
