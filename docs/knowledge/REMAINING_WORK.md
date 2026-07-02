@@ -9,7 +9,7 @@ The realignment sweep and the step-8 dark re-architecture are both complete and 
 | Things ARM / Fivestar must do after handoff, + the small cleanup we owe first | **[HANDOFF_GUIDE.md](./HANDOFF_GUIDE.md)** | ARM / Fivestar; feeds the July 21 deliverable |
 | Consciously deferred polish + open decisions, to revisit after the v3 test | **[DEFERRED_DIRECTIONS.md](./DEFERRED_DIRECTIONS.md)** | us, a possible v4 |
 | The `rc-design-system` package + `/capture-figma` queue | **[DESIGN_SYSTEM_RUN.md](./DESIGN_SYSTEM_RUN.md)** | folded into the ecosystem run (GO, D-035) |
-| **The ecosystem run** — package, UX-repo excavation, harness port, Figma work, in single-session passes | **[ECOSYSTEM_RUN.md](./ECOSYSTEM_RUN.md)** (rationale: [ECOSYSTEM_PLAN.md](./ECOSYSTEM_PLAN.md)) | us, now → July 21; Pass 1 done 07-02, Pass 2 (the package) next |
+| **The ecosystem run** — package, UX-repo excavation, harness port, Figma work, in single-session passes | **[ECOSYSTEM_RUN.md](./ECOSYSTEM_RUN.md)** (rationale: [ECOSYSTEM_PLAN.md](./ECOSYSTEM_PLAN.md)) | us, now → July 21; Passes 1–2 done 07-02 (`@rc/ui` v1 live, push pending auth), Pass 3 (excavation) next |
 
 Decision history is in **[DECISIONS.md](./DECISIONS.md)**; live build state in **[STATUS.md](./STATUS.md)**.
 
@@ -22,6 +22,6 @@ Decision history is in **[DECISIONS.md](./DECISIONS.md)**; live build state in *
 ## Still genuinely open (see the docs above for detail)
 
 - **High:** ARM per-job + bridge-program content swap (`HANDOFF_GUIDE.md` §1).
-- **High:** the ecosystem run's next pass (`ECOSYSTEM_RUN.md` — Pass 2, the `rc-design-system` stand-up); Kayla coordination before Pass 3 (branch intent, the "RC.org Prototype" file key, Landing content calls — Caelan, async).
+- **High:** the ecosystem run's next pass (`ECOSYSTEM_RUN.md` — Pass 3, the `robotics_career` excavation); its prereq is the Kayla coordination (branch intent, the "RC.org Prototype" file key, Landing content calls — Caelan, async). Also the `@rc/ui` push once Caelan runs `! gh auth login`.
 - **Medium:** three-role name confirmation vs Fivestar (`HANDOFF_GUIDE.md` §3); remove `devSeedResults()` before handoff (`HANDOFF_GUIDE.md` §5).
 - **Low:** everything in `DEFERRED_DIRECTIONS.md` (rung cue, results polish, the scene first-card motion nuance, responsive, a11y, open scoring calls).
