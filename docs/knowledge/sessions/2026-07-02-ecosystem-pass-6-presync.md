@@ -16,7 +16,7 @@ The run-sheet's sizing preference call went the other way from its default (rati
 
 ## Flags for Caelan
 
-- **Two harness files carry the retired "Figma wins for token values" precedence line:** `.claude/commands/revise-doc.md` (step 1) and `.claude/agents/doc-steward.md` (doc map). The steward flagged them and the permission classifier blocked self-editing harness files, correctly. Two one-line edits when you're in: swap to "the `@theme` block in `globals.css` is canonical for token values, code-outward (DESIGN_SYSTEM §2)".
+- **Two harness files carry the retired "Figma wins for token values" precedence line:** `.claude/commands/revise-doc.md` (step 1) and `.claude/agents/doc-steward.md` (doc map). The steward flagged them and the permission classifier blocked self-editing harness files, correctly. _(Superseded same-day by D-038: no interim edit needed — the lines become true again when Pass 7 flips the precedence back, and Pass 7 step 6 rewords them to defer to §2, with Caelan's authorization on record.)_
 
 ## State at end of session
 

@@ -186,17 +186,21 @@ Executed as specced, with one ruling and one scope-add. **Ruling (Caelan):** the
 
 **Exit gates:** lint/typecheck/tests green (82 unit + 3 E2E), `/design-review` still PASS, docs reconciled.
 
-## Pass 7 — Figma: dark variables + Interest Quiz file + capture — ~1–1.5 days
+## Pass 7 — Figma: dark variables + Interest Quiz file + capture + the dashboard-convention mirror — ~1–1.5 days
+
+**Ruling (Caelan, 2026-07-02, D-038):** Pass 7 also carries the **full mirror of `career_dashboard`'s design-system conventions**, landed in the same session because that's when each piece becomes true. The dashboard's setup (its `DESIGN_SYSTEM.md` §2/§3.5–3.7/§12 + `docs/figma/FIGMA_MAP.md`) is the target shape; Pass 6's code-outward canon (D-037) is explicitly the pre-publication state this pass supersedes.
 
 (`ECOSYSTEM_PLAN.md` §5. One confirmation first: the team-demand gate on capturing the quiz's final dark screens — ask once, then default to capture.)
-1. **Publish the dark extension into the DS library** (`afi5Q5nFtcnT9HJ04Cbylg`) as additional named variables, not a second mode (code models dark as additive tokens, D-029): Dark Canvas, Dark Surface, on-dark text ramp, glass set, role glow derivatives. Follow the §3.5 lineage discipline the library uses.
+1. **Publish the dark extension into the DS library** (`afi5Q5nFtcnT9HJ04Cbylg`) as additional named variables, not a second mode (code models dark as additive tokens, D-029): Dark Canvas, Dark Surface, on-dark text ramp, glass set, role glow derivatives. `DESIGN_SYSTEM.md` §2's dark table is the publication worklist. Follow the dashboard's lineage discipline: **every variable description states `kit: <name> (verbatim)` or `extension: <reason, with evidence>`.**
 2. **Create a new "Interest Quiz" Figma file** in the ARM team, subscribing to the DS library. RC-CC (`yGDi4yDtptKttboTYV8on7`) is dead — don't resuscitate.
-3. Port the dashboard's FIGMA_MAP-aware `/capture-figma` into this repo + seed a small per-project FIGMA_MAP (Pass 4 may have done the UX repo's; this is explore_floor's).
+3. Port the dashboard's FIGMA_MAP-aware `/capture-figma` into this repo + **seed `docs/figma/FIGMA_MAP.md` per the dashboard's shape**: file keys, node IDs, the naming contract (PascalCase React name = Figma component-set name; `@theme` property = the variable's web code syntax verbatim; static UI round-trips, interaction states stay code-owned). §2's tables convert straight into the manifest.
 4. Capture the final dark screens (results 5-screen set + quiz steps) into the Interest Quiz file.
-5. Register the "RC.org Prototype" file key (`k3AjijocJEmzrvlKTd9vJM`, on hand since Pass 3) in the UX repo's FIGMA_MAP as design source, **pull-only**; stand up a separate new file as the UX repo's capture target (Pass-3 ruling: never capture into Kayla's file).
-6. Claude Design: reuse the dashboard's `.design-sync` tokens-and-styles pattern for the UX refinement loop, sourced from `@rc/ui`. Do-not-merge rule stands: the "RoboticsCareer.org Design System" project (`8686032d…`) is the live-site recreation — keep the kit vocabulary out of it. The esbuild real-atoms bundle stays the conscious skip.
+5. **After publication, flip the doc canon (D-038):** rewrite `DESIGN_SYSTEM.md` §2's source-of-truth paragraph to the dashboard's three-artifact model (Figma wins values / the doc wins usage / code wins behavior) and add a dashboard-§12-style precedence section; add compact §3.6-style "reserved tokens + deliberate keeps" and §3.7-style "upstream proposals" sections (the `@rc/ui` v1.1 candidates: `control-xl`/`control-tap`, the montserrat-500 face, the Icon name union — consolidate from §5, globals comments, and this ledger). Run it via `/revise-doc` so the steward sweeps the ripples; log the supersession against D-037.
+6. **Harness reword (authorized in D-038):** update the precedence line in `.claude/commands/revise-doc.md` + `.claude/agents/doc-steward.md` to **defer to `DESIGN_SYSTEM.md` §2** instead of hardcoding a winner. If the self-modification guard blocks it even with the D-038 authorization on record, hand Caelan the two one-liners.
+7. Register the "RC.org Prototype" file key (`k3AjijocJEmzrvlKTd9vJM`, on hand since Pass 3) in the UX repo's FIGMA_MAP as design source, **pull-only**; stand up a separate new file as the UX repo's capture target (Pass-3 ruling: never capture into Kayla's file).
+8. Claude Design: reuse the dashboard's `.design-sync` tokens-and-styles pattern for the UX refinement loop, sourced from `@rc/ui`. Do-not-merge rule stands: the "RoboticsCareer.org Design System" project (`8686032d…`) is the live-site recreation — keep the kit vocabulary out of it. The esbuild real-atoms bundle stays the conscious skip.
 
-**Exit gates:** DS library carries the dark variables published; Interest Quiz file holds the captured screens; captures bind to variables, not raw values.
+**Exit gates:** DS library carries the dark variables published with lineage descriptions; Interest Quiz file holds the captured screens; captures bind to variables, not raw values; `FIGMA_MAP.md` is the binding authority `/capture-figma` reads first; `DESIGN_SYSTEM.md` carries the three-artifact precedence + keeps/proposals sections (steward-swept); the two harness lines defer to §2.
 
 ## Stretch — only if the last week is calm
 
