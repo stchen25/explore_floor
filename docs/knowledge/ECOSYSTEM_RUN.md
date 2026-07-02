@@ -163,7 +163,11 @@ Executed as specced, plus a baseline `/design-review`. `robotics_career` main @ 
 
 **Exit gates:** session ritual works cold (STATUS → commands run), guard hook fires, docs cross-reference clean.
 
-## Pass 5 — Tokenize Kayla's hex literals — ~0.5 day
+## Pass 5 — Tokenize Kayla's hex literals — ✅ (2026-07-02)
+
+Executed as specced from `robotics_career` (main @ `7347f6b`, local; push awaits Caelan). Every value in its `src/` is now token-traceable against `@rc/ui`: the ~90-hex census retired (only the 5 exempt brand fills + 2 ruled `#2BA4C4` map-pin keeps remain, commented), `font-montserrat`/faux weights gone, **the dense type folded onto the steps `@rc/ui` v1 already ships** (11→caption, 13→small, micro-10→eyebrow — zero new tokens, **no v1.1 bump needed**), content extracted to `src/data/` (faqs/testimonials/authOptions). Caelan's Batch-F rulings logged as its **D-006** (snaps + commented keeps: map-pin teal candidate, plain 10px, 36/26px between-steps, radius-20 cards, frost + footer alpha whites, layout heights, upward/inset shadows). All exit gates met: hex grep at target, lint/typecheck green, 11 routes console-clean at both widths, before/after screenshots unchanged apart from ruled snaps, and the `/design-review` re-run **flips the tokens + type sections to pass** — the remaining findings are exactly its `REFINEMENT_BRIEF.md`. Session note: `robotics_career/docs/knowledge/sessions/2026-07-02-pass5-tokenization.md`.
+
+**Original spec (for the record):**
 
 **Run this pass from `robotics_career`** (its harness only fires in-repo; Pass-4 ruling). The full execution spec is **`robotics_career/docs/knowledge/PASS_5_TOKENIZATION.md`** — written at Pass-4 close-out from the baseline `/design-review`, with the graded census (87 hex: 75 mechanical 1:1, 7 unmapped, 5 exempt), the batch plan, and the Batch-F decision list for Caelan. Close-out ticks THIS ledger cross-repo (docs commit here), the mirror of how Passes 2–4 were closed from this side. Reference snapshots of this doc + the plan live at `robotics_career/docs/reference/ECOSYSTEM_{PLAN,RUN}.md` (read-only copies; this file stays canonical).
 
