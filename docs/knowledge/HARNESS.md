@@ -57,8 +57,8 @@ Type these in the prompt. They orchestrate skills + subagents.
 | **`/phase-check`** | `[phase #]` | Reads the phase's acceptance criteria from `ROADMAP.md`, runs the **verifier** subagent (lint/typecheck/test + data invariants), ticks `STATUS.md`, and reports remaining gaps. Your phase gate. |
 | **`/design-review`** | `[screen/URL] [rubric]` | Runs the **design-reviewer** subagent: screenshots the running UI via Playwright and grades it against `docs/rubrics/`, filing severity-tagged findings. |
 | **`/compound`** | `decision\|lesson\|session …` | Captures knowledge into `docs/knowledge/` — an ADR entry, a workflow/craft lesson, or a dated session handoff note. |
-| **`/capture-figma`** | `[screen/URL]` | Code→canvas: captures the running screen into editable Figma frames (figma MCP). Static UI only — the animated scene/robot don't round-trip. |
-| **`/pull-figma`** | `<frame URL>` | Canvas→code: reads an edited Figma frame and applies the diff as idiomatic React against our token/composition conventions (not a blind regen). |
+| **`/capture-figma`** | `[screen/URL]` | Code→canvas: captures the running screen into Figma frames (figma MCP); reads `docs/figma/FIGMA_MAP.md` first — the Interest Quiz file is the capture target. Static UI only — the animated scene/robot don't round-trip. |
+| **`/pull-figma`** | `<frame URL>` | Canvas→code: reads an edited Figma frame and applies the diff as idiomatic React against our token/composition conventions (not a blind regen). Reads `docs/figma/FIGMA_MAP.md` first; only pulls from frames it registers. |
 | **`/revise-doc`** | `<doc> "<change>"` | Edits the owning canonical spec doc, then dispatches **doc-steward** to reconcile cross-doc ripples in the others, appends a decision, and ticks `STATUS.md`. The safe way to change a documented fact. Ported from the dashboard in the realignment (D-024). |
 
 ## 4. Subagents — isolated workers / independent reviewers (`.claude/agents/`)

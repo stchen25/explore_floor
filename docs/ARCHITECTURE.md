@@ -193,7 +193,8 @@ The principle: **data flows down, actions flow up, logic lives in pure functions
 │   │   └── index.ts
 │   │
 │   └── styles/
-│       └── globals.css            Tailwind v4 entry (@import) + @theme design tokens (canonical source)
+│       └── globals.css            Tailwind v4 entry (@import) + @theme design tokens (mirrors the
+│                                  published DS library; precedence in DESIGN_SYSTEM.md §2)
 │
 ├── tests/
 │   └── e2e/                       narrative.spec, role-select.spec, reduced-motion.spec (live)
@@ -278,7 +279,7 @@ Navigation happens via store actions that update `state.currentScreen` *and* cal
 
 ## 7. Figma integration via MCP
 
-The Figma MCP server is the seam between design and code, and it runs in a **read-leaning round-trip**, not a constant bidirectional sync. Code is the source of truth for behavior and for token values (`DESIGN_SYSTEM.md` §2); Figma is where static UI gets reviewed and refined visually. The loop has a name and a tool now (see below), and Claude Code is a supported client for it.
+The Figma MCP server is the seam between design and code, and it runs in a **read-leaning round-trip**, not a constant bidirectional sync. Code is the source of truth for behavior; the published Design System library is the source of truth for token values, with the `@theme` block mirroring it (`DESIGN_SYSTEM.md` §2); Figma is where static UI gets reviewed and refined visually. The binding manifest for the round-trip is `docs/figma/FIGMA_MAP.md` — `/capture-figma` and `/pull-figma` read it first, and an ID there is ground truth. The loop has a name and a tool now (see below), and Claude Code is a supported client for it.
 
 ### The round-trip: code to canvas and back
 
@@ -301,7 +302,7 @@ The capture works on *rendered* UI, so the value is uneven by surface, and that'
 
 ### Variable sync (the part Figma can actually hold)
 
-Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between Figma and the `@theme` block in `src/styles/globals.css`, and the flow is **code-outward**: the `@theme` block is canonical, and variables publish out to the Figma Design System library (`DESIGN_SYSTEM.md` §2 holds the file map; the original RC-CC file is dead). Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
+Design **variables** that Figma Variables can represent (color, typography, spacing, radii) stay synced by name between Figma and the `@theme` block in `src/styles/globals.css`: the Design System library (`afi5Q5nFtcnT9HJ04Cbylg`) holds the canonical values (the dark extension published there in ecosystem Pass 7, D-039) and the `@theme` block mirrors them, with `docs/figma/FIGMA_MAP.md` recording the variable IDs and the naming contract (`DESIGN_SYSTEM.md` §2 holds the precedence; the original RC-CC file is dead). Motion durations, easings, and springs are **not** in this set; they live in `/src/lib/motion.ts` in code only, because Figma can't model them. Keep the naming aligned so captures and variable reads stay clean:
 
 - Figma `color/brand/gold` ↔ Tailwind `arm-gold` (kit-aligned; renamed from `arm-yellow`, D-024)
 - Figma `color/role/{technician,specialist,integrator}` ↔ Tailwind `arm-gold` / `arm-teal` / `arm-orange` (the finalized role accents map to kit brand tokens via `ROLE_ACCENT` in `categoryAccent.ts`, D-029; the dark `-soft`/`-on`/`-glow` derivatives are the `--color-role-*` set)

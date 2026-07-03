@@ -15,7 +15,7 @@ A description of a change that was just made (or is about to be made) to **one**
 - `CONTEXT_BRIEF.md` — the *why* (the research story, the retention + specificity problem).
 - `PRD.md` — *what* we build (screens, the selectable flows, the core sort interaction, scope, the professional-track stub).
 - `DATA_MODEL.md` — the *schema* and tuning surface (types, the flow registry, the role/category details, pure-function contracts, the §17 flow invariants and the §15 sanity checks).
-- `DESIGN_SYSTEM.md` — *tokens and usage* (Figma file wins for token values; this doc for usage rules; code for behavior).
+- `DESIGN_SYSTEM.md` — *tokens and usage* (source-of-truth precedence: defer to its §2/§15).
 - `ARCHITECTURE.md` — *code organization* (stack, file structure, the flow/scoring model, dependency boundaries).
 - `ROADMAP.md` — *phases and acceptance criteria*, the cut list, non-negotiables.
 - `CLAUDE.md` — the operating manual / hard rules; mirrors the above at a high level.

@@ -1,6 +1,6 @@
 # Design System
 
-This doc is the visual source of truth for the build. It pairs with the Figma file **RC-CC — Design System** (`yGDi4yDtptKttboTYV8on7`), which holds the canonical tokens, components, and frames. Where this doc disagrees with the Figma file, the Figma file wins for tokens and component definitions; this doc wins for the rules about how things are used, the bridge to the playful layer, and code-side conventions.
+This doc is the usage source of truth for the build. It pairs with the **Design System library** (`afi5Q5nFtcnT9HJ04Cbylg`), which holds the canonical token values as published Figma Variables, and the **Interest Quiz file** (`pjgrRJS5YYII1iciW7Pak2`), which holds the screens; `docs/figma/FIGMA_MAP.md` is the binding manifest. Precedence lives in §2/§15: the library wins for values, this doc wins for usage rules, code wins for behavior. (The old RC-CC file this preamble once named is dead — D-037/D-039.)
 
 ---
 
@@ -16,7 +16,7 @@ Three principles:
 
 ## 2. Token alignment with Figma
 
-**The `@theme` block in `src/styles/globals.css` is canonical for this repo's tokens** (Tailwind v4 is CSS-first — tokens live in `@theme`, not a `tailwind.config.ts`), and the flow is code-outward. The old RC-CC file this section once named as the token source is dead (one blank cover, zero variables — verified live via MCP, `ECOSYSTEM_PLAN.md` §5); its "Figma wins for tokens" role is retired. The kit-aligned light values live in the Design System library (`afi5Q5nFtcnT9HJ04Cbylg`); the dark extension publishes there as **additional named variables, not a second mode** (code models dark as additive tokens, D-029) in ecosystem Pass 7, and screen captures land in a new Interest Quiz file (never RC-CC, never Kayla's file). Code-outward is the *pre-publication* state: once Pass 7 publishes, this section flips to the dashboard's three-artifact precedence (Figma wins values, this doc wins usage, code wins behavior) with a seeded `docs/figma/FIGMA_MAP.md` as the binding manifest (D-038; `ECOSYSTEM_RUN.md` Pass 7). The name mapping stays mechanical:
+**Three artifacts stay in sync** (the dashboard's model, adopted at publication — D-038/D-039). The **Design System library** (`afi5Q5nFtcnT9HJ04Cbylg`, an ARM team library) holds the canonical token values as Figma Variables: the kit-aligned light foundations plus **this repo's dark extension**, published in ecosystem Pass 7 as additional named variables, never a second mode (code models dark as additive tokens, D-029), every one carrying lineage in its description and rendered on the library's Foundations pages. The **`@theme` block** in `src/styles/globals.css` mirrors those tokens by name (Tailwind v4 is CSS-first — tokens live in `@theme`, not a `tailwind.config.ts`). **This doc** holds the usage rules. The binding manifest is **`docs/figma/FIGMA_MAP.md`** — file keys, variable IDs/keys, node IDs, and the naming contract; `/capture-figma` and `/pull-figma` read it first. **When values conflict, the Figma library wins for values, this doc wins for usage rules, and code wins for behavior** (§15). D-037's code-outward flow was the pre-publication state and is superseded as of the Pass-7 publication (D-039). Screen captures land in the **Interest Quiz file** (`pjgrRJS5YYII1iciW7Pak2`) — never RC-CC (dead: one blank cover, zero variables), never Kayla's file. The name mapping stays mechanical:
 
 | Figma path | Tailwind name | Notes |
 |---|---|---|
@@ -49,9 +49,9 @@ Three principles:
 | `size/{h1..h5,body,small}` | `text-{h1..h5,body,small}` | |
 | `lh/{h1..h5,body,small}` | `leading-{h1..h5,body,small}` | |
 
-**Dark system** (§3.5; these are the variable names the Pass-7 publication creates in the DS library):
+**Dark system** (§3.5; **published to the DS library 2026-07-02** — 24 variables + 2 effect styles, IDs and keys in `FIGMA_MAP.md` §4–§5):
 
-| Figma path (to publish) | Tailwind name | Notes |
+| Figma path (published) | Tailwind name | Notes |
 |---|---|---|
 | `color/dark/{canvas/surface/panel}` | `dark-{canvas/surface/panel}` | Dark surfaces; `panel` references `near-black` |
 | `color/dark/text-on-dark{/-muted/-faint}` | `text-on-dark{,-muted,-faint}` | Off-white text ramp |
@@ -61,7 +61,7 @@ Three principles:
 | — (effect styles, not variables) | `shadow-dark-{panel/card}` | Dark elevation; publishes as effect styles like the light tiers (§7) |
 | — (code-only) | `blur-{bar/panel}` | `backdrop-blur` steps; no clean Figma variable home |
 
-Variable names align by the mapping above so Figma Variables and Tailwind tokens stay legible to each other and the code-to-canvas round-trip (see `ARCHITECTURE.md` section 7) produces clean captures. Only values Figma Variables can hold are synced (color, type, spacing, radii). Motion is code-only. There is no Code Connect.
+Variable names align by the mapping above so Figma Variables and Tailwind tokens stay legible to each other and the code-to-canvas round-trip (see `ARCHITECTURE.md` section 7) produces clean captures. The library's **display names** are human-grouped in its own convention (`Color/Dark/Canvas`, `Color/Role/Technician Soft`); the machine contract is the variable's **WEB code syntax, verbatim and `var()`-wrapped** (`var(--color-dark-canvas)`), recorded per variable in `FIGMA_MAP.md` §4. In the library's collections the split mirrors code: raw values sit in `Primitives`, `var()` references (dark-panel, the role bases, the on-accent inks) sit in `Semantic` as aliases. Only values Figma Variables can hold are synced (color, type, spacing, radii). Motion is code-only. There is no Code Connect.
 
 ## 3. Color
 
@@ -425,7 +425,7 @@ Components specific to this experience. Each is named identically in code and (w
 
 **Documented cut (deleted Phase 4, D-027):** the exam dashboard (`Results/exam/` — `ExamResults`, the four `CategoryBars`, `ScoreBreakdown`, `YourRoles`) and `StatementSortView`, deleted with the cut Exam flow; and the conveyor scene (`ConveyorBelt`, `ConveyorItem`, `RoboticArm`, `SortBin`, `Robot`, `RobotPart`, `Pedestal`, the classic `RoleCard` / `ProgramList` / `MatchIndicator` / `RoundIndicator`, and `SoundToggle`), parked with the classic pipeline and never authored as Figma components. Recoverable at git tag `archive/pre-narrative-only`.
 
-Capture the live components into Figma at settled checkpoints (`/capture-figma`), grouped under a `Quiz Experience` page, named to match the React components.
+Capture the live components into Figma at settled checkpoints (`/capture-figma`), onto the Interest Quiz file's pages per `FIGMA_MAP.md` §3 (Quiz Flow / Results), named to match the React components.
 
 ## 13. Bridging the two layers — documented cut
 
@@ -447,10 +447,29 @@ The retired two-layer rules (foundation-vs-scene namespacing, scene-on-top-of-fo
 
 ## 15. Source-of-truth precedence
 
-When the team disagrees on a token or component:
+When the team disagrees on a token or component (live since the Pass-7 publication, D-039; §2 states the same triad):
 
-1. Figma file is the source for values (colors, sizes, spacing, type, components themselves).
-2. This doc is the source for usage rules (which token in which context, which archetype gets which accent, what the playful layer is and isn't).
-3. Code is the source for behavior (interaction, state, animation specifics).
+1. The **Design System library** (`afi5Q5nFtcnT9HJ04Cbylg`) is the source for **values** (colors, sizes, spacing, type, effect styles). `docs/figma/FIGMA_MAP.md` records the IDs — an ID there is ground truth.
+2. **This doc** is the source for **usage rules** (which token in which context, which role gets which accent, what the dark system is and isn't).
+3. **Code** is the source for **behavior** (interaction, state, animation specifics — motion never syncs).
 
-If a conflict appears between Figma and this doc on a value, fix the doc; on a usage rule, fix the Figma. They should always agree.
+If a conflict appears between the library and this doc on a value, fix the doc; on a usage rule, fix the library. They should always agree.
+
+## 16. Reserved tokens and deliberate keeps
+
+Tokens that look unusual from the outside but are held on purpose. Don't "clean them up" without a decision:
+
+- **The quiz-bound layout set** — `--container-read/results/map/map-card/constellation/job-panel`, `--spacing-nav`, `--ease-snap`, `--color-constellation-line` — deliberately excluded from `@rc/ui` v1 (the Pass-2 judged exclusions); they are this quiz's geometry, not shared vocabulary.
+- **`--text-small--line-height: 22px`** diverges from the package's `1.45`; a known consumer-conversion delta (`ECOSYSTEM_RUN.md` stretch notes). Keep until the (stretch-only) conversion reconciles it.
+- **The local `Icon` component** carries names beyond the packaged 47; the union is the atoms-pass item, not a local cleanup.
+- **`blur-bar` / `blur-panel`** stay code-only — no clean Figma variable home (§2); documented in FIGMA_MAP §4 so a sync run doesn't hunt for them.
+- **The light semantic set (§3.2)** stays defined but unused by the dark-only quiz (D-029) — it's the professional-track and light-surface floor, not a straggler.
+
+## 17. Upstream proposals (`@rc/ui` v1.1 candidates)
+
+Where this repo evolved past the shared package; consolidated here (from §5, `globals.css` comments, and the ecosystem ledger) so the proposals travel as one list:
+
+1. **Extend the control ladder with `control-xl` (40) and `control-tap` (44)** — minted here on the dashboard's ladder (D-036: the nav search field, and the 44px comfortable-tap floor for the results hero arrows). Proposal: adopt both into `@rc/ui` so the three repos share one ladder.
+2. **Ship the Montserrat 500 face** — only the 700 face is loaded here (the weight-honesty sweeps, D-036 scope-add), and `robotics_career` keeps a local 500 face. Proposal: add montserrat-500 to the package fonts with guidance on when medium is real.
+3. **Union the Icon name set** — the packaged `Icon` carries 47 names; this repo and the UX repo each carry extras. Proposal: union at the atoms pass so consumers drop local Icons.
+4. **Dark CTA hover tints** — `--color-arm-gold-soft` / `--color-arm-teal-soft` were deliberately not shipped in v1 (Pass-2 note: "cheap v1.1 if the UX repo wants CTA hovers on dark"). Proposal: ship both when any consumer needs a dark CTA hover.

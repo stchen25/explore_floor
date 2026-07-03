@@ -45,7 +45,7 @@ The "Set as target role" pill on the job-overview screen is **inert chrome by sc
 - **The scoring engine** (`src/lib/categoryScoring.ts`) is pure, branch-aware, and unit-tested. It returns a normalized match across all three roles.
 - **`roleDetails.ts`** content is ARM-verbatim and verified (see §1).
 - **The five results screens** (role cards → compare → bubble map → job constellation → job overview) are all built and green.
-- **Design tokens** are kit-aligned (dark-only) and still authored locally in this repo; the shared `rc-design-system` package (`@rc/ui`, tag `v1`) is live as of ecosystem Pass 2 (D-035), and converting this repo to consume it is stretch-only (see `DESIGN_SYSTEM_RUN.md`).
+- **Design tokens** are kit-aligned (dark-only) and published to the Figma Design System library, which wins for values; the `@theme` block mirrors it (`DESIGN_SYSTEM.md` §2, D-039). The block is still authored locally in this repo; the shared `rc-design-system` package (`@rc/ui`, tag `v1`) is live as of ecosystem Pass 2 (D-035), and converting this repo to consume it is stretch-only (see `DESIGN_SYSTEM_RUN.md`).
 
 ---
 

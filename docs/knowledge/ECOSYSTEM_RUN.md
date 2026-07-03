@@ -14,7 +14,7 @@ _Execution ledger for `ECOSYSTEM_PLAN.md` (the rationale doc; read it for the "w
 | 4 | Harness port into the UX repo | ✅ done 2026-07-02 (+ baseline design review) |
 | 5 | Tokenize Kayla's ~90 hex literals | ✅ done 2026-07-02 (from `robotics_career`) |
 | 6 | explore_floor pre-sync pass | ✅ done 2026-07-02 (+ full weight-honesty sweep) |
-| 7 | Figma: dark variables + Interest Quiz file + capture | ☐ next |
+| 7 | Figma: dark variables + Interest Quiz file + capture | ✅ core done 2026-07-02 (D-039); remainder: editable rebuilds + steps 7–8 |
 | — | Stretch (only if calm): consumer conversion, atoms tier | ☐ |
 
 **Standing rulings** (Caelan, 2026-07-02):
@@ -186,9 +186,11 @@ Executed as specced, with one ruling and one scope-add. **Ruling (Caelan):** the
 
 **Exit gates:** lint/typecheck/tests green (82 unit + 3 E2E), `/design-review` still PASS, docs reconciled.
 
-## Pass 7 — Figma: dark variables + Interest Quiz file + capture + the dashboard-convention mirror — ~1–1.5 days
+## Pass 7 — Figma: dark variables + Interest Quiz file + capture + the dashboard-convention mirror — ✅ core (2026-07-02, D-039)
 
-**Ruling (Caelan, 2026-07-02, D-038):** Pass 7 also carries the **full mirror of `career_dashboard`'s design-system conventions**, landed in the same session because that's when each piece becomes true. The dashboard's setup (its `DESIGN_SYSTEM.md` §2/§3.5–3.7/§12 + `docs/figma/FIGMA_MAP.md`) is the target shape; Pass 6's code-outward canon (D-037) is explicitly the pre-publication state this pass supersedes.
+**Executed (core, 2026-07-02).** Steps 1–6 done: the dark extension is **published** in the DS library (24 variables — 17 raw Primitives + 7 Semantic aliases, mirroring code's raw-vs-`var()` split — plus 2 dark effect styles, all with lineage descriptions, narrow scopes, and verbatim WEB code syntax; value-verified against `globals.css` before Caelan's publish click), the Foundations/Color + Elevation pages render the dark section, the **Interest Quiz file** (`pjgrRJS5YYII1iciW7Pak2`) is live in the ARM team with Cover / Quiz Flow / Results pages, `docs/figma/FIGMA_MAP.md` is seeded as the binding authority both Figma commands now read first, the **capture gate was confirmed yes** and all 8 final screens are in the file as **reference stills** (1440×900 image fills, production build, settled states), and the doc canon flipped per D-038 (`DESIGN_SYSTEM.md` preamble/§2/§15 + new §16 keeps / §17 `@rc/ui` v1.1 proposals; steward swept ARCHITECTURE / ROADMAP / HANDOFF_GUIDE / DESIGN_SYSTEM_RUN / HARNESS / CLAUDE.md; the two harness precedence lines defer to §2). **Remainder, queued:** the editable variable-bound screen rebuilds (land beside their `Ref/*` twins, rows in FIGMA_MAP §6) and steps 7–8 below (the UX repo's capture-target file + the Claude Design `.design-sync` bundle). Capture-method note for the rebuild session: the `generate_figma_design` HTML-capture pipeline is a dead end here (expiring single-use IDs, a false "completed", macOS occlusion throttling stalling captures ~150s — front the window first); build via `use_figma` against the stills. Session note: [2026-07-02](./sessions/2026-07-02-ecosystem-pass-7-figma-core.md).
+
+**Original ruling (Caelan, 2026-07-02, D-038):** Pass 7 also carries the **full mirror of `career_dashboard`'s design-system conventions**, landed in the same session because that's when each piece becomes true. The dashboard's setup (its `DESIGN_SYSTEM.md` §2/§3.5–3.7/§12 + `docs/figma/FIGMA_MAP.md`) is the target shape; Pass 6's code-outward canon (D-037) is explicitly the pre-publication state this pass supersedes.
 
 (`ECOSYSTEM_PLAN.md` §5. One confirmation first: the team-demand gate on capturing the quiz's final dark screens — ask once, then default to capture.)
 1. **Publish the dark extension into the DS library** (`afi5Q5nFtcnT9HJ04Cbylg`) as additional named variables, not a second mode (code models dark as additive tokens, D-029): Dark Canvas, Dark Surface, on-dark text ramp, glass set, role glow derivatives. `DESIGN_SYSTEM.md` §2's dark table is the publication worklist. Follow the dashboard's lineage discipline: **every variable description states `kit: <name> (verbatim)` or `extension: <reason, with evidence>`.**

@@ -9,7 +9,7 @@ The realignment sweep and the step-8 dark re-architecture are both complete and 
 | Things ARM / Fivestar must do after handoff, + the small cleanup we owe first | **[HANDOFF_GUIDE.md](./HANDOFF_GUIDE.md)** | ARM / Fivestar; feeds the July 21 deliverable |
 | Consciously deferred polish + open decisions, to revisit after the v3 test | **[DEFERRED_DIRECTIONS.md](./DEFERRED_DIRECTIONS.md)** | us, a possible v4 |
 | The `rc-design-system` package + `/capture-figma` queue | **[DESIGN_SYSTEM_RUN.md](./DESIGN_SYSTEM_RUN.md)** | folded into the ecosystem run (GO, D-035) |
-| **The ecosystem run** — package, UX-repo excavation, harness port, Figma work, in single-session passes | **[ECOSYSTEM_RUN.md](./ECOSYSTEM_RUN.md)** (rationale: [ECOSYSTEM_PLAN.md](./ECOSYSTEM_PLAN.md)) | us, now → July 21; Passes 1–2 done 07-02 (`@rc/ui` v1 pushed), Pass 3 (excavation) next |
+| **The ecosystem run** — package, UX-repo excavation, harness port, Figma work, in single-session passes | **[ECOSYSTEM_RUN.md](./ECOSYSTEM_RUN.md)** (rationale: [ECOSYSTEM_PLAN.md](./ECOSYSTEM_PLAN.md)) | us, now → July 21; Passes 1–7 core done 07-02 (D-039); remainder: editable screen rebuilds, UX-repo capture target, Claude Design bundle, stretch |
 
 Decision history is in **[DECISIONS.md](./DECISIONS.md)**; live build state in **[STATUS.md](./STATUS.md)**.
 
@@ -22,6 +22,6 @@ Decision history is in **[DECISIONS.md](./DECISIONS.md)**; live build state in *
 ## Still genuinely open (see the docs above for detail)
 
 - **High:** ARM per-job + bridge-program content swap (`HANDOFF_GUIDE.md` §1).
-- **High:** the ecosystem run's next pass (`ECOSYSTEM_RUN.md` — Pass 3, the `robotics_career` excavation); its prereq is the Kayla coordination (branch intent, the "RC.org Prototype" file key, Landing content calls — Caelan, async). (`@rc/ui` is pushed — the `github:caelar/rc-design-system#v1` dep is live.)
+- **High:** the ecosystem run's remainder (`ECOSYSTEM_RUN.md` Pass 7 — the editable variable-bound screen rebuilds in the Interest Quiz file, the UX repo's capture-target file, the Claude Design `.design-sync` bundle); plus the pushes still awaiting Caelan (robotics_career Pass 5, the career_dashboard archive tags/branch deletion).
 - **Medium:** three-role name confirmation vs Fivestar (`HANDOFF_GUIDE.md` §3); remove `devSeedResults()` before handoff (`HANDOFF_GUIDE.md` §5).
 - **Low:** everything in `DEFERRED_DIRECTIONS.md` (rung cue, results polish, the scene first-card motion nuance, responsive, a11y, open scoring calls).

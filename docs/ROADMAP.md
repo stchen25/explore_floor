@@ -361,7 +361,7 @@ Second user testing round:
 - Capture the final built screens back to the Figma file via code-to-canvas so the file reflects what shipped.
 - Update the Figma file's frame thumbnails so screenshots reflect the finished work.
 
-_(Destination updated: the original RC-CC file is dead. Final captures land in a new "Interest Quiz" Figma file subscribing to the Design System library, and the token flow is code-outward; see `DESIGN_SYSTEM.md` §2, queued as ecosystem Pass 7 in `docs/knowledge/ECOSYSTEM_RUN.md`.)_
+_(Destination updated: the original RC-CC file is dead. The "Interest Quiz" Figma file (`pjgrRJS5YYII1iciW7Pak2`) now exists in the ARM team, subscribed to the Design System library, and holds reference stills of all 8 final screens (ecosystem Pass 7, 2026-07-02); the editable variable-bound rebuilds are the pass's recorded remainder in `docs/knowledge/ECOSYSTEM_RUN.md`. Precedence is the three-artifact model in `DESIGN_SYSTEM.md` §2.)_
 
 #### 4.7 ARM-facing demo polish
 

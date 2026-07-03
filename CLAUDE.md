@@ -68,7 +68,7 @@ If you want to add a dependency, check `ARCHITECTURE.md` first. Prefer the stack
   /lib                Pure helpers: categoryScoring (the brain), screenerFit, categoryBreakdown, nodeLayout, bubbleLayout
   /styles             Tailwind v4 entry + the @theme design-token block (globals.css)
 /tests                Playwright specs (narrative / role-select / reduced-motion)
-src/styles/globals.css  Design tokens via Tailwind v4 @theme. Single source of truth for color/type/spacing (motion tokens live in src/lib/motion.ts).
+src/styles/globals.css  Design tokens via Tailwind v4 @theme; mirrors the published Figma DS library (precedence: DESIGN_SYSTEM.md §2/§15). Motion tokens live in src/lib/motion.ts.
 ```
 See `ARCHITECTURE.md` §3 for the full tree and `DATA_MODEL.md` §17 for the live data model.
 

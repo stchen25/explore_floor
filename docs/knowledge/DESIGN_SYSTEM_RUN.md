@@ -22,13 +22,13 @@ The whole package extraction stayed deferred by decision until the GO above (Cae
 - **Step 5 — convert consumers.** Point both `career_dashboard` **and** `explore_floor` at the package (`"@rc/ui": "github:caelar/rc-design-system#v1"`, the recommended git-dependency distribution), delete their local token authorship, and repoint `/design-sync` to source from it. Also bundle the real React atoms (`componentSrcMap` + esbuild) into the Claude Design project so exploration renders real components, and rename that project to "RC Design System".
 - **Step 6 — scaffold the three unborn prototypes** (Homepage, Sign-Up Flow, Explore Jobs & Trainings) on `@rc/ui` from the first commit. §10 calls this the largest payoff.
 
-**Source-of-truth roles:** superseded by `DESIGN_SYSTEM.md` §2 (§10's "Figma DS library = canonical for *values*" framing no longer holds): the `@theme` in code is canonical; the Figma Design System library and the Claude Design DS project sit downstream. Tokens flow one way, outward from code (unchanged).
+**Source-of-truth roles:** owned by `DESIGN_SYSTEM.md` §2 (the three-artifact model, live since the Pass-7 publication, D-039): the Figma Design System library wins for values, the `@theme` block mirrors it, the doc holds usage, and `docs/figma/FIGMA_MAP.md` is the binding manifest. (The interim code-outward framing, D-037, was the pre-publication state; §10's original "library = canonical for values" framing holds again.)
 
 **Explicit consequence to undo here:** `explore_floor/src/styles/globals.css` still **authors its own dark `@theme` locally** — an intentional artifact of the deferral. Rec C's "one canonical source" end-state is only partially realized until step 5 repoints this repo at the package.
 
-## 2. `/capture-figma` the final dark screens
+## 2. `/capture-figma` the final dark screens — resolved (ecosystem Pass 7, 2026-07-02)
 
-Capture the final dark results + quiz screens into the Fivestar Figma handoff (team-demand-gated: "if the team wants them in the Figma handoff"). No session note records a capture of the final screens yet, so the decision is unmade pending team preference. Do it in this run so the Figma file the client receives matches the built prototype. This run is also the natural time to reconcile `/capture-figma` against the shared-package components (System A Figma / System B Claude Design).
+The team-demand gate is answered: Caelan confirmed the screens belong in the Figma handoff (2026-07-02). Reference stills of all 8 final screens are captured into the Interest Quiz file (`pjgrRJS5YYII1iciW7Pak2`) as image fills; the editable variable-bound rebuilds are the pass's recorded remainder in `ECOSYSTEM_RUN.md`, and `/capture-figma` now reads `docs/figma/FIGMA_MAP.md` first. Still open from this entry: reconciling `/capture-figma` output against the shared-package components (System A Figma / System B Claude Design) once the editable rebuilds land.
 
 ## 3. Smaller optional alignments (from `archive/REALIGNMENT.md` §8 Rec D)
 
