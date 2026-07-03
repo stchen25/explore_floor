@@ -207,3 +207,5 @@ Executed as specced, with one ruling and one scope-add. **Ruling (Caelan):** the
 ## Stretch — only if the last week is calm
 
 Step-5 consumer conversion (repoint career_dashboard + explore_floor at `@rc/ui`, delete local token authorship — real regression risk, zero client-visible payoff; known deltas: explore_floor's `--text-small--line-height` 22px vs the package's 1.45, its Icon's extra names beyond the packaged 47). The remaining atoms tier (CtaButton, Chip, StatusPill, Ring, Meter, MetaRow, Card/CardHead — the §10 step-0 store-free audit first). The esbuild atoms bundle (default: skip).
+
+**Figma componentization + variants (Caelan, 2026-07-03, from the Interest Quiz eyeball pass).** The eyeball pass approved the file as-is; the one note was that the recurring elements would benefit from being real Figma components with variants where that structure earns its keep. Deliberately held: it's a cross-file project (Interest Quiz + the UX repo's capture target + the dashboard file), so scope it across all the files together and decide the approach then, rather than componentizing one file in isolation. Not a gate for the July 21 handoff.
