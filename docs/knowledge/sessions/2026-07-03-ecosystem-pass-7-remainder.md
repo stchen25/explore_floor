@@ -1,6 +1,6 @@
 # 2026-07-03 — Ecosystem run Pass 7 remainder: variable-bound screen rebuilds, steps 7–8 closed (D-040)
 
-**Resume here.** Pass 7 is **fully closed** (D-040): the Interest Quiz file (`pjgrRJS5YYII1iciW7Pak2`) holds all **9 final screens as editable, variable-bound frames** (the `Ref/*` stills are deleted — Caelan's replace ruling), ledger **step 7** was recognized as done cross-repo (the UX repo's D-007), and **step 8** landed (Claude Design project "RC.org Site — UX Refinement", `a28efdc8-57d4-4730-aec6-38e5141b19f5`, + `.design-sync/` in `robotics_career`). The ecosystem run's remaining work is only the **stretch pass**; the late-July handoff is the next milestone. Awaiting Caelan: the robotics_career commits/pushes (Pass-5 + D-007 docs + the new `.design-sync/`), the dashboard archive tags, and an eyeball pass on the Interest Quiz file.
+**Resume here.** Pass 7 is **fully closed** (D-040): the Interest Quiz file (`pjgrRJS5YYII1iciW7Pak2`) holds all **9 final screens as editable, variable-bound frames** (the `Ref/*` stills are deleted — Caelan's replace ruling), ledger **step 7** was recognized as done cross-repo (the UX repo's D-007), and **step 8** landed (Claude Design project "RC.org Site — UX Refinement", `a28efdc8-57d4-4730-aec6-38e5141b19f5`, + `.design-sync/` in `robotics_career`). The ecosystem run's remaining work is only the **stretch pass**; the late-July handoff is the next milestone. _(Verified later the same day: the robotics_career push landed — `ce16a98`, carrying the `.design-sync/` bundle — and the dashboard archive tags/branch deletions + FIGMA_MAP totals fix are done. Still awaiting Caelan: the **explore_floor push** (local `main` 12 ahead of origin) and the Interest Quiz eyeball pass.)_
 
 ## What landed
 
@@ -16,5 +16,5 @@ Don't fight the MCP HTML-capture submit path — the working pipeline is: **agen
 
 - explore_floor `main`: docs-only commit (FIGMA_MAP, ledger, ROADMAP §4.6, STATUS, DECISIONS D-040, LESSONS L-009, this note); `src/` + `index.html` untouched. Gates green at close: lint / typecheck / 82 unit / 3 E2E.
 - Figma: Interest Quiz file complete (Cover / Quiz Flow ×4 / Results ×5, all bound); DS library untouched this session.
-- robotics_career: `.design-sync/` added (3 files), uncommitted alongside the earlier Pass-5 + D-007 docs — all Caelan's to commit/push.
+- robotics_career: `.design-sync/` added (3 files) — committed and pushed later the same day inside Caelan's D-007 docs commit (`ce16a98`).
 - Servers stopped; scratchpad artifacts (screenshots, ds-bundle) session-only.
