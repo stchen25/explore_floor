@@ -117,7 +117,7 @@ export const narrativeFlow: CategoryFlow = {
       type: 'scene',
       id: 'n-s1',
       prompt:
-        "Alright, let's get started. Your alarm goes off in the morning. You're getting ready for your first day of school.",
+        "Your alarm goes off in the morning. You're getting ready for your first day of school.",
       question: 'How do you start the day?',
       choices: [
         {
