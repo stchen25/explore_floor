@@ -10,6 +10,7 @@ The realignment sweep and the step-8 dark re-architecture are both complete and 
 | Consciously deferred polish + open decisions, to revisit after the v3 test | **[DEFERRED_DIRECTIONS.md](./DEFERRED_DIRECTIONS.md)** | us, a possible v4 |
 | The `rc-design-system` package + `/capture-figma` queue | **[DESIGN_SYSTEM_RUN.md](./DESIGN_SYSTEM_RUN.md)** | folded into the ecosystem run (GO, D-035) |
 | **The ecosystem run** — package, UX-repo excavation, harness port, Figma work, in single-session passes | **[ECOSYSTEM_RUN.md](./ECOSYSTEM_RUN.md)** (rationale: [ECOSYSTEM_PLAN.md](./ECOSYSTEM_PLAN.md)) | us, now → July 21; Passes 1–7 core done 07-02 (D-039); remainder: editable screen rebuilds, UX-repo capture target, Claude Design bundle, stretch |
+| **The componentization run** — real Figma components + variants across the ecosystem files (nav mega set, buttons, chips, forms), promote-vs-local registry, bounded code alignment | **[COMPONENTIZATION_RUN.md](./COMPONENTIZATION_RUN.md)** (D-041) | us, ratified 07-03; Pass 0 (audit + registry) not started; not a July 21 gate |
 
 Decision history is in **[DECISIONS.md](./DECISIONS.md)**; live build state in **[STATUS.md](./STATUS.md)**.
 
